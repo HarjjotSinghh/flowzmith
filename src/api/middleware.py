@@ -121,6 +121,9 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
             "/redoc",
             "/openapi.json",
             "/ws/",
+            "/ws",
+            "/ws/",
+            "/ws",
             "/static/"
         ]
 
@@ -156,6 +159,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         """Process rate limiting for incoming requests."""
         try:
+            # Skip rate limiting for WebSocket endpoints
+            if request.url.path.startswith("/ws"):
+                logger.info(f"RateLimitMiddleware: Skipping rate limit for {request.url.path}")
+                return await call_next(request)
+
             # Get client identifier
             client_id = self._get_client_id(request)
 
@@ -281,7 +289,8 @@ class ValidationMiddleware(BaseHTTPMiddleware):
     def _should_skip_validation(self, path: str) -> bool:
         """Check if validation should be skipped for this path."""
         skip_paths = [
-            "/ws/"
+            "/ws/",
+            "/ws"
         ]
         should_skip = any(path.startswith(skip_path) for skip_path in skip_paths)
         logger.info(f"ValidationMiddleware: Path '{path}' should skip validation: {should_skip}")

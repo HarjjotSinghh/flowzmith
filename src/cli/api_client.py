@@ -61,6 +61,15 @@ class APIClient:
 
         return data
 
+    def _get_system_address(self) -> str:
+        """Return a stable identifier for this machine (MAC-like)."""
+        try:
+            node = uuid.getnode()
+            mac_hex = ":".join(f"{(node >> ele) & 0xff:02x}" for ele in range(40, -1, -8))
+            return mac_hex
+        except Exception:
+            return str(uuid.uuid4())
+
     # WebSocket Methods
     async def connect_websocket(self) -> str:
         """Connect to WebSocket and return connection ID."""
@@ -108,7 +117,9 @@ class APIClient:
     # Contract API Methods
     async def submit_contract(self, contract_data: Dict[str, Any]) -> Dict[str, Any]:
         """Submit a new contract for processing."""
-        # The API expects contract data at /contracts/submit for flexible payloads
+        # Attach system address for CLI to help backend create/find user
+        contract_data = dict(contract_data)
+        contract_data.setdefault("system_address", self._get_system_address())
         return await self.post("/api/v1/contracts/submit", json=contract_data)
 
     async def get_contracts(self, status: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
@@ -152,6 +163,8 @@ class APIClient:
         data = aiohttp.FormData()
         data.add_field("file", open(file_path, "rb"), filename=file_path.name)
         data.add_field("metadata", json.dumps(metadata))
+        # Include system address for CLI uploads
+        data.add_field("system_address", self._get_system_address())
 
         return await self.post("/api/v1/documentation/upload", data=data)
 
@@ -163,6 +176,8 @@ class APIClient:
 
         data = aiohttp.FormData()
         data.add_field("file", open(file_path, "rb"), filename=file_path.name)
+        # Include system address for CLI uploads
+        data.add_field("system_address", self._get_system_address())
 
         return await self.post("/api/v1/contracts/file", data=data)
 

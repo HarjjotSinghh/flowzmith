@@ -31,7 +31,10 @@ async def websocket_endpoint(
             await websocket.close(code=4001, reason="User not found")
             return
 
-        # Accept connection
+        # Accept connection BEFORE using manager
+        await websocket.accept()
+
+        # Connect via manager
         connection_id = await manager.connect(websocket, user_id=user_id)
         handler = WebSocketHandler(db)
 
@@ -61,7 +64,10 @@ async def session_websocket_endpoint(
 ):
     """WebSocket endpoint for anonymous sessions."""
     try:
-        # Accept connection
+        # Accept connection BEFORE using manager
+        await websocket.accept()
+
+        # Connect via manager
         connection_id = await manager.connect(websocket, session_id=session_id)
         handler = WebSocketHandler(db)
 

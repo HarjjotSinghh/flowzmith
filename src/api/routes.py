@@ -4,7 +4,7 @@ API routes for Smart Contract LLM Builder.
 
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import uuid
@@ -152,6 +152,7 @@ async def update_user_profile(
 async def generate_contract(
     request: ContractGenerationRequest,
     user_id: str,
+    request_ctx: Request = None,
     db: Session = Depends(get_db)
 ):
     """Generate contract from user input."""
@@ -161,10 +162,48 @@ async def generate_contract(
         llm_service = LLMService(db)
         flow_service = FlowService(db)
 
+        # Resolve or create user if not existing
+        from ..models import User, PersonaType, ContractSubmission
+        import uuid as _uuid
+
+        resolved_user = None
+        try:
+            provided_user_uuid = _uuid.UUID(user_id)
+            resolved_user = db.query(User).filter(User.id == provided_user_uuid).first()
+        except Exception:
+            resolved_user = None
+
+        # If user not found, derive synthetic email from client IP for web/API
+        if not resolved_user:
+            client_ip = None
+            try:
+                client_ip = request_ctx.client.host if request_ctx and request_ctx.client else None
+            except Exception:
+                client_ip = None
+
+            if client_ip:
+                synthetic_email = f"ip-{str(client_ip).replace(':', '-')}@local"
+            else:
+                synthetic_email = f"anonymous-{_uuid.uuid4()}@local"
+
+            # Try find by synthetic email
+            resolved_user = db.query(User).filter(User.email == synthetic_email).first()
+
+            # Create minimal user if still not found
+            if not resolved_user:
+                resolved_user = User(
+                    email=synthetic_email,
+                    persona_type=PersonaType.NON_TECHNICAL,
+                    preferences={"source": "api", "identifier": client_ip},
+                    data_retention_consent=False
+                )
+                db.add(resolved_user)
+                db.commit()
+                db.refresh(resolved_user)
+
         # Create contract submission
-        from ..models import ContractSubmission
         submission = ContractSubmission(
-            user_id=user_id,
+            user_id=resolved_user.id,
             input_type=request.input_type,
             content=request.content,
             pre_conditions=request.pre_conditions,
@@ -203,13 +242,14 @@ async def generate_contract(
 async def submit_contract(
     contract_data: dict,
     user_id: str = None,
+    request: Request = None,
     db: Session = Depends(get_db)
 ):
     """Submit contract data for processing."""
     try:
         # Create submission from contract data
-        from ..models import ContractSubmission, InputType, SubmissionStatus
-        import uuid
+        from ..models import ContractSubmission, InputType, SubmissionStatus, User, PersonaType
+        import uuid as _uuid
 
         # Map input method to InputType enum
         input_type_map = {
@@ -223,17 +263,56 @@ async def submit_contract(
         input_method = contract_data.get("input_method", "direct_code")
         input_type = input_type_map.get(input_method, InputType.MIXED)
 
-        # Convert string user_id to UUID if provided, otherwise create a default user
+        # Resolve or create user
+        resolved_user = None
+        provided_user_uuid = None
         if user_id:
             try:
-                user_uuid = uuid.UUID(user_id)
+                provided_user_uuid = _uuid.UUID(user_id)
+                resolved_user = db.query(User).filter(User.id == provided_user_uuid).first()
             except ValueError:
-                user_uuid = uuid.uuid4()  # Default user if invalid
+                provided_user_uuid = None
+                resolved_user = None
+
+        # Determine source and identifier
+        system_address = contract_data.get("system_address") or contract_data.get("mac_address")
+        client_ip = None
+        try:
+            client_ip = request.client.host if request and request.client else None
+        except Exception:
+            client_ip = None
+
+        # Build synthetic email based on source
+        if system_address:
+            identifier = str(system_address).lower().replace(":", "-").replace(" ", "")
+            synthetic_email = f"cli-{identifier}@local"
+        elif client_ip:
+            identifier = str(client_ip).replace(":", "-")
+            synthetic_email = f"ip-{identifier}@local"
         else:
-            user_uuid = uuid.uuid4()  # Default user
+            synthetic_email = f"anonymous-{_uuid.uuid4()}@local"
+
+        if not resolved_user:
+            # Try to find by synthetic email
+            resolved_user = db.query(User).filter(User.email == synthetic_email).first()
+
+        if not resolved_user:
+            # Create minimal user record to satisfy FK
+            resolved_user = User(
+                email=synthetic_email,
+                persona_type=PersonaType.NON_TECHNICAL,
+                preferences={
+                    "source": "cli" if system_address else "api",
+                    "identifier": system_address or client_ip
+                },
+                data_retention_consent=False
+            )
+            db.add(resolved_user)
+            db.commit()
+            db.refresh(resolved_user)
 
         submission = ContractSubmission(
-            user_id=user_uuid,
+            user_id=resolved_user.id,
             input_type=input_type,
             content=contract_data.get("content", ""),
             pre_conditions={
@@ -251,6 +330,7 @@ async def submit_contract(
 
         return {
             "submission_id": str(submission.id),
+            "user_id": str(resolved_user.id),
             "status": "success",
             "message": "Contract submitted successfully"
         }
@@ -262,6 +342,8 @@ async def submit_contract(
 async def upload_contract_file(
     file: UploadFile = File(...),
     user_id: str = None,
+    system_address: Optional[str] = None,
+    request: Request = None,
     db: Session = Depends(get_db)
 ):
     """Upload contract file for processing."""
@@ -273,30 +355,61 @@ async def upload_contract_file(
         content_str = content.decode('utf-8')
 
         # Determine input type
-        from ..models import InputType, SubmissionStatus
+        from ..models import InputType, SubmissionStatus, ContractSubmission, User, PersonaType
         input_type = InputType.CDC_FILE if file.filename.endswith('.cdc') else InputType.SOL_FILE
 
-        # Convert string user_id to UUID if provided, otherwise create a default user
+        # Resolve or create user (use MAC/system address for CLI if provided; otherwise IP for web uploads)
+        resolved_user = None
+        import uuid as _uuid
         if user_id:
             try:
-                user_uuid = uuid.UUID(user_id)
+                provided_user_uuid = _uuid.UUID(user_id)
+                resolved_user = db.query(User).filter(User.id == provided_user_uuid).first()
             except ValueError:
-                user_uuid = uuid.uuid4()  # Default user if invalid
-        else:
-            user_uuid = uuid.uuid4()  # Default user
+                resolved_user = None
 
-        # Create submission
-        from ..models import ContractSubmission
+        client_ip = None
+        try:
+            client_ip = request.client.host if request and request.client else None
+        except Exception:
+            client_ip = None
+
+        if system_address:
+            identifier = str(system_address).lower().replace(":", "-").replace(" ", "")
+            synthetic_email = f"cli-{identifier}@local"
+        else:
+            synthetic_email = f"ip-{str(client_ip).replace(':', '-')}@local" if client_ip else f"anonymous-{_uuid.uuid4()}@local"
+
+        if not resolved_user:
+            resolved_user = db.query(User).filter(User.email == synthetic_email).first()
+        if not resolved_user:
+            resolved_user = User(
+                email=synthetic_email,
+                persona_type=PersonaType.NON_TECHNICAL,
+                preferences={"source": "cli" if system_address else "api", "identifier": system_address or client_ip},
+                data_retention_consent=False
+            )
+            db.add(resolved_user)
+            db.commit()
+            db.refresh(resolved_user)
+
         submission = ContractSubmission(
-            user_id=user_uuid,
+            user_id=resolved_user.id,
             input_type=input_type,
             content=content_str,
+            pre_conditions={"filename": file.filename},
             status=SubmissionStatus.PENDING
         )
         db.add(submission)
         db.commit()
+        db.refresh(submission)
 
-        return {"message": "File uploaded successfully", "submission_id": str(submission.id)}
+        return {
+            "submission_id": str(submission.id),
+            "user_id": str(resolved_user.id),
+            "status": "success",
+            "message": "File uploaded and contract submitted successfully"
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
