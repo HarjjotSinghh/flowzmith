@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Contract LLM Builder{% endblock %}
+
+{% block content %}
+<div class="notification-container"></div>
+
+<!-- Dashboard Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <p class="text-muted">Welcome back! Here's your smart contract development overview.</p>
+            </div>
+            <div>
+                <a href="/submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Contract
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number">{{ total_contracts or 0 }}</div>
+                <div class="stat-label">Total Contracts</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-success">{{ successful_deployments or 0 }}</div>
+                <div class="stat-label">Successful Deployments</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-warning">{{ pending_submissions or 0 }}</div>
+                <div class="stat-label">Pending Submissions</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-info">{{ total_docs or 0 }}</div>
+                <div class="stat-label">Documentation Items</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Submissions -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Submissions</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_submissions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in recent_submissions %}
+                                <tr>
+                                    <td>{{ submission.id[:8] }}...</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ submission.input_type }}</span>
+                                    </td>
+                                    <td>
+                                        <span id="submission-{{ submission.id }}-status" class="status-badge status-{{ submission.status.lower() }}">
+                                            {{ submission.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ submission.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/submission/{{ submission.id }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if submission.status == 'COMPLETED' %}
+                                            <a href="/deploy/{{ submission.id }}" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-rocket"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent submissions yet.</p>
+                        <a href="/submit" class="btn btn-primary">Create Your First Contract</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Submit New Contract
+                    </a>
+                    <a href="/docs" class="btn btn-info">
+                        <i class="fas fa-book"></i> Browse Documentation
+                    </a>
+                    <a href="/deployments" class="btn btn-success">
+                        <i class="fas fa-rocket"></i> View Deployments
+                    </a>
+                    <a href="/profile" class="btn btn-secondary">
+                        <i class="fas fa-user"></i> Update Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history"></i> Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-feed">
+                    {% if recent_activity %}
+                        {% for activity in recent_activity %}
+                        <div class="activity-item mb-3">
+                            <div class="d-flex">
+                                <div class="me-2">
+                                    {% if activity.type == 'submission' %}
+                                        <i class="fas fa-upload text-primary"></i>
+                                    {% elif activity.type == 'deployment' %}
+                                        <i class="fas fa-rocket text-success"></i>
+                                    {% else %}
+                                        <i class="fas fa-cog text-info"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ activity.title }}</div>
+                                    <div class="text-muted small">{{ activity.description }}</div>
+                                    <div class="text-muted small">{{ activity.timestamp }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent activity.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-heartbeat"></i> System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="fas fa-database text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">Database</div>
+                                <div class="text-success small">Connected</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="fas fa-brain text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">LLM Service</div>
+                                <div class="text-success small">Online</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="fas fa-network-wired text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">Flow Network</div>
+                                <div class="text-success small">Connected</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="fas fa-wifi text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">WebSocket</div>
+                                <div class="text-success small" id="ws-status">Connected</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Update WebSocket status indicator
+socket.addEventListener('open', function() {
+    document.getElementById('ws-status').textContent = 'Connected';
+    document.getElementById('ws-status').className = 'text-success small';
+});
+
+socket.addEventListener('close', function() {
+    document.getElementById('ws-status').textContent = 'Disconnected';
+    document.getElementById('ws-status').className = 'text-danger small';
+});
+
+// Auto-refresh dashboard data every 30 seconds
+setInterval(function() {
+    fetch('/api/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            // Update statistics
+            document.querySelector('.stat-number').textContent = data.total_contracts;
+            // Update other stats as needed
+        })
+        .catch(error => console.error('Error fetching dashboard stats:', error));
+}, 30000);
+</script>
+{% endblock %}

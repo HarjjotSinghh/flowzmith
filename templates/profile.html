@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Smart Contract LLM Builder{% endblock %}
+
+{% block content %}
+<div class="notification-container"></div>
+
+<!-- Profile Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-user"></i> Profile</h1>
+                <p class="text-muted">Manage your account settings and preferences.</p>
+            </div>
+            <div>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Information -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user-edit"></i> Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <form id="profile-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" class="form-control" value="user@example.com" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="persona-type" class="form-label">Experience Level</label>
+                                <select id="persona-type" class="form-select">
+                                    <option value="BEGINNER">Beginner</option>
+                                    <option value="INTERMEDIATE" selected>Intermediate</option>
+                                    <option value="EXPERT">Expert</option>
+                                    <option value="NON_TECHNICAL">Non-technical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="flow-account" class="form-label">Flow Account Address</label>
+                        <input type="text" id="flow-account" class="form-control" placeholder="0x..." value="">
+                    </div>
+                    <div class="mb-3">
+                        <label for="preferences" class="form-label">Preferences (JSON)</label>
+                        <textarea id="preferences" class="form-control" rows="4" placeholder='{"theme": "dark", "notifications": true}'>{"theme": "light", "notifications": true, "auto_save": true}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="data-retention-consent" checked>
+                            <label class="form-check-label" for="data-retention-consent">
+                                Allow data retention for learning improvements
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Security Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="current-password" class="form-label">Current Password</label>
+                    <input type="password" id="current-password" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="new-password" class="form-label">New Password</label>
+                    <input type="password" id="new-password" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="confirm-password" class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirm-password" class="form-control">
+                </div>
+                <button type="button" class="btn btn-warning" onclick="changePassword()">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="col-lg-4">
+        <!-- Account Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Account Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="https://picsum.photos/seed/user-avatar/100/100.jpg" alt="Profile" class="rounded-circle" width="100" height="100">
+                </div>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="fw-bold">15</div>
+                        <div class="text-muted small">Contracts</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fw-bold">8</div>
+                        <div class="text-muted small">Deployments</div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="fw-bold text-success">12</div>
+                        <div class="text-muted small">Successful</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fw-bold text-warning">3</div>
+                        <div class="text-muted small">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Contract
+                    </a>
+                    <a href="/deployments" class="btn btn-info">
+                        <i class="fas fa-rocket"></i> My Deployments
+                    </a>
+                    <button class="btn btn-outline-danger" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export My Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connected Services -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plug"></i> Connected Services</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fab fa-github fa-2x me-3"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">GitHub</div>
+                        <div class="text-muted small">Connected</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary">Disconnect</button>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-network-wired fa-2x me-3"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">Flow Wallet</div>
+                        <div class="text-muted small">Not connected</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function changePassword() {
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        showNotification('Please fill in all password fields', 'warning');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        showNotification('New passwords do not match', 'danger');
+        return;
+    }
+
+    if (newPassword.length < 8) {
+        showNotification('Password must be at least 8 characters long', 'danger');
+        return;
+    }
+
+    // Simulate password change
+    showNotification('Password changed successfully!', 'success');
+    document.getElementById('current-password').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('confirm-password').value = '';
+}
+
+function exportData() {
+    showNotification('Preparing your data export...', 'info');
+
+    // Simulate data export
+    setTimeout(() => {
+        const userData = {
+            profile: {
+                email: document.getElementById('email').value,
+                persona_type: document.getElementById('persona-type').value,
+                flow_account: document.getElementById('flow-account').value,
+                preferences: JSON.parse(document.getElementById('preferences').value)
+            },
+            export_date: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'smart-contract-llm-data-export.json';
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showNotification('Data exported successfully!', 'success');
+    }, 2000);
+}
+
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showNotification('Profile updated successfully!', 'success');
+});
+</script>
+{% endblock %}

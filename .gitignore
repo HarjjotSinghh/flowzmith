@@ -1,1 +1,8 @@
 env/
+.env.*
+.env
+__pycache__
+
+.claude
+.specify
+specs/

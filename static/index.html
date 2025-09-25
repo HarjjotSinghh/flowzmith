@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contract LLM Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-online { background-color: #28a745; }
+        .status-offline { background-color: #dc3545; }
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .feature-card {
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+        .progress-container {
+            display: none;
+        }
+        .progress-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="row mb-5">
+            <div class="col-12 text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-cube me-3"></i>Smart Contract LLM Builder
+                </h1>
+                <p class="lead">AI-powered smart contract generation and deployment for Flow blockchain</p>
+                <div class="mt-3">
+                    <span class="status-indicator" id="api-status"></span>
+                    <span id="api-status-text">Checking API status...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </h5>
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action active" data-section="generate">
+                                <i class="fas fa-plus-circle me-2"></i>Generate Contract
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-section="deploy">
+                                <i class="fas fa-rocket me-2"></i>Deploy Contract
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-section="documentation">
+                                <i class="fas fa-book me-2"></i>Documentation
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-section="analytics">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-section="settings">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Stats -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="card-title">System Statistics</h6>
+                        <div class="small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Total Users:</span>
+                                <span id="total-users">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Contracts Generated:</span>
+                                <span id="total-contracts">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Success Rate:</span>
+                                <span id="success-rate">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>API Status:</span>
+                                <span id="api-status-detail">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Generate Contract Section -->
+                <div id="generate-section" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-plus-circle me-2"></i>Generate Smart Contract
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="contract-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="input-type" class="form-label">Input Type</label>
+                                        <select class="form-select" id="input-type" required>
+                                            <option value="NATURAL_LANGUAGE">Natural Language</option>
+                                            <option value="CDC_FILE">Cadence File (.cdc)</option>
+                                            <option value="SOL_FILE">Solidity File (.sol)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="network" class="form-label">Network</label>
+                                        <select class="form-select" id="network" required>
+                                            <option value="testnet">Testnet</option>
+                                            <option value="mainnet">Mainnet</option>
+                                            <option value="emulator">Emulator</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="contract-content" class="form-label">Contract Content</label>
+                                    <textarea class="form-control" id="contract-content" rows="8"
+                                              placeholder="Describe your smart contract requirements or paste your code..." required></textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="pre-conditions" class="form-label">Pre-conditions (JSON)</label>
+                                        <textarea class="form-control" id="pre-conditions" rows="4"
+                                                  placeholder='{"accounts": {"user": "0x123..."}}'></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="post-conditions" class="form-label">Post-conditions (JSON)</label>
+                                        <textarea class="form-control" id="post-conditions" rows="4"
+                                                  placeholder='{"deployed_contracts": ["MyContract"]}'></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <span class="loading-spinner spinner-border spinner-border-sm me-2" role="status"></span>
+                                        Generate Contract
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Progress Container -->
+                            <div class="progress-container mt-4">
+                                <div class="progress mb-3">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div id="progress-status">Starting generation...</div>
+                            </div>
+
+                            <!-- Results Container -->
+                            <div id="results-container" class="mt-4" style="display: none;">
+                                <div class="alert alert-success">
+                                    <h5><i class="fas fa-check-circle me-2"></i>Contract Generated Successfully!</h5>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h6>Generated Contract Code:</h6>
+                                    <div class="code-block" id="contract-code"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h6>Flow Configuration:</h6>
+                                    <div class="code-block" id="flow-config"></div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-success" onclick="deployGeneratedContract()">
+                                        <i class="fas fa-rocket me-2"></i>Deploy Contract
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="downloadContract()">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="copyToClipboard()">
+                                        <i class="fas fa-copy me-2"></i>Copy Code
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deploy Contract Section -->
+                <div id="deploy-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-rocket me-2"></i>Deploy Contract
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Select a generated configuration to deploy:</p>
+                            <div id="deployments-list">
+                                <!-- Deployments will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation Section -->
+                <div id="documentation-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-book me-2"></i>Documentation Search
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" id="search-query"
+                                           placeholder="Search Flow/Cadence documentation...">
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="content-type">
+                                        <option value="">All Types</option>
+                                        <option value="LANGUAGE_SPEC">Language Spec</option>
+                                        <option value="API_REFERENCE">API Reference</option>
+                                        <option value="TUTORIAL">Tutorial</option>
+                                        <option value="EXAMPLE">Example</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="searchDocumentation()">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                            <div id="search-results" class="mt-4">
+                                <!-- Search results will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card text-center feature-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                                            <h5 id="analytics-total-users">0</h5>
+                                            <small>Total Users</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center feature-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-file-code fa-2x text-success mb-2"></i>
+                                            <h5 id="analytics-total-submissions">0</h5>
+                                            <small>Submissions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center feature-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-rocket fa-2x text-warning mb-2"></i>
+                                            <h5 id="analytics-successful-deployments">0</h5>
+                                            <small>Successful Deployments</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center feature-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                                            <h5 id="analytics-success-rate">0%</h5>
+                                            <small>Success Rate</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>LLM Provider Settings</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Preferred Provider</label>
+                                        <select class="form-select" id="llm-provider">
+                                            <option value="OPENAI">OpenAI</option>
+                                            <option value="GROQ">Groq</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Data Privacy</h6>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="learning-consent">
+                                            <label class="form-check-label" for="learning-consent">
+                                                Allow learning data usage
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="analytics-consent">
+                                            <label class="form-check-label" for="analytics-consent">
+                                                Allow analytics sharing
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebSocket Connection -->
+    <script>
+        // WebSocket connection for real-time updates
+        let ws = null;
+        let currentUser = null;
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/session/${Date.now()}`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function() {
+                console.log('WebSocket connected');
+                updateApiStatus(true);
+            };
+
+            ws.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                handleWebSocketMessage(message);
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket disconnected');
+                updateApiStatus(false);
+                // Attempt to reconnect after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateApiStatus(false);
+            };
+        }
+
+        function handleWebSocketMessage(message) {
+            switch(message.type) {
+                case 'progress':
+                    updateProgress(message.data);
+                    break;
+                case 'status':
+                    updateStatus(message.data);
+                    break;
+                case 'log':
+                    console.log('Log:', message.data);
+                    break;
+            }
+        }
+
+        function updateProgress(data) {
+            const progressBar = document.querySelector('.progress-bar');
+            const progressStatus = document.getElementById('progress-status');
+
+            progressBar.style.width = `${data.progress * 100}%`;
+            progressStatus.textContent = data.message;
+        }
+
+        function updateStatus(data) {
+            console.log('Status update:', data);
+        }
+
+        function updateApiStatus(online) {
+            const statusIndicator = document.getElementById('api-status');
+            const statusText = document.getElementById('api-status-text');
+            const statusDetail = document.getElementById('api-status-detail');
+
+            if (online) {
+                statusIndicator.className = 'status-indicator status-online';
+                statusText.textContent = 'API Online';
+                statusDetail.textContent = 'Connected';
+            } else {
+                statusIndicator.className = 'status-indicator status-offline';
+                statusText.textContent = 'API Offline';
+                statusDetail.textContent = 'Disconnected';
+            }
+        }
+
+        // Initialize WebSocket connection
+        document.addEventListener('DOMContentLoaded', function() {
+            connectWebSocket();
+            loadSystemStats();
+            loadAnalytics();
+        });
+
+        // Navigation
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Update active state
+                document.querySelectorAll('.list-group-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                // Show selected section
+                const section = this.dataset.section;
+                document.querySelectorAll('.content-section').forEach(sec => {
+                    sec.style.display = 'none';
+                });
+                document.getElementById(`${section}-section`).style.display = 'block';
+            });
+        });
+
+        // Contract form submission
+        document.getElementById('contract-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const progressContainer = document.querySelector('.progress-container');
+            const resultsContainer = document.getElementById('results-container');
+
+            // Show loading state
+            submitButton.classList.add('loading');
+            progressContainer.classList.add('active');
+            resultsContainer.style.display = 'none';
+
+            const formData = {
+                input_type: document.getElementById('input-type').value,
+                content: document.getElementById('contract-content').value,
+                pre_conditions: document.getElementById('pre-conditions').value || null,
+                post_conditions: document.getElementById('post-conditions').value || null,
+                network: document.getElementById('network').value
+            };
+
+            try {
+                // In a real implementation, you would authenticate first
+                const response = await fetch('/api/v1/contracts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add authentication header
+                        // 'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate contract');
+                }
+
+                const result = await response.json();
+
+                // Display results
+                document.getElementById('contract-code').textContent = result.generated_contract_code;
+                document.getElementById('flow-config').textContent = JSON.stringify(result.config_content, null, 2);
+                resultsContainer.style.display = 'block';
+
+                // Store the config ID for deployment
+                window.lastGeneratedConfig = result.config_id;
+
+            } catch (error) {
+                alert('Error generating contract: ' + error.message);
+            } finally {
+                submitButton.classList.remove('loading');
+                progressContainer.classList.remove('active');
+            }
+        });
+
+        // Helper functions
+        async function loadSystemStats() {
+            try {
+                const response = await fetch('/api/v1/statistics');
+                const stats = await response.json();
+
+                document.getElementById('total-users').textContent = stats.total_users;
+                document.getElementById('total-contracts').textContent = stats.total_submissions;
+                document.getElementById('success-rate').textContent = stats.success_rate + '%';
+            } catch (error) {
+                console.error('Failed to load system stats:', error);
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/v1/statistics');
+                const stats = await response.json();
+
+                document.getElementById('analytics-total-users').textContent = stats.total_users;
+                document.getElementById('analytics-total-submissions').textContent = stats.total_submissions;
+                document.getElementById('analytics-successful-deployments').textContent = stats.successful_deployments;
+                document.getElementById('analytics-success-rate').textContent = stats.success_rate + '%';
+            } catch (error) {
+                console.error('Failed to load analytics:', error);
+            }
+        }
+
+        async function searchDocumentation() {
+            const query = document.getElementById('search-query').value;
+            const contentType = document.getElementById('content-type').value;
+
+            if (!query) return;
+
+            try {
+                const response = await fetch('/api/v1/documentation/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        content_type: contentType || null,
+                        limit: 10
+                    })
+                });
+
+                const results = await response.json();
+                displaySearchResults(results);
+            } catch (error) {
+                console.error('Failed to search documentation:', error);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results');
+
+            if (results.length === 0) {
+                container.innerHTML = '<p class="text-muted">No results found.</p>';
+                return;
+            }
+
+            container.innerHTML = results.map(doc => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">${doc.title}</h6>
+                        <p class="card-text">${doc.content.substring(0, 200)}...</p>
+                        <small class="text-muted">${doc.source} - ${doc.content_type}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deployGeneratedContract() {
+            if (!window.lastGeneratedConfig) {
+                alert('No contract to deploy. Please generate a contract first.');
+                return;
+            }
+
+            // Switch to deploy section
+            document.querySelector('[data-section="deploy"]').click();
+
+            // Load deployments
+            loadDeployments();
+        }
+
+        async function loadDeployments() {
+            try {
+                const response = await fetch('/api/v1/deployments');
+                const deployments = await response.json();
+
+                const container = document.getElementById('deployments-list');
+                container.innerHTML = deployments.map(deployment => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title">Deployment #${deployment.id.substring(0, 8)}</h6>
+                            <p class="card-text">
+                                Status: <span class="badge bg-${deployment.status === 'SUCCESS' ? 'success' : 'warning'}">${deployment.status}</span><br>
+                                Network: ${deployment.network}<br>
+                                Created: ${new Date(deployment.created_at).toLocaleString()}
+                            </p>
+                            <button class="btn btn-primary btn-sm" onclick="viewDeployment('${deployment.id}')">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load deployments:', error);
+            }
+        }
+
+        function downloadContract() {
+            const code = document.getElementById('contract-code').textContent;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'generated_contract.cdc';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const code = document.getElementById('contract-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Contract code copied to clipboard!');
+            });
+        }
+
+        function saveSettings() {
+            alert('Settings saved successfully!');
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

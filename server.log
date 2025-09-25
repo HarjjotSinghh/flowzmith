@@ -1,0 +1,1036 @@
+INFO:     Will watch for changes in these directories: ['/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [2622] using WatchFiles
+INFO:     Started server process [2696]
+INFO:     Waiting for application startup.
+2025-09-26 01:36:05,099 - src.main - INFO - Starting Smart Contract LLM Builder application...
+2025-09-26 01:36:08,279 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-26 01:36:08,279 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-26 01:36:08,279 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:08,279 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:08,950 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-26 01:36:08,950 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-26 01:36:08,950 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:08,950 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:09,627 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-26 01:36:09,627 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-26 01:36:09,627 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:09,627 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:10,324 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:10,324 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:10,324 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:36:10,324 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:36:10,324 INFO sqlalchemy.engine.Engine [generated in 0.00049s] {}
+2025-09-26 01:36:10,324 - sqlalchemy.engine.Engine - INFO - [generated in 0.00049s] {}
+2025-09-26 01:36:11,013 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:36:11,013 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:36:11,368 - src.models.database - INFO - Database connection successful
+2025-09-26 01:36:11,712 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:11,712 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:11,714 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:11,714 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:11,714 INFO sqlalchemy.engine.Engine [generated in 0.00013s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:11,714 - sqlalchemy.engine.Engine - INFO - [generated in 0.00013s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:12,460 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:12,460 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:12,460 INFO sqlalchemy.engine.Engine [cached since 0.747s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:12,460 - sqlalchemy.engine.Engine - INFO - [cached since 0.747s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:12,802 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:12,802 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:12,802 INFO sqlalchemy.engine.Engine [cached since 1.089s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:12,802 - sqlalchemy.engine.Engine - INFO - [cached since 1.089s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,169 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,169 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,169 INFO sqlalchemy.engine.Engine [cached since 1.456s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,169 - sqlalchemy.engine.Engine - INFO - [cached since 1.456s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,518 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,518 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,518 INFO sqlalchemy.engine.Engine [cached since 1.805s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,518 - sqlalchemy.engine.Engine - INFO - [cached since 1.805s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,852 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,852 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:13,852 INFO sqlalchemy.engine.Engine [cached since 2.138s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:13,852 - sqlalchemy.engine.Engine - INFO - [cached since 2.138s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:14,204 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:14,204 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:14,205 INFO sqlalchemy.engine.Engine [cached since 2.491s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:14,205 - sqlalchemy.engine.Engine - INFO - [cached since 2.491s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:14,850 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:14,850 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:14,851 INFO sqlalchemy.engine.Engine [cached since 3.137s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:14,851 - sqlalchemy.engine.Engine - INFO - [cached since 3.137s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,261 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,261 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,261 INFO sqlalchemy.engine.Engine [generated in 0.00027s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,261 - sqlalchemy.engine.Engine - INFO - [generated in 0.00027s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,608 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,608 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,608 INFO sqlalchemy.engine.Engine [cached since 0.3469s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,608 - sqlalchemy.engine.Engine - INFO - [cached since 0.3469s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,970 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,970 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:15,970 INFO sqlalchemy.engine.Engine [cached since 0.7096s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:15,970 - sqlalchemy.engine.Engine - INFO - [cached since 0.7096s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:16,355 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:16,355 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:16,355 INFO sqlalchemy.engine.Engine [cached since 1.094s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:16,355 - sqlalchemy.engine.Engine - INFO - [cached since 1.094s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:16,693 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:16,693 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:16,693 INFO sqlalchemy.engine.Engine [cached since 1.432s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:16,693 - sqlalchemy.engine.Engine - INFO - [cached since 1.432s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,103 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,103 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,103 INFO sqlalchemy.engine.Engine [cached since 1.842s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,103 - sqlalchemy.engine.Engine - INFO - [cached since 1.842s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,457 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,457 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,458 INFO sqlalchemy.engine.Engine [cached since 2.197s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,458 - sqlalchemy.engine.Engine - INFO - [cached since 2.197s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,821 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,821 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:17,821 INFO sqlalchemy.engine.Engine [cached since 2.56s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:17,821 - sqlalchemy.engine.Engine - INFO - [cached since 2.56s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:18,157 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:18,157 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:18,157 INFO sqlalchemy.engine.Engine [cached since 2.896s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:18,157 - sqlalchemy.engine.Engine - INFO - [cached since 2.896s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:18,499 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:18,499 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:18,499 INFO sqlalchemy.engine.Engine [cached since 3.238s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:18,499 - sqlalchemy.engine.Engine - INFO - [cached since 3.238s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:18,834 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-26 01:36:18,834 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-26 01:36:19,209 - src.models.database - INFO - Database tables created successfully
+2025-09-26 01:36:19,209 - src.main - INFO - Database initialized successfully
+2025-09-26 01:36:19,209 - src.main - INFO - Application started successfully
+INFO:     Application startup complete.
+2025-09-26 01:36:21,488 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:36:21,488 - src.api.middleware - INFO - Request: GET /health
+2025-09-26 01:36:21,846 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:21,846 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:21,846 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:36:21,846 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:36:21,846 INFO sqlalchemy.engine.Engine [cached since 11.52s ago] {}
+2025-09-26 01:36:21,846 - sqlalchemy.engine.Engine - INFO - [cached since 11.52s ago] {}
+2025-09-26 01:36:22,518 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:36:22,518 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:36:22,859 - src.models.database - INFO - Database connection successful
+2025-09-26 01:36:22,964 - src.api.middleware - INFO - Response: 200 (1.475s) GET /health
+2025-09-26 01:36:22,964 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:36:22,964 - src.api.middleware - INFO - Request: GET /health
+2025-09-26 01:36:23,297 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:23,297 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:23,297 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:36:23,297 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:36:23,297 INFO sqlalchemy.engine.Engine [cached since 12.97s ago] {}
+2025-09-26 01:36:23,297 - sqlalchemy.engine.Engine - INFO - [cached since 12.97s ago] {}
+2025-09-26 01:36:23,975 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:36:23,975 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:36:24,354 - src.models.database - INFO - Database connection successful
+2025-09-26 01:36:24,355 - src.api.middleware - INFO - Response: 200 (1.390s) GET /health
+INFO:     127.0.0.1:55925 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55989 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55900 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56034 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:36:29,629 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:36:29,630 - src.api.middleware - INFO - Request: GET /
+2025-09-26 01:36:29,632 - src.main - ERROR - Database query error: Could not determine join condition between parent/child tables on relationship User.deployment_logs - there are no foreign keys linking these tables.  Ensure that referencing columns are associated with a ForeignKey or ForeignKeyConstraint, or specify a 'primaryjoin' expression.
+2025-09-26 01:36:29,638 - src.api.middleware - INFO - Response: 200 (0.009s) GET /
+INFO:     127.0.0.1:56054 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56097 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56104 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+WARNING:  WatchFiles detected changes in 'src/models/user.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-09-26 01:36:38,800 - src.main - INFO - Shutting down Smart Contract LLM Builder application...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2696]
+INFO:     Started server process [5094]
+INFO:     Waiting for application startup.
+2025-09-26 01:36:39,759 - src.main - INFO - Starting Smart Contract LLM Builder application...
+WARNING:  WatchFiles detected changes in 'src/models/deployment.py'. Reloading...
+2025-09-26 01:36:42,891 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-26 01:36:42,891 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-26 01:36:42,892 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:42,892 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:43,572 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-26 01:36:43,572 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-26 01:36:43,572 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:43,572 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:44,270 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-26 01:36:44,270 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-26 01:36:44,270 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:44,270 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:44,980 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:44,980 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:44,980 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:36:44,980 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:36:44,980 INFO sqlalchemy.engine.Engine [generated in 0.00069s] {}
+2025-09-26 01:36:44,980 - sqlalchemy.engine.Engine - INFO - [generated in 0.00069s] {}
+2025-09-26 01:36:45,672 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:36:45,672 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:36:46,014 - src.models.database - INFO - Database connection successful
+2025-09-26 01:36:46,351 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:46,351 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:46,353 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:46,353 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:46,355 INFO sqlalchemy.engine.Engine [generated in 0.00164s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:46,355 - sqlalchemy.engine.Engine - INFO - [generated in 0.00164s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,049 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,049 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,049 INFO sqlalchemy.engine.Engine [cached since 0.6956s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,049 - sqlalchemy.engine.Engine - INFO - [cached since 0.6956s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,396 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,396 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,397 INFO sqlalchemy.engine.Engine [cached since 1.043s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,397 - sqlalchemy.engine.Engine - INFO - [cached since 1.043s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,734 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,734 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:47,734 INFO sqlalchemy.engine.Engine [cached since 1.38s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:47,734 - sqlalchemy.engine.Engine - INFO - [cached since 1.38s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,077 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,077 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,077 INFO sqlalchemy.engine.Engine [cached since 1.724s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,077 - sqlalchemy.engine.Engine - INFO - [cached since 1.724s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,437 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,437 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,437 INFO sqlalchemy.engine.Engine [cached since 2.084s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,437 - sqlalchemy.engine.Engine - INFO - [cached since 2.084s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,804 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,804 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:48,805 INFO sqlalchemy.engine.Engine [cached since 2.451s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:48,805 - sqlalchemy.engine.Engine - INFO - [cached since 2.451s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,144 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,144 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,144 INFO sqlalchemy.engine.Engine [cached since 2.791s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,144 - sqlalchemy.engine.Engine - INFO - [cached since 2.791s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,529 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,529 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,530 INFO sqlalchemy.engine.Engine [generated in 0.00046s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,530 - sqlalchemy.engine.Engine - INFO - [generated in 0.00046s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,903 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,903 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:49,903 INFO sqlalchemy.engine.Engine [cached since 0.3733s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:49,903 - sqlalchemy.engine.Engine - INFO - [cached since 0.3733s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,280 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,280 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,281 INFO sqlalchemy.engine.Engine [cached since 0.7515s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,281 - sqlalchemy.engine.Engine - INFO - [cached since 0.7515s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,619 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,619 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,619 INFO sqlalchemy.engine.Engine [cached since 1.09s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,619 - sqlalchemy.engine.Engine - INFO - [cached since 1.09s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,981 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,981 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:50,981 INFO sqlalchemy.engine.Engine [cached since 1.452s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:50,981 - sqlalchemy.engine.Engine - INFO - [cached since 1.452s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:51,348 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:51,348 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:51,348 INFO sqlalchemy.engine.Engine [cached since 1.819s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:51,348 - sqlalchemy.engine.Engine - INFO - [cached since 1.819s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:51,694 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:51,694 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:51,694 INFO sqlalchemy.engine.Engine [cached since 2.165s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:51,694 - sqlalchemy.engine.Engine - INFO - [cached since 2.165s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,077 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,077 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,077 INFO sqlalchemy.engine.Engine [cached since 2.548s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,077 - sqlalchemy.engine.Engine - INFO - [cached since 2.548s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,437 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,437 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,437 INFO sqlalchemy.engine.Engine [cached since 2.908s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,437 - sqlalchemy.engine.Engine - INFO - [cached since 2.908s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,821 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,821 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:36:52,821 INFO sqlalchemy.engine.Engine [cached since 3.292s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:52,821 - sqlalchemy.engine.Engine - INFO - [cached since 3.292s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:36:53,178 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-26 01:36:53,178 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-26 01:36:53,516 - src.models.database - INFO - Database tables created successfully
+2025-09-26 01:36:53,516 - src.main - INFO - Database initialized successfully
+2025-09-26 01:36:53,516 - src.main - INFO - Application started successfully
+INFO:     Application startup complete.
+INFO:     Started server process [6114]
+INFO:     Waiting for application startup.
+2025-09-26 01:36:54,297 - src.main - INFO - Starting Smart Contract LLM Builder application...
+2025-09-26 01:36:57,480 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-09-26 01:36:57,480 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-09-26 01:36:57,481 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:57,481 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:58,149 INFO sqlalchemy.engine.Engine select current_schema()
+2025-09-26 01:36:58,149 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-09-26 01:36:58,150 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:58,150 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:58,829 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-09-26 01:36:58,829 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-09-26 01:36:58,830 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-09-26 01:36:58,830 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-09-26 01:36:59,505 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:36:59,505 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:36:59,506 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:36:59,506 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:36:59,506 INFO sqlalchemy.engine.Engine [generated in 0.00082s] {}
+2025-09-26 01:36:59,506 - sqlalchemy.engine.Engine - INFO - [generated in 0.00082s] {}
+2025-09-26 01:37:00,204 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:00,204 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:00,554 - src.models.database - INFO - Database connection successful
+2025-09-26 01:37:00,902 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:00,902 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:00,904 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:00,904 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:00,904 INFO sqlalchemy.engine.Engine [generated in 0.00013s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:00,904 - sqlalchemy.engine.Engine - INFO - [generated in 0.00013s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:01,597 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:01,597 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:01,597 INFO sqlalchemy.engine.Engine [cached since 0.693s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:01,597 - sqlalchemy.engine.Engine - INFO - [cached since 0.693s ago] {'table_name': 'user_data_controls', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:01,929 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:01,929 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:01,929 INFO sqlalchemy.engine.Engine [cached since 1.025s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:01,929 - sqlalchemy.engine.Engine - INFO - [cached since 1.025s ago] {'table_name': 'contract_submissions', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,264 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,264 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,264 INFO sqlalchemy.engine.Engine [cached since 1.36s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,264 - sqlalchemy.engine.Engine - INFO - [cached since 1.36s ago] {'table_name': 'generated_configurations', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,599 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,599 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,599 INFO sqlalchemy.engine.Engine [cached since 1.695s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,599 - sqlalchemy.engine.Engine - INFO - [cached since 1.695s ago] {'table_name': 'deployment_logs', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,995 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,995 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:02,995 INFO sqlalchemy.engine.Engine [cached since 2.091s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:02,995 - sqlalchemy.engine.Engine - INFO - [cached since 2.091s ago] {'table_name': 'transaction_proposals', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:03,334 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:03,334 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:03,334 INFO sqlalchemy.engine.Engine [cached since 2.43s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:03,334 - sqlalchemy.engine.Engine - INFO - [cached since 2.43s ago] {'table_name': 'documentation_knowledge_base', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:03,672 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:03,672 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:03,672 INFO sqlalchemy.engine.Engine [cached since 2.768s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:03,672 - sqlalchemy.engine.Engine - INFO - [cached since 2.768s ago] {'table_name': 'learning_feedback_loops', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,065 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,065 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,065 INFO sqlalchemy.engine.Engine [generated in 0.00018s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,065 - sqlalchemy.engine.Engine - INFO - [generated in 0.00018s] {'typname_1': 'personatype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,398 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,398 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,398 INFO sqlalchemy.engine.Engine [cached since 0.3332s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,398 - sqlalchemy.engine.Engine - INFO - [cached since 0.3332s ago] {'typname_1': 'dataretentionpreference', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,737 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,737 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:04,738 INFO sqlalchemy.engine.Engine [cached since 0.6732s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:04,738 - sqlalchemy.engine.Engine - INFO - [cached since 0.6732s ago] {'typname_1': 'inputtype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,172 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,172 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,173 INFO sqlalchemy.engine.Engine [cached since 1.108s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,173 - sqlalchemy.engine.Engine - INFO - [cached since 1.108s ago] {'typname_1': 'submissionstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,519 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,519 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,519 INFO sqlalchemy.engine.Engine [cached since 1.454s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,519 - sqlalchemy.engine.Engine - INFO - [cached since 1.454s ago] {'typname_1': 'validationstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,864 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,864 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:05,864 INFO sqlalchemy.engine.Engine [cached since 1.799s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:05,864 - sqlalchemy.engine.Engine - INFO - [cached since 1.799s ago] {'typname_1': 'deploymentstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,205 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,205 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,205 INFO sqlalchemy.engine.Engine [cached since 2.14s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,205 - sqlalchemy.engine.Engine - INFO - [cached since 2.14s ago] {'typname_1': 'transactiontype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,538 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,538 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,538 INFO sqlalchemy.engine.Engine [cached since 2.473s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,538 - sqlalchemy.engine.Engine - INFO - [cached since 2.473s ago] {'typname_1': 'approvalstatus', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,874 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,874 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:06,874 INFO sqlalchemy.engine.Engine [cached since 2.809s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:06,874 - sqlalchemy.engine.Engine - INFO - [cached since 2.809s ago] {'typname_1': 'contenttype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:07,256 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:07,256 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-09-26 01:37:07,256 INFO sqlalchemy.engine.Engine [cached since 3.191s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:07,256 - sqlalchemy.engine.Engine - INFO - [cached since 3.191s ago] {'typname_1': 'patterntype', 'nspname_1': 'pg_catalog'}
+2025-09-26 01:37:07,589 INFO sqlalchemy.engine.Engine COMMIT
+2025-09-26 01:37:07,589 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-09-26 01:37:07,935 - src.models.database - INFO - Database tables created successfully
+2025-09-26 01:37:07,935 - src.main - INFO - Database initialized successfully
+2025-09-26 01:37:07,936 - src.main - INFO - Application started successfully
+INFO:     Application startup complete.
+INFO:     127.0.0.1:56160 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+2025-09-26 01:37:07,946 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:07,946 - src.api.middleware - ERROR - Rate limiting error: 'default'
+INFO:     connection closed
+2025-09-26 01:37:07,947 - src.api.middleware - INFO - Request: GET /health
+2025-09-26 01:37:08,303 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:08,303 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:08,303 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:37:08,303 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:37:08,303 INFO sqlalchemy.engine.Engine [cached since 8.798s ago] {}
+2025-09-26 01:37:08,303 - sqlalchemy.engine.Engine - INFO - [cached since 8.798s ago] {}
+2025-09-26 01:37:08,981 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:08,981 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:09,350 - src.models.database - INFO - Database connection successful
+2025-09-26 01:37:09,350 - src.api.middleware - INFO - Request: GET /health
+2025-09-26 01:37:09,694 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:09,694 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:09,694 INFO sqlalchemy.engine.Engine SELECT 1
+2025-09-26 01:37:09,694 - sqlalchemy.engine.Engine - INFO - SELECT 1
+2025-09-26 01:37:09,694 INFO sqlalchemy.engine.Engine [cached since 10.19s ago] {}
+2025-09-26 01:37:09,694 - sqlalchemy.engine.Engine - INFO - [cached since 10.19s ago] {}
+2025-09-26 01:37:10,398 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:10,398 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:10,760 - src.models.database - INFO - Database connection successful
+2025-09-26 01:37:10,760 - src.api.middleware - INFO - Response: 200 (2.814s) GET /health
+2025-09-26 01:37:10,761 - src.api.middleware - INFO - Response: 200 (1.410s) GET /health
+INFO:     127.0.0.1:56325 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56240 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56264 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56373 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56398 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:37:19,526 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:19,527 - src.api.middleware - INFO - Request: GET /submit
+2025-09-26 01:37:19,874 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:19,874 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:19,876 INFO sqlalchemy.engine.Engine SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s 
+ LIMIT %(param_1)s
+2025-09-26 01:37:19,876 - sqlalchemy.engine.Engine - INFO - SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s 
+ LIMIT %(param_1)s
+2025-09-26 01:37:19,876 INFO sqlalchemy.engine.Engine [generated in 0.00026s] {'status_1': 'COMPLETED', 'param_1': 20}
+2025-09-26 01:37:19,876 - sqlalchemy.engine.Engine - INFO - [generated in 0.00026s] {'status_1': 'COMPLETED', 'param_1': 20}
+2025-09-26 01:37:20,598 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:20,598 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:21,039 - src.api.middleware - INFO - Response: 200 (1.512s) GET /submit
+INFO:     127.0.0.1:56400 - "GET /submit HTTP/1.1" 200 OK
+2025-09-26 01:37:21,065 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:21,066 - src.api.middleware - INFO - Request: GET /static/css/style.css
+2025-09-26 01:37:21,066 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:21,066 - src.api.middleware - INFO - Request: GET /static/js/main.js
+2025-09-26 01:37:21,068 - src.api.middleware - INFO - Response: 304 (0.003s) GET /static/css/style.css
+2025-09-26 01:37:21,068 - src.api.middleware - INFO - Response: 304 (0.002s) GET /static/js/main.js
+INFO:     127.0.0.1:56400 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:56406 - "GET /static/js/main.js HTTP/1.1" 304 Not Modified
+2025-09-26 01:37:22,158 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:22,159 - src.api.middleware - INFO - Request: GET /
+2025-09-26 01:37:22,503 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:22,503 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:22,505 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions) AS anon_1
+2025-09-26 01:37:22,505 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions) AS anon_1
+2025-09-26 01:37:22,505 INFO sqlalchemy.engine.Engine [generated in 0.00016s] {}
+2025-09-26 01:37:22,505 - sqlalchemy.engine.Engine - INFO - [generated in 0.00016s] {}
+2025-09-26 01:37:23,312 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:23,312 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:23,312 INFO sqlalchemy.engine.Engine [generated in 0.00029s] {'status_1': 'SUCCESS'}
+2025-09-26 01:37:23,312 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] {'status_1': 'SUCCESS'}
+2025-09-26 01:37:23,648 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:23,648 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:23,648 INFO sqlalchemy.engine.Engine [generated in 0.00026s] {'status_1': 'PENDING'}
+2025-09-26 01:37:23,648 - sqlalchemy.engine.Engine - INFO - [generated in 0.00026s] {'status_1': 'PENDING'}
+2025-09-26 01:37:23,992 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT documentation_knowledge_base.id AS documentation_knowledge_base_id, documentation_knowledge_base.source AS documentation_knowledge_base_source, documentation_knowledge_base.title AS documentation_knowledge_base_title, documentation_knowledge_base.content_type AS documentation_knowledge_base_content_type, documentation_knowledge_base.content AS documentation_knowledge_base_content, documentation_knowledge_base.embedding_vector AS documentation_knowledge_base_embedding_vector, documentation_knowledge_base.chunk_index AS documentation_knowledge_base_chunk_index, documentation_knowledge_base.last_updated AS documentation_knowledge_base_last_updated, documentation_knowledge_base.version AS documentation_knowledge_base_version 
+FROM documentation_knowledge_base) AS anon_1
+2025-09-26 01:37:23,992 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT documentation_knowledge_base.id AS documentation_knowledge_base_id, documentation_knowledge_base.source AS documentation_knowledge_base_source, documentation_knowledge_base.title AS documentation_knowledge_base_title, documentation_knowledge_base.content_type AS documentation_knowledge_base_content_type, documentation_knowledge_base.content AS documentation_knowledge_base_content, documentation_knowledge_base.embedding_vector AS documentation_knowledge_base_embedding_vector, documentation_knowledge_base.chunk_index AS documentation_knowledge_base_chunk_index, documentation_knowledge_base.last_updated AS documentation_knowledge_base_last_updated, documentation_knowledge_base.version AS documentation_knowledge_base_version 
+FROM documentation_knowledge_base) AS anon_1
+2025-09-26 01:37:23,992 INFO sqlalchemy.engine.Engine [generated in 0.00017s] {}
+2025-09-26 01:37:23,992 - sqlalchemy.engine.Engine - INFO - [generated in 0.00017s] {}
+2025-09-26 01:37:24,371 INFO sqlalchemy.engine.Engine SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions ORDER BY contract_submissions.created_at DESC 
+ LIMIT %(param_1)s
+2025-09-26 01:37:24,371 - sqlalchemy.engine.Engine - INFO - SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions ORDER BY contract_submissions.created_at DESC 
+ LIMIT %(param_1)s
+2025-09-26 01:37:24,372 INFO sqlalchemy.engine.Engine [generated in 0.00018s] {'param_1': 10}
+2025-09-26 01:37:24,372 - sqlalchemy.engine.Engine - INFO - [generated in 0.00018s] {'param_1': 10}
+2025-09-26 01:37:24,753 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:24,753 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:25,090 - src.api.middleware - INFO - Response: 200 (2.931s) GET /
+INFO:     127.0.0.1:56421 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56517 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56546 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:37:29,760 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:29,761 - src.api.middleware - INFO - Request: HEAD /submit
+2025-09-26 01:37:29,761 - src.api.middleware - INFO - Response: 405 (0.000s) HEAD /submit
+INFO:     127.0.0.1:56548 - "HEAD /submit HTTP/1.1" 405 Method Not Allowed
+2025-09-26 01:37:33,067 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:33,068 - src.api.middleware - INFO - Request: GET /submit
+2025-09-26 01:37:33,405 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:33,405 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:33,405 INFO sqlalchemy.engine.Engine SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s 
+ LIMIT %(param_1)s
+2025-09-26 01:37:33,405 - sqlalchemy.engine.Engine - INFO - SELECT contract_submissions.id AS contract_submissions_id, contract_submissions.user_id AS contract_submissions_user_id, contract_submissions.input_type AS contract_submissions_input_type, contract_submissions.content AS contract_submissions_content, contract_submissions.pre_conditions AS contract_submissions_pre_conditions, contract_submissions.post_conditions AS contract_submissions_post_conditions, contract_submissions.status AS contract_submissions_status, contract_submissions.created_at AS contract_submissions_created_at, contract_submissions.processed_at AS contract_submissions_processed_at 
+FROM contract_submissions 
+WHERE contract_submissions.status = %(status_1)s 
+ LIMIT %(param_1)s
+2025-09-26 01:37:33,405 INFO sqlalchemy.engine.Engine [cached since 13.53s ago] {'status_1': 'COMPLETED', 'param_1': 20}
+2025-09-26 01:37:33,405 - sqlalchemy.engine.Engine - INFO - [cached since 13.53s ago] {'status_1': 'COMPLETED', 'param_1': 20}
+2025-09-26 01:37:34,159 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:56594 - "WebSocket /ws" 403
+2025-09-26 01:37:34,159 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:37:34,508 - src.api.middleware - INFO - Response: 200 (1.441s) GET /submit
+INFO:     127.0.0.1:56588 - "GET /submit HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56629 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:37:38,419 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:38,420 - src.api.middleware - INFO - Request: GET /deployments
+2025-09-26 01:37:38,752 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-09-26 01:37:38,752 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-09-26 01:37:38,753 INFO sqlalchemy.engine.Engine SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs ORDER BY deployment_logs.created_at DESC 
+ LIMIT %(param_1)s
+2025-09-26 01:37:38,753 - sqlalchemy.engine.Engine - INFO - SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs ORDER BY deployment_logs.created_at DESC 
+ LIMIT %(param_1)s
+2025-09-26 01:37:38,753 INFO sqlalchemy.engine.Engine [generated in 0.00010s] {'param_1': 50}
+2025-09-26 01:37:38,753 - sqlalchemy.engine.Engine - INFO - [generated in 0.00010s] {'param_1': 50}
+2025-09-26 01:37:39,419 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs) AS anon_1
+2025-09-26 01:37:39,419 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs) AS anon_1
+2025-09-26 01:37:39,419 INFO sqlalchemy.engine.Engine [generated in 0.00017s] {}
+2025-09-26 01:37:39,419 - sqlalchemy.engine.Engine - INFO - [generated in 0.00017s] {}
+2025-09-26 01:37:39,762 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:39,762 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:39,763 INFO sqlalchemy.engine.Engine [cached since 16.45s ago] {'status_1': 'SUCCESS'}
+2025-09-26 01:37:39,763 - sqlalchemy.engine.Engine - INFO - [cached since 16.45s ago] {'status_1': 'SUCCESS'}
+2025-09-26 01:37:40,097 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:40,097 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:40,097 INFO sqlalchemy.engine.Engine [cached since 16.78s ago] {'status_1': 'FAILED'}
+2025-09-26 01:37:40,097 - sqlalchemy.engine.Engine - INFO - [cached since 16.78s ago] {'status_1': 'FAILED'}
+2025-09-26 01:37:40,429 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:40,429 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1
+2025-09-26 01:37:40,429 INFO sqlalchemy.engine.Engine [cached since 17.12s ago] {'status_1': 'PENDING'}
+2025-09-26 01:37:40,429 - sqlalchemy.engine.Engine - INFO - [cached since 17.12s ago] {'status_1': 'PENDING'}
+2025-09-26 01:37:40,764 - src.main - ERROR - Database query error in deployments page: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum deploymentstatus: "PENDING"
+LINE 4: WHERE deployment_logs.status = 'PENDING') AS anon_1
+                                       ^
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT deployment_logs.id AS deployment_logs_id, deployment_logs.submission_id AS deployment_logs_submission_id, deployment_logs.config_id AS deployment_logs_config_id, deployment_logs.deployment_id AS deployment_logs_deployment_id, deployment_logs.network AS deployment_logs_network, deployment_logs.status AS deployment_logs_status, deployment_logs.error_message AS deployment_logs_error_message, deployment_logs.error_code AS deployment_logs_error_code, deployment_logs.transaction_hash AS deployment_logs_transaction_hash, deployment_logs.gas_used AS deployment_logs_gas_used, deployment_logs.execution_time_ms AS deployment_logs_execution_time_ms, deployment_logs.log_content AS deployment_logs_log_content, deployment_logs.created_at AS deployment_logs_created_at 
+FROM deployment_logs 
+WHERE deployment_logs.status = %(status_1)s) AS anon_1]
+[parameters: {'status_1': 'PENDING'}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2025-09-26 01:37:40,770 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-09-26 01:37:40,770 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2025-09-26 01:37:41,135 - src.api.middleware - INFO - Response: 200 (2.715s) GET /deployments
+INFO:     127.0.0.1:56642 - "GET /deployments HTTP/1.1" 200 OK
+2025-09-26 01:37:41,146 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:41,146 - src.api.middleware - INFO - Request: GET /docs
+2025-09-26 01:37:41,147 - src.api.middleware - INFO - Response: 200 (0.000s) GET /docs
+INFO:     127.0.0.1:56685 - "GET /docs HTTP/1.1" 200 OK
+2025-09-26 01:37:41,156 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:37:41,156 - src.api.middleware - INFO - Request: GET /profile
+2025-09-26 01:37:41,159 - src.api.middleware - INFO - Response: 200 (0.002s) GET /profile
+INFO:     127.0.0.1:56687 - "GET /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56722 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56824 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56883 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56918 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56928 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:56967 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57009 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57099 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57114 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57133 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57155 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57196 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57218 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57245 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57269 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57296 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57328 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57355 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57418 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57439 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57471 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57487 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57504 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57538 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57544 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57575 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57583 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57605 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57630 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57645 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57681 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57696 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57721 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57736 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57782 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57809 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57841 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57848 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57879 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57889 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57929 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57935 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57970 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:57980 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58005 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58018 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58049 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2025-09-26 01:40:30,240 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:40:30,242 - src.api.middleware - ERROR - Rate limiting error: 'default'
+2025-09-26 01:40:30,242 - src.api.middleware - INFO - Request: GET /static/css/style.css
+2025-09-26 01:40:30,243 - src.api.middleware - INFO - Request: GET /.well-known/appspecific/com.chrome.devtools.json
+2025-09-26 01:40:30,243 - src.api.middleware - INFO - Response: 404 (0.000s) GET /.well-known/appspecific/com.chrome.devtools.json
+2025-09-26 01:40:30,244 - src.api.middleware - INFO - Response: 304 (0.002s) GET /static/css/style.css
+INFO:     127.0.0.1:58061 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58059 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58128 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58144 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58176 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58191 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58230 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58254 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58278 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58298 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58324 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58436 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58446 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58503 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58505 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58575 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58577 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58672 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58717 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58735 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58761 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58771 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58801 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58816 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58933 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:58947 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:59017 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     127.0.0.1:59026 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-09-26 01:42:04,028 - src.main - INFO - Shutting down Smart Contract LLM Builder application...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [6114]
+INFO:     Stopping reloader process [2622]

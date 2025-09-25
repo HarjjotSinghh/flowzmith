@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Contract - Smart Contract LLM Builder{% endblock %}
+
+{% block head %}
+<style>
+    .contract-tab {
+        cursor: pointer;
+    }
+    .contract-tab.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .code-preview {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .form-step {
+        display: none;
+    }
+    .form-step.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notification-container"></div>
+
+<!-- Submission Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-plus"></i> Submit Smart Contract</h1>
+                <p class="text-muted">Upload your contract or describe what you want to build.</p>
+            </div>
+            <div>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="progress" style="height: 25px;">
+            <div class="progress-bar" role="progressbar" style="width: 0%" id="submission-progress">
+                Step 1 of 3
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <span>Input Method</span>
+            <span>Contract Details</span>
+            <span>Review & Submit</span>
+        </div>
+    </div>
+</div>
+
+<!-- Submission Form -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form id="submission-form">
+                    <!-- Step 1: Input Method Selection -->
+                    <div class="form-step active" id="step-1">
+                        <h4><i class="fas fa-upload"></i> Choose Input Method</h4>
+                        <p class="text-muted">How would you like to provide your smart contract?</p>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card contract-tab" data-method="file">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-code fa-3x text-primary mb-3"></i>
+                                        <h5>Upload File</h5>
+                                        <p class="text-muted">Upload your .cdc or .sol file</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card contract-tab" data-method="text">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-keyboard fa-3x text-info mb-3"></i>
+                                        <h5>Code Input</h5>
+                                        <p class="text-muted">Paste your contract code</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card contract-tab" data-method="natural">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-comment fa-3x text-success mb-3"></i>
+                                        <h5>Natural Language</h5>
+                                        <p class="text-muted">Describe what you want to build</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card contract-tab" data-method="mixed">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-layer-group fa-3x text-warning mb-3"></i>
+                                        <h5>Mixed Input</h5>
+                                        <p class="text-muted">Combine multiple methods</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Upload Area (Hidden by default) -->
+                        <div id="file-upload-section" style="display: none;">
+                            <div id="file-upload-area" class="file-upload-area mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5>Drop your file here</h5>
+                                <p class="text-muted">or click to browse</p>
+                                <input type="file" id="contract-file" accept=".cdc,.sol" style="display: none;">
+                            </div>
+                            <div id="file-info" class="alert alert-info" style="display: none;">
+                                <i class="fas fa-file"></i> <span id="file-name"></span>
+                            </div>
+                        </div>
+
+                        <!-- Code Input Area (Hidden by default) -->
+                        <div id="code-input-section" style="display: none;">
+                            <div class="mb-3">
+                                <label for="contract-code" class="form-label">Contract Code</label>
+                                <textarea id="contract-code" class="form-control" rows="10" placeholder="Paste your Cadence or Solidity code here..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Natural Language Input (Hidden by default) -->
+                        <div id="natural-input-section" style="display: none;">
+                            <div class="mb-3">
+                                <label for="natural-description" class="form-label">Describe Your Contract</label>
+                                <textarea id="natural-description" class="form-control" rows="6" placeholder="Describe what you want your smart contract to do..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="persona-type" class="form-label">Your Experience Level</label>
+                                <select id="persona-type" class="form-select">
+                                    <option value="BEGINNER">Beginner</option>
+                                    <option value="INTERMEDIATE">Intermediate</option>
+                                    <option value="EXPERT">Expert</option>
+                                    <option value="NON_TECHNICAL">Non-technical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" id="next-to-step-2" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Contract Details -->
+                    <div class="form-step" id="step-2">
+                        <h4><i class="fas fa-cog"></i> Contract Details</h4>
+                        <p class="text-muted">Provide additional details about your contract requirements.</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contract-name" class="form-label">Contract Name</label>
+                                    <input type="text" id="contract-name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contract-type" class="form-label">Contract Type</label>
+                                    <select id="contract-type" class="form-select" required>
+                                        <option value="">Select type...</option>
+                                        <option value="token">Token</option>
+                                        <option value="nft">NFT</option>
+                                        <option value="defi">DeFi</option>
+                                        <option value="dao">DAO</option>
+                                        <option value="marketplace">Marketplace</option>
+                                        <option value="gaming">Gaming</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pre-conditions" class="form-label">Pre-conditions</label>
+                            <textarea id="pre-conditions" class="form-control" rows="3" placeholder="What should be true before this contract executes?"></textarea>
+                            <div class="form-text">Optional: Describe any preconditions or requirements.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="post-conditions" class="form-label">Post-conditions</label>
+                            <textarea id="post-conditions" class="form-control" rows="3" placeholder="What should be true after this contract executes?"></textarea>
+                            <div class="form-text">Optional: Describe expected outcomes.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="target-network" class="form-label">Target Network</label>
+                            <select id="target-network" class="form-select" required>
+                                <option value="testnet">Flow Testnet</option>
+                                <option value="mainnet">Flow Mainnet</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" id="back-to-step-1">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-primary" id="next-to-step-3">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Submit -->
+                    <div class="form-step" id="step-3">
+                        <h4><i class="fas fa-eye"></i> Review & Submit</h4>
+                        <p class="text-muted">Review your submission before submitting.</p>
+
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Review Summary</h5>
+                            <div id="review-summary">
+                                <!-- Summary will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Code Preview</h5>
+                            <div id="code-preview" class="code-preview">
+                                <!-- Code preview will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms-accept" required>
+                                <label class="form-check-label" for="terms-accept">
+                                    I accept the terms and conditions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="data-consent">
+                                <label class="form-check-label" for="data-consent">
+                                    I consent to data processing for AI improvements
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" id="back-to-step-2">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="submit" class="btn btn-success" id="submit-contract" disabled>
+                                <i class="fas fa-paper-plane"></i> Submit Contract
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="col-lg-4">
+        <!-- Tips -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-check-circle text-success"></i> Best Practices</h6>
+                    <ul class="small">
+                        <li>Use clear, descriptive variable names</li>
+                        <li>Add comments for complex logic</li>
+                        <li>Test on testnet before mainnet deployment</li>
+                        <li>Follow the Flow Cadence naming conventions</li>
+                    </ul>
+                </div>
+                <div class="tip-item">
+                    <h6><i class="fas fa-exclamation-triangle text-warning"></i> Security</h6>
+                    <ul class="small">
+                        <li>Never expose private keys</li>
+                        <li>Use proper access controls</li>
+                        <li>Validate all inputs</li>
+                        <li>Consider gas optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Quick Links -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-book"></i> Quick Reference</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="/docs?topic=language" class="list-group-item list-group-item-action">
+                        <i class="fas fa-code"></i> Cadence Language Guide
+                    </a>
+                    <a href="/docs?topic=examples" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-code"></i> Example Contracts
+                    </a>
+                    <a href="/docs?topic=deployment" class="list-group-item list-group-item-action">
+                        <i class="fas fa-rocket"></i> Deployment Guide
+                    </a>
+                    <a href="/docs?topic=debugging" class="list-group-item list-group-item-action">
+                        <i class="fas fa-bug"></i> Debugging Tips
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentStep = 1;
+let selectedMethod = null;
+let contractData = {};
+
+// Initialize form handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup input method selection
+    document.querySelectorAll('.contract-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            selectInputMethod(this.dataset.method);
+        });
+    });
+
+    // Setup navigation buttons
+    document.getElementById('next-to-step-2').addEventListener('click', () => nextStep());
+    document.getElementById('next-to-step-3').addEventListener('click', () => nextStep());
+    document.getElementById('back-to-step-1').addEventListener('click', () => previousStep());
+    document.getElementById('back-to-step-2').addEventListener('click', () => previousStep());
+
+    // Setup form submission
+    document.getElementById('submission-form').addEventListener('submit', handleSubmit);
+
+    // Setup checkboxes
+    document.getElementById('terms-accept').addEventListener('change', updateSubmitButton);
+    document.getElementById('data-consent').addEventListener('change', updateSubmitButton);
+
+    // Setup file upload
+    setupFileUpload('file-upload-area', handleFileSelection);
+});
+
+function selectInputMethod(method) {
+    selectedMethod = method;
+
+    // Update UI
+    document.querySelectorAll('.contract-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-method="${method}"]`).classList.add('active');
+
+    // Show/hide relevant sections
+    document.getElementById('file-upload-section').style.display = method === 'file' ? 'block' : 'none';
+    document.getElementById('code-input-section').style.display = method === 'text' ? 'block' : 'none';
+    document.getElementById('natural-input-section').style.display = method === 'natural' ? 'block' : 'none';
+
+    // Enable next button
+    document.getElementById('next-to-step-2').disabled = false;
+}
+
+function handleFileSelection(fileName, content) {
+    document.getElementById('file-name').textContent = fileName;
+    document.getElementById('file-info').style.display = 'block';
+    contractData.file_content = content;
+    contractData.file_name = fileName;
+}
+
+function nextStep() {
+    if (currentStep === 1) {
+        if (!validateStep1()) return;
+    } else if (currentStep === 2) {
+        if (!validateStep2()) return;
+        populateReview();
+    }
+
+    // Hide current step
+    document.getElementById(`step-${currentStep}`).classList.remove('active');
+
+    // Show next step
+    currentStep++;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+
+    // Update progress bar
+    updateProgressBar();
+}
+
+function previousStep() {
+    // Hide current step
+    document.getElementById(`step-${currentStep}`).classList.remove('active');
+
+    // Show previous step
+    currentStep--;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+
+    // Update progress bar
+    updateProgressBar();
+}
+
+function validateStep1() {
+    let isValid = true;
+    let content = '';
+
+    switch (selectedMethod) {
+        case 'file':
+            if (!contractData.file_content) {
+                showNotification('Please upload a file', 'warning');
+                isValid = false;
+            }
+            content = contractData.file_content;
+            break;
+        case 'text':
+            content = document.getElementById('contract-code').value.trim();
+            if (!content) {
+                showNotification('Please enter your contract code', 'warning');
+                isValid = false;
+            }
+            break;
+        case 'natural':
+            content = document.getElementById('natural-description').value.trim();
+            if (!content) {
+                showNotification('Please describe your contract', 'warning');
+                isValid = false;
+            }
+            break;
+    }
+
+    if (isValid) {
+        contractData.content = content;
+    }
+
+    return isValid;
+}
+
+function validateStep2() {
+    const name = document.getElementById('contract-name').value.trim();
+    const type = document.getElementById('contract-type').value;
+
+    if (!name) {
+        showNotification('Please enter a contract name', 'warning');
+        return false;
+    }
+
+    if (!type) {
+        showNotification('Please select a contract type', 'warning');
+        return false;
+    }
+
+    contractData.name = name;
+    contractData.type = type;
+    contractData.preConditions = document.getElementById('pre-conditions').value.trim();
+    contractData.postConditions = document.getElementById('post-conditions').value.trim();
+    contractData.targetNetwork = document.getElementById('target-network').value;
+    contractData.personaType = document.getElementById('persona-type')?.value || 'INTERMEDIATE';
+
+    return true;
+}
+
+function populateReview() {
+    const summary = document.getElementById('review-summary');
+    summary.innerHTML = `
+        <p><strong>Method:</strong> ${selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1)}</p>
+        <p><strong>Contract Name:</strong> ${contractData.name}</p>
+        <p><strong>Type:</strong> ${contractData.type}</p>
+        <p><strong>Network:</strong> ${contractData.targetNetwork}</p>
+        <p><strong>Experience Level:</strong> ${contractData.personaType}</p>
+    `;
+
+    // Show code preview
+    const preview = document.getElementById('code-preview');
+    if (contractData.content) {
+        preview.innerHTML = `<pre><code>${contractData.content.substring(0, 1000)}${contractData.content.length > 1000 ? '...' : ''}</code></pre>`;
+    } else {
+        preview.innerHTML = '<p class="text-muted">No code to preview</p>';
+    }
+}
+
+function updateProgressBar() {
+    const progress = (currentStep / 3) * 100;
+    const progressBar = document.getElementById('submission-progress');
+    progressBar.style.width = `${progress}%`;
+    progressBar.textContent = `Step ${currentStep} of 3`;
+}
+
+function updateSubmitButton() {
+    const termsAccepted = document.getElementById('terms-accept').checked;
+    const submitButton = document.getElementById('submit-contract');
+    submitButton.disabled = !termsAccepted;
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+
+    const submitButton = document.getElementById('submit-contract');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    try {
+        const formData = {
+            input_type: selectedMethod.toUpperCase(),
+            content: contractData.content,
+            pre_conditions: contractData.preConditions,
+            post_conditions: contractData.postConditions,
+            contract_name: contractData.name,
+            contract_type: contractData.type,
+            target_network: contractData.targetNetwork,
+            persona_type: contractData.personaType,
+            file_name: contractData.file_name
+        };
+
+        const result = await SmartContractLLM.submitContract(formData);
+
+        showNotification('Contract submitted successfully!', 'success');
+
+        // Redirect to submission detail page
+        setTimeout(() => {
+            window.location.href = `/submission/${result.submission_id}`;
+        }, 2000);
+
+    } catch (error) {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Contract';
+    }
+}
+</script>
+{% endblock %}

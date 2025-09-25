@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - Smart Contract LLM Builder{% endblock %}
+
+{% block head %}
+<style>
+    .doc-sidebar {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .doc-content {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .doc-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .doc-item:hover {
+        background-color: #f8f9fa;
+    }
+    .doc-item.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .search-highlight {
+        background-color: #fff3cd;
+        padding: 0 2px;
+    }
+    .code-block {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+    }
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notification-container"></div>
+
+<!-- Documentation Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-book"></i> Documentation</h1>
+                <p class="text-muted">Browse Flow blockchain and Cadence documentation with AI-powered search.</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="showUploadModal()">
+                    <i class="fas fa-upload"></i> Upload Docs
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="search-input" class="form-control" placeholder="Search documentation..." value="{{ query or '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select id="search-type" class="form-select">
+                            <option value="all">All Types</option>
+                            <option value="LANGUAGE_SPEC">Language Spec</option>
+                            <option value="API_REFERENCE">API Reference</option>
+                            <option value="TUTORIAL">Tutorial</option>
+                            <option value="EXAMPLE">Examples</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="semantic-search" checked>
+                            <label class="form-check-label" for="semantic-search">
+                                Semantic Search
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="search-examples" checked>
+                            <label class="form-check-label" for="search-examples">
+                                Include Examples
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="search-tutorials" checked>
+                            <label class="form-check-label" for="search-tutorials">
+                                Include Tutorials
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if query %}
+<!-- Search Results -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-search"></i> Search Results ({{ results|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if results %}
+                    <div id="search-results">
+                        {% for result in results %}
+                        <div class="card mb-3 doc-item" data-doc-id="{{ result.id }}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title">{{ result.title }}</h5>
+                                        <div class="mb-2">
+                                            <span class="badge bg-secondary">{{ result.content_type }}</span>
+                                            {% if result.version %}
+                                            <span class="badge bg-info">{{ result.version }}</span>
+                                            {% endif %}
+                                            <span class="text-muted small">{{ result.source }}</span>
+                                        </div>
+                                        <p class="card-text">{{ result.content[:300] }}{% if result.content|length > 300 %}...{% endif %}</p>
+                                        {% if result.score %}
+                                        <div class="text-muted small">Relevance: {{ "%.2f"|format(result.score * 100) }}%</div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewDocument('{{ result.id }}')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No results found for "{{ query }}".</p>
+                        <div class="mt-3">
+                            <h6>Suggestions:</h6>
+                            <ul class="list-unstyled">
+                                <li>• Try different keywords</li>
+                                <li>• Check your spelling</li>
+                                <li>• Use more general terms</li>
+                                <li>• Try searching for specific Flow or Cadence concepts</li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Documentation Browser -->
+<div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+        <div class="card doc-sidebar">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-folder"></i> Browse</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-book"></i> Language Specification</h6>
+                        <small class="text-muted">Cadence language fundamentals</small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-cogs"></i> API Reference</h6>
+                        <small class="text-muted">Standard library and built-ins</small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-graduation-cap"></i> Tutorials</h6>
+                        <small class="text-muted">Step-by-step guides</small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-code"></i> Examples</h6>
+                        <small class="text-muted">Code samples and patterns</small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-network-wired"></i> Flow Blockchain</h6>
+                        <small class="text-muted">Blockchain-specific concepts</small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h6 class="mb-1"><i class="fas fa-tools"></i> Development Tools</h6>
+                        <small class="text-muted">CLI and development setup</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-link"></i> Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="https://docs.onflow.org" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Flow Docs
+                    </a>
+                    <a href="https://cadence-lang.org" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Cadence Lang
+                    </a>
+                    <a href="https://flow.composer.org" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Flow Playground
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        <div class="card doc-content">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Documentation</a></li>
+                            <li class="breadcrumb-item active">Overview</li>
+                        </ol>
+                    </nav>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleView('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if not query %}
+                <!-- Welcome Content -->
+                <div class="text-center py-4">
+                    <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+                    <h3>Welcome to Documentation</h3>
+                    <p class="text-muted">Search through comprehensive Flow blockchain and Cadence documentation.</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-search fa-2x text-primary mb-3"></i>
+                                    <h5>Search</h5>
+                                    <p class="text-muted">Use semantic search to find relevant documentation</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-code fa-2x text-success mb-3"></i>
+                                    <h5>Examples</h5>
+                                    <p class="text-muted">Browse practical code examples and patterns</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-graduation-cap fa-2x text-info mb-3"></i>
+                                    <h5>Learn</h5>
+                                    <p class="text-muted">Follow step-by-step tutorials and guides</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>Popular Topics</h5>
+                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <span class="badge bg-primary p-2">Transactions</span>
+                            <span class="badge bg-primary p-2">Resources</span>
+                            <span class="badge bg-primary p-2">Contracts</span>
+                            <span class="badge bg-primary p-2">NFTs</span>
+                            <span class="badge bg-primary p-2">Fungible Tokens</span>
+                            <span class="badge bg-primary p-2">Access Control</span>
+                            <span class="badge bg-primary p-2">Capability Security</span>
+                            <span class="badge bg-primary p-2">Scripts</span>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Document Viewer -->
+                <div id="document-viewer">
+                    <div class="mb-3">
+                        <h4 id="doc-title">Select a document to view</h4>
+                        <div class="text-muted" id="doc-meta"></div>
+                    </div>
+                    <div id="doc-content">
+                        <p class="text-muted">Click on a search result to view the full documentation.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Documentation Modal -->
+<div class="modal fade" id="upload-docs-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Documentation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="upload-docs-form">
+                    <div class="mb-3">
+                        <label for="doc-title" class="form-label">Title</label>
+                        <input type="text" id="doc-title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doc-type" class="form-label">Type</label>
+                        <select id="doc-type" class="form-select" required>
+                            <option value="LANGUAGE_SPEC">Language Specification</option>
+                            <option value="API_REFERENCE">API Reference</option>
+                            <option value="TUTORIAL">Tutorial</option>
+                            <option value="EXAMPLE">Example</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doc-source" class="form-label">Source</label>
+                        <input type="text" id="doc-source" class="form-control" placeholder="e.g., Flow Docs, Cadence Lang" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doc-version" class="form-label">Version (Optional)</label>
+                        <input type="text" id="doc-version" class="form-control" placeholder="e.g., 1.0.0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="doc-content" class="form-label">Content</label>
+                        <textarea id="doc-content" class="form-control" rows="8" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="uploadDocumentation()">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentView = 'list';
+let searchTimeout;
+
+// Initialize documentation page
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup search
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch();
+        }, 300);
+    });
+
+    // Setup search filters
+    document.getElementById('search-type').addEventListener('change', performSearch);
+    document.getElementById('semantic-search').addEventListener('change', performSearch);
+    document.getElementById('search-examples').addEventListener('change', performSearch);
+    document.getElementById('search-tutorials').addEventListener('change', performSearch);
+
+    // Setup doc item clicks
+    document.querySelectorAll('.doc-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const docId = this.getAttribute('data-doc-id');
+            viewDocument(docId);
+        });
+    });
+
+    // Initial search if query is present
+    const currentQuery = new URLSearchParams(window.location.search).get('q');
+    if (currentQuery) {
+        document.getElementById('search-input').value = currentQuery;
+    }
+});
+
+function performSearch() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+
+    const searchType = document.getElementById('search-type').value;
+    const semanticSearch = document.getElementById('semantic-search').checked;
+    const includeExamples = document.getElementById('search-examples').checked;
+    const includeTutorials = document.getElementById('search-tutorials').checked;
+
+    // Build URL
+    const params = new URLSearchParams({
+        q: query,
+        type: searchType,
+        semantic: semanticSearch,
+        examples: includeExamples,
+        tutorials: includeTutorials
+    });
+
+    // Redirect to search results
+    window.location.href = `/docs?${params.toString()}`;
+}
+
+async function viewDocument(docId) {
+    try {
+        const response = await fetch(`/api/docs/${docId}`);
+        const doc = await response.json();
+
+        // Update document viewer
+        document.getElementById('doc-title').textContent = doc.title;
+        document.getElementById('doc-meta').innerHTML = `
+            <span class="badge bg-secondary">${doc.content_type}</span>
+            <span class="text-muted">${doc.source}</span>
+            ${doc.version ? `<span class="badge bg-info">${doc.version}</span>` : ''}
+            <span class="text-muted">Updated ${new Date(doc.last_updated).toLocaleDateString()}</span>
+        `;
+
+        // Format content with code highlighting
+        let formattedContent = doc.content;
+
+        // Simple code block formatting
+        formattedContent = formattedContent.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, code) {
+            return `<div class="code-block"><pre><code class="language-${language || 'text'}">${code.trim()}</code></pre></div>`;
+        });
+
+        // Inline code formatting
+        formattedContent = formattedContent.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Highlight search terms if present
+        const searchQuery = document.getElementById('search-input').value.trim();
+        if (searchQuery) {
+            const regex = new RegExp(`(${searchQuery})`, 'gi');
+            formattedContent = formattedContent.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+
+        document.getElementById('doc-content').innerHTML = formattedContent;
+
+        // Update breadcrumb
+        document.querySelector('.breadcrumb .active').textContent = doc.title;
+
+        // Scroll to top
+        document.querySelector('.doc-content').scrollTop = 0;
+
+        // Mark as active
+        document.querySelectorAll('.doc-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-doc-id="${docId}"]`)?.classList.add('active');
+
+    } catch (error) {
+        showNotification('Error loading document', 'danger');
+    }
+}
+
+function showUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('upload-docs-modal'));
+    modal.show();
+}
+
+async function uploadDocumentation() {
+    const formData = {
+        title: document.getElementById('doc-title').value,
+        content_type: document.getElementById('doc-type').value,
+        source: document.getElementById('doc-source').value,
+        version: document.getElementById('doc-version').value,
+        content: document.getElementById('doc-content').value
+    };
+
+    try {
+        const response = await fetch('/api/docs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        showNotification('Documentation uploaded successfully!', 'success');
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('upload-docs-modal'));
+        modal.hide();
+
+        // Reset form
+        document.getElementById('upload-docs-form').reset();
+
+        // Refresh page
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+
+    } catch (error) {
+        showNotification('Error uploading documentation: ' + error.message, 'danger');
+    }
+}
+
+function toggleView(viewType) {
+    currentView = viewType;
+    // Implement view toggle logic here
+    showNotification(`Switched to ${viewType} view`, 'info');
+}
+</script>
+{% endblock %}

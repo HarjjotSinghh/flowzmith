@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+
+{% block title %}Deployments - Smart Contract LLM Builder{% endblock %}
+
+{% block content %}
+<div class="notification-container"></div>
+
+<!-- Deployments Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-rocket"></i> Deployments</h1>
+                <p class="text-muted">Manage your smart contract deployments across different networks.</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="showNewDeploymentModal()">
+                    <i class="fas fa-plus"></i> New Deployment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <select id="network-filter" class="form-select">
+            <option value="">All Networks</option>
+            <option value="testnet">Testnet</option>
+            <option value="mainnet">Mainnet</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select id="status-filter" class="form-select">
+            <option value="">All Status</option>
+            <option value="SUCCESS">Success</option>
+            <option value="FAILED">Failed</option>
+            <option value="PENDING">Pending</option>
+            <option value="TIMEOUT">Timeout</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input type="text" id="deployment-search" class="form-control" placeholder="Search deployments...">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-primary w-100" onclick="refreshDeployments()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Deployment Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number">{{ total_deployments or 0 }}</div>
+                <div class="stat-label">Total Deployments</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-success">{{ successful_deployments or 0 }}</div>
+                <div class="stat-label">Successful</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-danger">{{ failed_deployments or 0 }}</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number text-warning">{{ pending_deployments or 0 }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deployments List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Deployment History</h5>
+            </div>
+            <div class="card-body">
+                {% if deployments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Contract</th>
+                                    <th>Network</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deployments-table">
+                                {% for deployment in deployments %}
+                                <tr data-deployment-id="{{ deployment.id }}">
+                                    <td>{{ deployment.id[:8] }}...</td>
+                                    <td>
+                                        <div class="fw-bold">{{ deployment.contract_name or 'Unknown' }}</div>
+                                        <div class="text-muted small">{{ deployment.submission_id[:8] }}...</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ deployment.network }}</span>
+                                    </td>
+                                    <td>
+                                        <span id="deployment-{{ deployment.id }}-status" class="status-badge status-{{ deployment.status.lower() }}">
+                                            {{ deployment.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ deployment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ deployment.execution_time_ms }}ms</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewDeploymentDetails('{{ deployment.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            {% if deployment.status == 'SUCCESS' %}
+                                            <button class="btn btn-sm btn-outline-success" onclick="viewOnExplorer('{{ deployment.transaction_hash }}', '{{ deployment.network }}')">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-info" onclick="downloadLogs('{{ deployment.id }}')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-rocket fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No deployments yet.</p>
+                        <button class="btn btn-primary" onclick="showNewDeploymentModal()">
+                            <i class="fas fa-plus"></i> Create Your First Deployment
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deployment Details Modal -->
+<div class="modal fade" id="deployment-details-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Deployment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="deployment-details-content">
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Deployment Modal -->
+<div class="modal fade" id="new-deployment-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Deployment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="new-deployment-form">
+                    <div class="mb-3">
+                        <label for="submission-select" class="form-label">Select Contract</label>
+                        <select id="submission-select" class="form-select" required>
+                            <option value="">Choose a contract...</option>
+                            {% for submission in available_submissions %}
+                            <option value="{{ submission.id }}">{{ submission.contract_name or 'Unnamed Contract' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deployment-network" class="form-label">Network</label>
+                        <select id="deployment-network" class="form-select" required>
+                            <option value="testnet">Flow Testnet</option>
+                            <option value="mainnet">Flow Mainnet</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deployment-args" class="form-label">Deployment Arguments (JSON)</label>
+                        <textarea id="deployment-args" class="form-control" rows="4" placeholder='{"param1": "value1", "param2": "value2"}'></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createDeployment()">
+                    <i class="fas fa-rocket"></i> Deploy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Logs Modal -->
+<div class="modal fade" id="live-logs-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Live Deployment Logs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="live-logs-container" class="code-editor">
+                    <!-- Logs will be populated by WebSocket -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deployments = {{ deployments_json|safe if deployments_json else '[]' }};
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup filters
+    document.getElementById('network-filter').addEventListener('change', filterDeployments);
+    document.getElementById('status-filter').addEventListener('change', filterDeployments);
+    document.getElementById('deployment-search').addEventListener('input', filterDeployments);
+
+    // Auto-refresh every 30 seconds
+    setInterval(refreshDeployments, 30000);
+});
+
+function filterDeployments() {
+    const networkFilter = document.getElementById('network-filter').value;
+    const statusFilter = document.getElementById('status-filter').value;
+    const searchTerm = document.getElementById('deployment-search').value.toLowerCase();
+
+    const rows = document.querySelectorAll('#deployments-table tr');
+
+    rows.forEach(row => {
+        const deploymentId = row.getAttribute('data-deployment-id');
+        const deployment = deployments.find(d => d.id === deploymentId);
+
+        if (!deployment) return;
+
+        const networkMatch = !networkFilter || deployment.network === networkFilter;
+        const statusMatch = !statusFilter || deployment.status === statusFilter;
+        const searchMatch = !searchTerm ||
+            (deployment.contract_name && deployment.contract_name.toLowerCase().includes(searchTerm)) ||
+            deployment.id.toLowerCase().includes(searchTerm);
+
+        row.style.display = networkMatch && statusMatch && searchMatch ? '' : 'none';
+    });
+}
+
+async function refreshDeployments() {
+    try {
+        const response = await fetch('/api/deployments');
+        const data = await response.json();
+        deployments = data.deployments;
+
+        // Update the table
+        updateDeploymentsTable(data.deployments);
+
+        // Update statistics
+        updateDeploymentStats(data.stats);
+
+        showNotification('Deployments refreshed', 'success');
+    } catch (error) {
+        showNotification('Error refreshing deployments', 'danger');
+    }
+}
+
+function updateDeploymentsTable(deployments) {
+    const tbody = document.getElementById('deployments-table');
+    tbody.innerHTML = deployments.map(deployment => `
+        <tr data-deployment-id="${deployment.id}">
+            <td>${deployment.id.substring(0, 8)}...</td>
+            <td>
+                <div class="fw-bold">${deployment.contract_name || 'Unknown'}</div>
+                <div class="text-muted small">${deployment.submission_id.substring(0, 8)}...</div>
+            </td>
+            <td>
+                <span class="badge bg-secondary">${deployment.network}</span>
+            </td>
+            <td>
+                <span id="deployment-${deployment.id}-status" class="status-badge status-${deployment.status.toLowerCase()}">
+                    ${deployment.status}
+                </span>
+            </td>
+            <td>${new Date(deployment.created_at).toLocaleString()}</td>
+            <td>${deployment.execution_time_ms}ms</td>
+            <td>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewDeploymentDetails('${deployment.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${deployment.status === 'SUCCESS' ? `
+                    <button class="btn btn-sm btn-outline-success" onclick="viewOnExplorer('${deployment.transaction_hash}', '${deployment.network}')">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-outline-info" onclick="downloadLogs('${deployment.id}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateDeploymentStats(stats) {
+    document.querySelector('.stat-number').textContent = stats.total;
+    // Update other stats as needed
+}
+
+function showNewDeploymentModal() {
+    const modal = new bootstrap.Modal(document.getElementById('new-deployment-modal'));
+    modal.show();
+}
+
+async function createDeployment() {
+    const submissionId = document.getElementById('submission-select').value;
+    const network = document.getElementById('deployment-network').value;
+    const args = document.getElementById('deployment-args').value;
+
+    if (!submissionId || !network) {
+        showNotification('Please fill in all required fields', 'warning');
+        return;
+    }
+
+    try {
+        const deploymentData = {
+            submission_id: submissionId,
+            network: network,
+            deployment_args: args ? JSON.parse(args) : {}
+        };
+
+        await SmartContractLLM.deployContract(deploymentData);
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('new-deployment-modal'));
+        modal.hide();
+
+        // Show live logs
+        showLiveLogs();
+
+        // Refresh deployments after a delay
+        setTimeout(refreshDeployments, 5000);
+
+    } catch (error) {
+        showNotification('Error creating deployment: ' + error.message, 'danger');
+    }
+}
+
+async function viewDeploymentDetails(deploymentId) {
+    try {
+        const response = await fetch(`/api/deployments/${deploymentId}`);
+        const deployment = await response.json();
+
+        const content = document.getElementById('deployment-details-content');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Basic Information</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>ID:</strong></td><td>${deployment.id}</td></tr>
+                        <tr><td><strong>Status:</strong></td><td><span class="status-badge status-${deployment.status.toLowerCase()}">${deployment.status}</span></td></tr>
+                        <tr><td><strong>Network:</strong></td><td>${deployment.network}</td></tr>
+                        <tr><td><strong>Created:</strong></td><td>${new Date(deployment.created_at).toLocaleString()}</td></tr>
+                        <tr><td><strong>Duration:</strong></td><td>${deployment.execution_time_ms}ms</td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6>Deployment Information</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>Contract Name:</strong></td><td>${deployment.contract_name || 'Unknown'}</td></tr>
+                        <tr><td><strong>Submission ID:</strong></td><td>${deployment.submission_id}</td></tr>
+                        ${deployment.transaction_hash ? `<tr><td><strong>Transaction Hash:</strong></td><td><code>${deployment.transaction_hash}</code></td></tr>` : ''}
+                        ${deployment.error_message ? `<tr><td><strong>Error:</strong></td><td><span class="text-danger">${deployment.error_message}</span></td></tr>` : ''}
+                        <tr><td><strong>Gas Used:</strong></td><td>${deployment.gas_used || 'N/A'}</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h6>Configuration</h6>
+                <pre class="code-editor">${JSON.stringify(deployment.config_content, null, 2)}</pre>
+            </div>
+            <div class="mt-3">
+                <h6>Generated Code</h6>
+                <pre class="code-editor">${deployment.generated_contract_code || 'No code available'}</pre>
+            </div>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById('deployment-details-modal'));
+        modal.show();
+
+    } catch (error) {
+        showNotification('Error loading deployment details', 'danger');
+    }
+}
+
+function viewOnExplorer(txHash, network) {
+    const baseUrl = network === 'mainnet' ? 'https://flowscan.org' : 'https://testnet.flowscan.org';
+    window.open(`${baseUrl}/transaction/${txHash}`, '_blank');
+}
+
+function downloadLogs(deploymentId) {
+    fetch(`/api/deployments/${deploymentId}/logs`)
+        .then(response => response.json())
+        .then(data => {
+            const blob = new Blob([data.logs.join('\n')], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deployment-${deploymentId}-logs.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            showNotification('Error downloading logs', 'danger');
+        });
+}
+
+function showLiveLogs() {
+    const modal = new bootstrap.Modal(document.getElementById('live-logs-modal'));
+    modal.show();
+
+    // Clear existing logs
+    document.getElementById('live-logs-container').innerHTML = '';
+}
+
+// Handle WebSocket messages for live updates
+function handleWebSocketMessage(data) {
+    if (data.type === 'deployment_update') {
+        updateDeploymentStatus(data.deployment_id, data.status, data.message);
+
+        // Add to live logs if modal is open
+        const logsContainer = document.getElementById('live-logs-container');
+        if (logsContainer) {
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span class="timestamp">${new Date().toLocaleTimeString()}</span> ${data.message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+    }
+}
+</script>
+{% endblock %}
