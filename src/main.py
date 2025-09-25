@@ -14,7 +14,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from src.api import router, websocket_router
+from src.api import router, websocket_router, knowledge_base_router
 from src.api.middleware import (
     AuthenticationMiddleware,
     RateLimitMiddleware,
@@ -110,6 +110,9 @@ app.include_router(router, prefix="/api/v1")
 
 # Include WebSocket routes
 app.include_router(websocket_router)
+
+# Include Knowledge Base routes
+app.include_router(knowledge_base_router, prefix="/api/v1")
 
 # Mount static files
 if os.path.exists("static"):
@@ -301,6 +304,14 @@ async def docs_page(request: Request, db: Session = Depends(get_db)):
     })
 
 
+@app.get("/knowledge-base", response_class=HTMLResponse)
+async def knowledge_base_page(request: Request, db: Session = Depends(get_db)):
+    """Knowledge base management page."""
+    return templates.TemplateResponse("knowledge_base.html", {
+        "request": request
+    })
+
+
 @app.get("/profile", response_class=HTMLResponse)
 async def profile_page(request: Request):
     """User profile page."""
@@ -343,7 +354,7 @@ async def api_info():
             "documentation": "/api/v1/documentation",
             "users": "/api/v1/users",
             "statistics": "/api/v1/statistics",
-            "websocket": "/api/v1/ws"
+            "websocket": "/ws"
         }
     }
 

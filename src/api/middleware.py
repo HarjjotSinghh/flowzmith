@@ -121,7 +121,6 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
             "/redoc",
             "/openapi.json",
             "/ws/",
-            "/api/v1/ws/",
             "/static/"
         ]
 
@@ -282,8 +281,7 @@ class ValidationMiddleware(BaseHTTPMiddleware):
     def _should_skip_validation(self, path: str) -> bool:
         """Check if validation should be skipped for this path."""
         skip_paths = [
-            "/ws/",
-            "/api/v1/ws/"
+            "/ws/"
         ]
         should_skip = any(path.startswith(skip_path) for skip_path in skip_paths)
         logger.info(f"ValidationMiddleware: Path '{path}' should skip validation: {should_skip}")
@@ -297,12 +295,27 @@ class ValidationMiddleware(BaseHTTPMiddleware):
         if "websocket" in content_type.lower():
             return
 
-        # For API requests, expect JSON
+        # For API requests, expect JSON except specific multipart endpoints
         if request.url.path.startswith("/api/"):
-            if not content_type.startswith("application/json"):
+            # Allow file upload endpoints to use multipart/form-data
+            multipart_allowed_paths = [
+                "/api/v1/contracts/file",
+                "/api/v1/documentation/upload"
+            ]
+
+            is_multipart = content_type.startswith("multipart/form-data")
+            is_allowed_multipart_path = any(request.url.path.startswith(p) for p in multipart_allowed_paths)
+
+            if not is_multipart and not content_type.startswith("application/json"):
                 raise HTTPException(
                     status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                     detail="Content-Type must be application/json"
+                )
+
+            if is_multipart and not is_allowed_multipart_path:
+                raise HTTPException(
+                    status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                    detail="Multipart upload only allowed on upload endpoints"
                 )
 
     def _validate_request_size(self, request: Request):

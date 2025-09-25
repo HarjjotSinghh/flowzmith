@@ -7,6 +7,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+import uuid
 
 from ..models.database import get_db
 from ..services import (
@@ -198,6 +199,65 @@ async def generate_contract(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/contracts/submit")
+async def submit_contract(
+    contract_data: dict,
+    user_id: str = None,
+    db: Session = Depends(get_db)
+):
+    """Submit contract data for processing."""
+    try:
+        # Create submission from contract data
+        from ..models import ContractSubmission, InputType, SubmissionStatus
+        import uuid
+
+        # Map input method to InputType enum
+        input_type_map = {
+            "natural_language": InputType.NATURAL_LANGUAGE,
+            "cadence_file": InputType.CDC_FILE,
+            "solidity_file": InputType.SOL_FILE,
+            "direct_code": InputType.MIXED,
+            "template": InputType.MIXED
+        }
+
+        input_method = contract_data.get("input_method", "direct_code")
+        input_type = input_type_map.get(input_method, InputType.MIXED)
+
+        # Convert string user_id to UUID if provided, otherwise create a default user
+        if user_id:
+            try:
+                user_uuid = uuid.UUID(user_id)
+            except ValueError:
+                user_uuid = uuid.uuid4()  # Default user if invalid
+        else:
+            user_uuid = uuid.uuid4()  # Default user
+
+        submission = ContractSubmission(
+            user_id=user_uuid,
+            input_type=input_type,
+            content=contract_data.get("content", ""),
+            pre_conditions={
+                "contract_name": contract_data.get("contract_name", "Unnamed Contract"),
+                "contract_type": contract_data.get("contract_type", "Custom"),
+                "description": contract_data.get("description", ""),
+                "network": contract_data.get("network", "testnet"),
+                "metadata": contract_data.get("metadata", {})
+            },
+            status=SubmissionStatus.PENDING
+        )
+        db.add(submission)
+        db.commit()
+        db.refresh(submission)
+
+        return {
+            "submission_id": str(submission.id),
+            "status": "success",
+            "message": "Contract submitted successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/contracts/file")
 async def upload_contract_file(
     file: UploadFile = File(...),
@@ -213,14 +273,25 @@ async def upload_contract_file(
         content_str = content.decode('utf-8')
 
         # Determine input type
-        input_type = "CDC_FILE" if file.filename.endswith('.cdc') else "SOL_FILE"
+        from ..models import InputType, SubmissionStatus
+        input_type = InputType.CDC_FILE if file.filename.endswith('.cdc') else InputType.SOL_FILE
+
+        # Convert string user_id to UUID if provided, otherwise create a default user
+        if user_id:
+            try:
+                user_uuid = uuid.UUID(user_id)
+            except ValueError:
+                user_uuid = uuid.uuid4()  # Default user if invalid
+        else:
+            user_uuid = uuid.uuid4()  # Default user
 
         # Create submission
         from ..models import ContractSubmission
         submission = ContractSubmission(
-            user_id=user_id,
+            user_id=user_uuid,
             input_type=input_type,
-            content=content_str
+            content=content_str,
+            status=SubmissionStatus.PENDING
         )
         db.add(submission)
         db.commit()

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 websocket_router = APIRouter()
 
 
-@websocket_router.websocket("/api/v1/ws/{user_id}")
+@websocket_router.websocket("/ws/{user_id}")
 async def websocket_endpoint(
     websocket: WebSocket,
     user_id: str,
@@ -53,7 +53,7 @@ async def websocket_endpoint(
             pass
 
 
-@websocket_router.websocket("/api/v1/ws/session/{session_id}")
+@websocket_router.websocket("/ws/session/{session_id}")
 async def session_websocket_endpoint(
     websocket: WebSocket,
     session_id: str,
@@ -205,13 +205,13 @@ async def track_deployment(user_id: str, deployment_id: str):
 
 
 # WebSocket management endpoints
-@websocket_router.get("/api/v1/ws/stats")
+@websocket_router.get("/ws/stats")
 async def get_websocket_stats():
     """Get WebSocket connection statistics."""
     return manager.get_connection_stats()
 
 
-@websocket_router.get("/api/v1/ws/operations/{operation_id}")
+@websocket_router.get("/ws/operations/{operation_id}")
 async def get_operation_status(operation_id: str):
     """Get the status of a specific operation."""
     status = progress_tracker.get_operation_status(operation_id)

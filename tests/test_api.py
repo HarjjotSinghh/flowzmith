@@ -248,7 +248,7 @@ class TestWebSocket:
         """Test WebSocket connection."""
         # This would require a WebSocket client library
         # For now, we'll just check if the endpoint exists
-        response = client.get("/api/v1/ws/stats")
+        response = client.get("/ws/stats")
         assert response.status_code == 200
 
 class TestDatabaseOperations:

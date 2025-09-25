@@ -788,7 +788,7 @@ const deployment = await client.deployContract(submissionId);
 
 ```javascript
 // Connect to WebSocket for real-time updates
-const ws = new WebSocket('ws://localhost:8000/api/v1/ws/updates?token=YOUR_JWT_TOKEN');
+const ws = new WebSocket('ws://localhost:8000/ws');
 
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);

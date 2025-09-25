@@ -184,7 +184,7 @@ Authorization: Bearer <token>
 Connect to WebSocket for real-time updates:
 
 ```
-ws://localhost:8000/api/v1/ws/updates?token=<jwt-token>
+ws://localhost:8000/ws
 ```
 
 ## Configuration
