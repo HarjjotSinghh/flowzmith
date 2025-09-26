@@ -15,6 +15,9 @@ from pathlib import Path
 
 from ..config import get_settings
 
+import logging
+logger = logging.getLogger(__name__)
+
 class APIClient:
     """Async HTTP and WebSocket client for API interactions."""
 
@@ -29,35 +32,58 @@ class APIClient:
         self.session = aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=300)
         )
+        logger.info("APIClient session created (base_url=%s, ws_url=%s)", self.base_url, self.ws_url)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        logger.info("APIClient shutting down; closing websocket=%s, session=%s", bool(self.websocket), bool(self.session))
         if self.websocket:
-            await self.websocket.close()
+            try:
+                await self.websocket.close()
+            except Exception:
+                logger.exception("Error closing websocket")
         if self.session:
-            await self.session.close()
+            try:
+                await self.session.close()
+            except Exception:
+                logger.exception("Error closing aiohttp session")
 
     # HTTP Methods
     async def get(self, endpoint: str, **kwargs) -> Dict[str, Any]:
-        async with self.session.get(f"{self.base_url}{endpoint}", **kwargs) as response:
+        url = f"{self.base_url}{endpoint}"
+        logger.info("HTTP GET %s params=%s headers=%s", url, kwargs.get("params"), kwargs.get("headers"))
+        async with self.session.get(url, **kwargs) as response:
             return await self._handle_response(response)
 
     async def post(self, endpoint: str, **kwargs) -> Dict[str, Any]:
-        async with self.session.post(f"{self.base_url}{endpoint}", **kwargs) as response:
+        url = f"{self.base_url}{endpoint}"
+        payload_keys = list(kwargs.get("json", {}).keys()) if kwargs.get("json") else ("form-data" if kwargs.get("data") else None)
+        logger.info("HTTP POST %s json_keys=%s has_data=%s headers=%s", url, payload_keys, bool(kwargs.get("data")), kwargs.get("headers"))
+        async with self.session.post(url, **kwargs) as response:
             return await self._handle_response(response)
 
     async def put(self, endpoint: str, **kwargs) -> Dict[str, Any]:
-        async with self.session.put(f"{self.base_url}{endpoint}", **kwargs) as response:
+        url = f"{self.base_url}{endpoint}"
+        payload_keys = list(kwargs.get("json", {}).keys()) if kwargs.get("json") else ("form-data" if kwargs.get("data") else None)
+        logger.info("HTTP PUT %s json_keys=%s has_data=%s headers=%s", url, payload_keys, bool(kwargs.get("data")), kwargs.get("headers"))
+        async with self.session.put(url, **kwargs) as response:
             return await self._handle_response(response)
 
     async def _handle_response(self, response: aiohttp.ClientResponse) -> Dict[str, Any]:
+        method = getattr(response.request_info, "method", "?")
+        url = str(getattr(response, "url", ""))
+        status = response.status
         try:
             data = await response.json()
-        except:
-            data = {"text": await response.text()}
+            logger.debug("HTTP %s %s responded with %s and JSON body", method, url, status)
+        except Exception:
+            text = await response.text()
+            data = {"text": text}
+            logger.debug("HTTP %s %s responded with %s and non-JSON body", method, url, status)
 
-        if response.status >= 400:
-            raise Exception(f"API Error {response.status}: {data}")
+        if status >= 400:
+            logger.error("API Error %s for %s %s: %s", status, method, url, data)
+            raise Exception(f"API Error {status}: {data}")
 
         return data
 
@@ -74,25 +100,31 @@ class APIClient:
     async def connect_websocket(self) -> str:
         """Connect to WebSocket and return connection ID."""
         try:
+            logger.info("Connecting to WebSocket at %s", self.ws_url)
             self.websocket = await websockets.connect(self.ws_url)
             # Wait for welcome/connection established message
             welcome_msg = await self.websocket.recv()
             welcome_data = json.loads(welcome_msg)
+            logger.debug("Received welcome message: %s", welcome_data)
 
             # Support both legacy and current formats
             if welcome_data.get("type") == "welcome":
                 self.connection_id = welcome_data.get("connection_id")
+                logger.info("WebSocket connected; connection_id=%s", self.connection_id)
                 return self.connection_id
 
             if welcome_data.get("type") == "connection_established":
                 data = welcome_data.get("data", {})
                 self.connection_id = data.get("connection_id") or welcome_data.get("connection_id")
                 if self.connection_id:
+                    logger.info("WebSocket connected; connection_id=%s", self.connection_id)
                     return self.connection_id
 
+            logger.error("Unexpected welcome message format: %s", welcome_data)
             raise Exception("Unexpected welcome message format: " + str(welcome_data))
 
         except Exception as e:
+            logger.exception("WebSocket connection failed")
             raise Exception(f"WebSocket connection failed: {e}")
 
     async def send_message(self, message: Dict[str, Any]) -> None:
@@ -100,7 +132,12 @@ class APIClient:
         if not self.websocket:
             raise Exception("WebSocket not connected")
 
-        await self.websocket.send(json.dumps(message))
+        try:
+            logger.debug("Sending WebSocket message: %s", message)
+            await self.websocket.send(json.dumps(message))
+        except Exception:
+            logger.exception("Failed to send WebSocket message")
+            raise
 
     async def listen_messages(self, callback: Callable[[Dict[str, Any]], None]) -> None:
         """Listen for WebSocket messages and call callback for each."""
@@ -108,11 +145,16 @@ class APIClient:
             raise Exception("WebSocket not connected")
 
         try:
+            logger.info("Listening for WebSocket messages...")
             async for message in self.websocket:
                 data = json.loads(message)
+                logger.debug("Received WebSocket message: %s", data)
                 callback(data)
         except websockets.exceptions.ConnectionClosed:
-            pass
+            logger.warning("WebSocket connection closed")
+        except Exception:
+            logger.exception("Error while listening to WebSocket messages")
+            raise
 
     # Contract API Methods
     async def submit_contract(self, contract_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -120,6 +162,7 @@ class APIClient:
         # Attach system address for CLI to help backend create/find user
         contract_data = dict(contract_data)
         contract_data.setdefault("system_address", self._get_system_address())
+        logger.info("Submitting contract to /api/v1/contracts/submit with keys=%s", list(contract_data.keys()))
         return await self.post("/api/v1/contracts/submit", json=contract_data)
 
     async def get_contracts(self, status: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
@@ -128,30 +171,36 @@ class APIClient:
         if status:
             params["status"] = status
 
+        logger.info("Fetching contracts: params=%s", params)
         result = await self.get("/api/v1/contracts", params=params)
         return result.get("contracts", [])
 
     async def get_contract(self, contract_id: str) -> Dict[str, Any]:
         """Get specific contract details."""
+        logger.info("Fetching contract details: contract_id=%s", contract_id)
         return await self.get(f"/api/v1/contracts/{contract_id}")
 
     # Deployment API Methods
     async def deploy_contract(self, deployment_data: Dict[str, Any]) -> Dict[str, Any]:
         """Deploy a contract to blockchain."""
+        logger.info("Deploying contract: keys=%s", list(deployment_data.keys()))
         return await self.post("/api/v1/deployments", json=deployment_data)
 
     async def get_deployments(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Get list of deployments."""
+        logger.info("Fetching deployments: limit=%s", limit)
         result = await self.get("/api/v1/deployments", params={"limit": limit})
         return result.get("deployments", [])
 
     async def get_deployment_status(self, deployment_id: str) -> Dict[str, Any]:
         """Get deployment status."""
+        logger.info("Fetching deployment status: deployment_id=%s", deployment_id)
         return await self.get(f"/api/v1/deployments/{deployment_id}/status")
 
     # Documentation API Methods
     async def search_documentation(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
         """Search documentation."""
+        logger.info("Searching documentation: query=%s, limit=%s", query, limit)
         result = await self.get("/api/v1/documentation/search", params={"q": query, "limit": limit})
         return result.get("results", [])
 
@@ -160,6 +209,7 @@ class APIClient:
         if not file_path.exists():
             raise Exception(f"File not found: {file_path}")
 
+        logger.info("Uploading documentation: file=%s", file_path)
         data = aiohttp.FormData()
         data.add_field("file", open(file_path, "rb"), filename=file_path.name)
         data.add_field("metadata", json.dumps(metadata))
@@ -174,6 +224,7 @@ class APIClient:
         if not file_path.exists():
             raise Exception(f"File not found: {file_path}")
 
+        logger.info("Uploading file: type=%s, file=%s", file_type, file_path)
         data = aiohttp.FormData()
         data.add_field("file", open(file_path, "rb"), filename=file_path.name)
         # Include system address for CLI uploads
@@ -184,32 +235,40 @@ class APIClient:
     # System API Methods
     async def health_check(self) -> Dict[str, Any]:
         """Check system health."""
+        logger.info("Calling /health endpoint")
         return await self.get("/health")
 
     async def get_dashboard_stats(self) -> Dict[str, Any]:
         """Get dashboard statistics."""
+        logger.info("Calling /api/dashboard/stats endpoint")
         return await self.get("/api/dashboard/stats")
 
     # Utility Methods
     async def wait_for_operation(self, operation_id: str, timeout: int = 300) -> Dict[str, Any]:
         """Wait for an operation to complete."""
         start_time = datetime.now()
+        logger.info("Waiting for operation_id=%s with timeout=%s", operation_id, timeout)
 
         while (datetime.now() - start_time).total_seconds() < timeout:
             try:
                 status = await self.get(f"/api/v1/operations/{operation_id}/status")
+                logger.debug("Operation %s status: %s", operation_id, status.get("status"))
 
                 if status.get("status") in ["completed", "failed", "success"]:
+                    logger.info("Operation %s finished with status=%s", operation_id, status.get("status"))
                     return status
 
                 await asyncio.sleep(2)
             except Exception as e:
+                logger.exception("Error while polling operation %s", operation_id)
                 await asyncio.sleep(2)
 
+        logger.error("Operation timeout: %s", operation_id)
         raise Exception(f"Operation timeout: {operation_id}")
 
     async def stream_operation_progress(self, operation_id: str, callback: Callable[[Dict[str, Any]], None]) -> None:
         """Stream real-time progress for an operation."""
+        logger.info("Subscribing to operation progress: operation_id=%s", operation_id)
         await self.send_message({
             "type": "subscribe_operation",
             "operation_id": operation_id
@@ -217,6 +276,7 @@ class APIClient:
 
         async def message_handler(data: Dict[str, Any]):
             if data.get("operation_id") == operation_id:
+                logger.debug("Progress update for operation %s: %s", operation_id, data)
                 callback(data)
 
         await self.listen_messages(message_handler)
