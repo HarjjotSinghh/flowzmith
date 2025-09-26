@@ -291,7 +291,7 @@ class StatisticsResponse(BaseModel):
 class HealthResponse(BaseModel):
     """Schema for health check response."""
     status: str
-    timestamp: datetime
+    timestamp: str
     version: str
     database_connected: bool
     llm_providers: List[str]
@@ -316,7 +316,7 @@ class WebSocketMessage(BaseModel):
     """Schema for WebSocket messages."""
     type: str
     data: Dict[str, Any]
-    timestamp: datetime
+    timestamp: str
 
 
 class ProgressUpdate(BaseModel):
@@ -333,7 +333,7 @@ class LogUpdate(BaseModel):
     type: str = "log"
     level: str = Field(..., pattern=r'^(INFO|WARNING|ERROR|DEBUG)$')
     message: str
-    timestamp: datetime
+    timestamp: str
 
 
 class StatusUpdate(BaseModel):
@@ -341,4 +341,4 @@ class StatusUpdate(BaseModel):
     type: str = "status"
     status: str
     details: Optional[Dict[str, Any]] = None
-    timestamp: datetime
+    timestamp: str
