@@ -3,6 +3,7 @@ API routes for Smart Contract LLM Builder.
 """
 
 import asyncio
+import time
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request, BackgroundTasks
@@ -430,11 +431,12 @@ async def submit_contract(
     request: Request = None,
     db: Session = Depends(get_db)
 ):
-    """Submit contract data for processing."""
+    """Submit contract data for processing and generate all files."""
     try:
         # Create submission from contract data
         from ..models import ContractSubmission, InputType, SubmissionStatus, User, PersonaType
         import uuid as _uuid
+        import time
 
         # Map input method to InputType enum
         input_type_map = {
@@ -513,11 +515,85 @@ async def submit_contract(
         db.commit()
         db.refresh(submission)
 
+        # Now actually generate the contract files like the CLI does
+        generation_start_time = time.time()
+        
+        # Initialize ContractCreator and APIClient for file generation
+        api_client = APIClient(base_url="http://localhost:8000")
+        contract_creator = ContractCreator(api_client, db)
+        
+        # Prepare requirements from contract_data
+        requirements = {
+            "name": contract_data.get("name", contract_data.get("contract_name", "Contract")),
+            "type": contract_data.get("type", contract_data.get("contract_type", "custom")).lower(),
+            "description": contract_data.get("description", ""),
+            "network": contract_data.get("network", "testnet"),
+            "metadata": contract_data.get("metadata", {}),
+            "account_setup": contract_data.get("account_setup", "single"),
+            "features": contract_data.get("features", ["transactions", "deployment_scripts", "test_cases"])
+        }
+        
+        # Get contract content
+        contract_content = contract_data.get("content", "")
+        input_method = "api"
+        
+        # Create a mock result object for file generation
+        contract_id = str(uuid.uuid4())
+        result = {
+            "contract_id": contract_id,
+            "submission_id": str(submission.id),
+            "status": "success",
+            "contract_code": contract_content,
+            "flow_project": contract_data.get("flow_project", {}),
+            "message": "Contract generated successfully"
+        }
+        
+        # Generate and save all files using the ContractCreator methods
+        project_path = await contract_creator._save_contract_to_filesystem(
+            result, requirements, contract_content, input_method
+        )
+        
+        # Calculate generation time
+        generation_time = time.time() - generation_start_time
+        
+        # Read the generated metadata to get file information for database storage
+        try:
+            from pathlib import Path
+            import json
+            metadata_file = Path(project_path) / "metadata.json"
+            if metadata_file.exists():
+                with open(metadata_file, 'r') as f:
+                    metadata = json.load(f)
+                    files_generated = metadata.get("files_generated", {})
+                    
+                    # Update result object with flow project information
+                    result["flow_project"] = {
+                        "transactions": files_generated.get("transactions", []),
+                        "scripts": files_generated.get("scripts", []),
+                        "tests": files_generated.get("tests", []),
+                        "flow_json": files_generated.get("flow_json", ""),
+                        "contract": files_generated.get("contract", "")
+                    }
+        except Exception as e:
+            # Silently continue if metadata cannot be read
+            pass
+        
+        # Save to database as well
+        await contract_creator._save_contract_to_database(
+            result, requirements, contract_content, input_method, generation_time
+        )
+        
+        # Update submission status to completed
+        submission.status = SubmissionStatus.COMPLETED
+        db.commit()
+
         return {
             "submission_id": str(submission.id),
             "user_id": str(resolved_user.id),
             "status": "success",
-            "message": "Contract submitted successfully"
+            "message": "Contract submitted and files generated successfully",
+            "project_path": project_path,
+            "generation_time": generation_time
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

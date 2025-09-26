@@ -1,0 +1,49 @@
+{
+  "contract_id": "084e5eac-8b4b-45be-8b54-a12c59533a3e",
+  "contract_name": "APITestToken",
+  "contract_type": "token",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "APITestToken",
+    "type": "token",
+    "description": "A test token contract submitted via API",
+    "network": "testnet",
+    "metadata": {
+      "version": "1.0.0",
+      "author": "API Test"
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T03:31:21.820277",
+  "result": {
+    "contract_id": "084e5eac-8b4b-45be-8b54-a12c59533a3e",
+    "submission_id": "b8bbc835-724e-4214-a10c-7c80412fdae8",
+    "status": "success",
+    "contract_code": "access(all) contract APITestToken {\n    access(all) var totalSupply: UFix64\n    \n    init() {\n        self.totalSupply = 1000000.0\n    }\n    \n    access(all) fun getTotalSupply(): UFix64 {\n        return self.totalSupply\n    }\n}",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/APITestToken.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "mint_tokens",
+      "transfer_tokens",
+      "setup_account"
+    ],
+    "scripts": [
+      "get_balance",
+      "get_supply",
+      "check_account_setup"
+    ],
+    "tests": [
+      "test_token_deployment"
+    ]
+  }
+}

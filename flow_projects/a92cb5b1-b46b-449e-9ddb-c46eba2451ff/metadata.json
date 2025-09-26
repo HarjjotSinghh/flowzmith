@@ -1,0 +1,41 @@
+{
+  "contract_id": "a92cb5b1-b46b-449e-9ddb-c46eba2451ff",
+  "contract_name": "Organzation2",
+  "contract_type": "Custom",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "Organzation2",
+    "contract_type": "Custom",
+    "description": "A smart contract for managing organizations (startups/businesses)",
+    "network": "testnet",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T02:58:35.734669",
+  "result": {
+    "submission_id": "cff2cca9-2f67-4e8c-9b3e-42aecf7683a9",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/Organzation2.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

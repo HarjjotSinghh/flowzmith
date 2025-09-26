@@ -106,9 +106,10 @@ class ConnectionManager:
         logger.info(f"WebSocket disconnected")
 
     async def send_personal_message(self, message: dict, websocket: WebSocket):
-        """Send a message to a specific WebSocket."""
+        """Send a message to a specific WebSocket connection."""
         try:
-            await websocket.send_text(json.dumps(message))
+            # Convert datetime objects to ISO strings before JSON serialization
+            await websocket.send_text(json.dumps(message, default=str))
         except Exception as e:
             logger.error(f"Failed to send WebSocket message: {e}")
             # Connection might be closed, remove it

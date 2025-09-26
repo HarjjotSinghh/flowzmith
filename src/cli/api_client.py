@@ -137,7 +137,8 @@ class APIClient:
 
         try:
             logger.debug("Sending WebSocket message: %s", message)
-            await self.websocket.send(json.dumps(message))
+            # Convert datetime objects to ISO strings before JSON serialization
+            await self.websocket.send(json.dumps(message, default=str))
         except Exception:
             logger.exception("Failed to send WebSocket message")
             raise

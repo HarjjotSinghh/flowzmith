@@ -1,0 +1,41 @@
+{
+  "contract_id": "b48283bd-ab89-4ea3-8847-9d401ac145cb",
+  "contract_name": "UserProfile",
+  "contract_type": "Custom",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "UserProfile",
+    "contract_type": "Custom",
+    "description": "A smart contract for managing user profiles",
+    "network": "testnet",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T03:04:03.532156",
+  "result": {
+    "submission_id": "b150acf3-6fba-4912-9cbc-cb9353b97ce1",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/UserProfile.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

@@ -31,9 +31,10 @@ console = Console()
 class ContractCreator:
     """Handles smart contract creation process."""
 
-    def __init__(self, api_client: APIClient):
+    def __init__(self, api_client: APIClient, db_session=None):
         self.api_client = api_client
         self.file_generator = FlowFileGenerator()
+        self.db_session = db_session
 
     async def create_contract_interactive(self) -> Dict[str, Any]:
         """Guide user through interactive contract creation with automatic context loading."""
@@ -1454,7 +1455,7 @@ For more information about Flow and Cadence development, visit:
             )
             
             # Save to database
-            db = next(get_db())
+            db = self.db_session if self.db_session else next(get_db())
             db.add(contract_record)
             db.commit()
             db.refresh(contract_record)

@@ -1,0 +1,46 @@
+{
+  "contract_id": "3f770529-b3e0-4ca1-bb39-7b98e88eada7",
+  "contract_name": "Test2",
+  "contract_type": "dao",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "Test2",
+    "type": "dao",
+    "description": "Any DAO example on cadence",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T03:26:31.311648",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T03:26:34.135540",
+  "result": {
+    "submission_id": "92884f1a-67c6-43a9-a309-96ff1e950c58",
+    "status": "success",
+    "contract": "```cadence\n// Test2.cdc\n\n// A simple DAO contract example on Cadence\n\npub contract Test2 {\n\n    // Events\n    pub event ProposalCreated(proposalID: UInt64)\n    pub event VoteCast(proposalID: UInt64, voter: Address, vote: Bool)\n    pub event ProposalExecuted(proposalID: UInt64)\n\n    // Resource interface for Proposal\n    pub resource interface IProposal {\n        pub let id: UInt64\n        pub let proposer: Address\n        pub let description: String\n        pub var votes: {Address: Bool}\n        pub var executed: Bool\n\n        pub fun castVote(voter: Address, vote: Bool)\n        pub fun execute()\n    }\n\n    // Proposal resource\n    pub resource Proposal: IProposal {\n        pub let id: UInt64\n        pub let proposer: Address\n        pub let description: String\n        pub var votes: {Address: Bool}\n        pub var executed: Bool\n\n        init(proposer: Address, description: String, id: UInt64) {\n            self.id = id\n            self.proposer = proposer\n            self.description = description\n            self.votes = {}\n            self.executed = false\n        }\n\n        pub fun castVote(voter: Address, vote: Bool) {\n            pre {\n                !self.executed: \"Proposal has already been executed\"\n                !self.votes.containsKey(voter): \"Voter has already voted\"\n            }\n            self.votes[voter] = vote\n            emit VoteCast(self.id, voter, vote)\n        }\n\n        pub fun execute() {\n            pre {\n                !self.executed: \"Proposal has already been executed\"\n            }\n            let yesVotes = self.votes.values.filter { $0 }.length\n            let noVotes = self.votes.values.filter { !$0 }.length\n            if yesVotes > noVotes {\n                self.executed = true\n                emit ProposalExecuted(self.id)\n            } else {\n                panic(\"Not enough yes votes to execute proposal\")\n            }\n        }\n    }\n\n    // DAO state\n    pub var proposals: @{UInt64: Proposal}\n    pub var nextProposalID: UInt64\n\n    init() {\n        self.proposals <- {}\n        self.nextProposalID = 0\n    }\n\n    // Function to create a new proposal\n    pub fun createProposal(proposer: Address, description: String) {\n        let proposal <- create Proposal(proposer: proposer, description: description, id: self.nextProposalID)\n        self.proposals[self.nextProposalID] <-! proposal\n        self.nextProposalID = self.nextProposalID + 1\n        emit ProposalCreated(self.nextProposalID - 1)\n    }\n\n    // Function to get a proposal\n    pub fun getProposal(id: UInt64): &Proposal? {\n        return &self.proposals[id] as &Proposal?\n    }\n\n    // Destroy unused proposals\n    destroy() {\n        destroy self.proposals\n    }\n}\n\n// Example transaction to create a proposal\ntransaction(description: String) {\n    prepare(signer: AuthAccount) {\n        Test2.createProposal(proposer: signer.address, description: description)\n    }\n}\n\n// Example transaction to cast a vote\ntransaction(proposalID: UInt64, vote: Bool) {\n    prepare(signer: AuthAccount) {\n        let proposal = Test2.getProposal(id: proposalID)\n        if let proposal = proposal {\n            proposal.castVote(voter: signer.address, vote: vote)\n        } else {\n            panic(\"Proposal not found\")\n        }\n    }\n}\n\n// Example transaction to execute a proposal\ntransaction(proposalID: UInt64) {\n    prepare(signer: AuthAccount) {\n        let proposal = Test2.getProposal(id: proposalID)\n        if let proposal = proposal {\n            proposal.execute()\n        } else {\n            panic(\"Proposal not found\")\n        }\n    }\n}\n\n// Example script to get a proposal\npub fun main(proposalID: UInt64): &Test2.Proposal? {\n    return Test2.getProposal(id: proposalID)\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/Test2.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

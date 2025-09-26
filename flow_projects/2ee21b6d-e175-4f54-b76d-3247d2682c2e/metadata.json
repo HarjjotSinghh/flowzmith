@@ -1,0 +1,43 @@
+{
+  "contract_id": "2ee21b6d-e175-4f54-b76d-3247d2682c2e",
+  "contract_name": "Test2",
+  "contract_type": "DAO",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "Test2",
+    "contract_type": "DAO",
+    "description": "Any DAO example on cadence",
+    "network": "testnet",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T03:26:41.718593",
+  "result": {
+    "submission_id": "92884f1a-67c6-43a9-a309-96ff1e950c58",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/3f770529-b3e0-4ca1-bb39-7b98e88eada7",
+    "generation_time": 0.01593804359436035
+  },
+  "files_generated": {
+    "contract": "contracts/Test2.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}
