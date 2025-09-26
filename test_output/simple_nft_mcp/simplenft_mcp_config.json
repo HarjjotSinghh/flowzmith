@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "simplenft_mcp": {
+      "command": "python",
+      "args": [
+        "simplenft_mcp_server.py"
+      ],
+      "env": {
+        "CONTRACT_ADDRESS": "0x1234567890abcdef",
+        "NETWORK": "testnet"
+      }
+    }
+  }
+}

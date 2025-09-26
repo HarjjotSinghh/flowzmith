@@ -537,5 +537,71 @@ def generate_from_context(
     asyncio.run(_run())
 
 
+@app.command()
+def mcp_explorer():
+    """Use MCP server to explore Flow blockchain."""
+    logger.info("Running mcp_explorer command")
+    console.print("🔍 Flow Blockchain Explorer (MCP)", style="bold blue")
+    console.print("This command uses the MCP server to interact with Flow blockchain.", style="dim")
+
+    # Import and use MCP client
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+
+        async def explore_flow():
+            console.print("Connecting to MCP server...", style="blue")
+            client = MCPFlowClient()
+            await client.connect()
+
+            try:
+                # List accounts
+                console.print("\n📋 Available Accounts:", style="cyan")
+                accounts = await client.list_accounts()
+                typer.echo(json.dumps(accounts, indent=2))
+
+                # Interactive menu
+                while True:
+                    console.print("\n🔧 Available Actions:", style="cyan")
+                    console.print("1. View Account Details")
+                    console.print("2. View Contract")
+                    console.print("3. View Transaction")
+                    console.print("4. List Recent Transactions")
+                    console.print("5. Exit")
+
+                    choice = typer.prompt("Select action (1-5)", type=int)
+
+                    if choice == 1:
+                        address = typer.prompt("Enter account address")
+                        result = await client.view_account(address)
+                        typer.echo(json.dumps(result, indent=2))
+                    elif choice == 2:
+                        address = typer.prompt("Enter contract address")
+                        name = typer.prompt("Enter contract name")
+                        result = await client.view_contract(address, name)
+                        typer.echo(json.dumps(result, indent=2))
+                    elif choice == 3:
+                        tx_id = typer.prompt("Enter transaction ID")
+                        result = await client.view_transaction(tx_id)
+                        typer.echo(json.dumps(result, indent=2))
+                    elif choice == 4:
+                        address = typer.prompt("Enter address (optional, press Enter to skip)", default="")
+                        result = await client.list_transactions(address if address else None)
+                        typer.echo(json.dumps(result, indent=2))
+                    elif choice == 5:
+                        break
+                    else:
+                        console.print("Invalid choice. Please try again.", style="red")
+
+            finally:
+                await client.disconnect()
+
+        asyncio.run(explore_flow())
+
+    except ImportError as e:
+        console.print(f"❌ MCP client not available: {e}", style="red")
+        console.print("Please install MCP dependencies: pip install -r flow_mcp/requirements.txt", style="yellow")
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()

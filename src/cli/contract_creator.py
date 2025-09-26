@@ -25,6 +25,7 @@ from .api_client import APIClient
 from .file_generators import FlowFileGenerator
 from ..models.database import get_db
 from ..models.generated_contract import GeneratedContract, ContractType, NetworkType, GenerationMethod
+from ..mcp_generator.mcp_server_generator import MCPServerGenerator
 
 console = Console()
 
@@ -961,6 +962,10 @@ pub contract {requirements['contract_name']} {{
         if result.get("status") == "success" and contract_data.get("generate_flow_project"):
             await self._handle_flow_project_output(result, requirements)
 
+        # Generate MCP server for the contract
+        if result.get("status") == "success":
+            await self._generate_mcp_server(result, requirements, contract_content)
+
         return result
 
     async def _submit_with_progress(self, contract_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -1465,3 +1470,55 @@ For more information about Flow and Cadence development, visit:
         except Exception as e:
             console.print(f"❌ Failed to save contract to database: {e}", style="red")
             # Don't raise the exception to avoid breaking the main flow
+
+    async def _generate_mcp_server(self, result: Dict[str, Any], requirements: Dict[str, Any], contract_content: str) -> None:
+        """Generate MCP server for the contract."""
+        try:
+            console.print("\n🔧 Generating MCP server...", style="blue")
+            
+            # Get the project directory from the result
+            project_id = result.get("project_id", "unknown")
+            project_dir = Path("/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm/flow_projects") / project_id
+            
+            # Find the contract file
+            contract_file = None
+            if project_dir.exists():
+                # Look for .cdc files in the contracts directory
+                contracts_dir = project_dir / "contracts"
+                if contracts_dir.exists():
+                    cdc_files = list(contracts_dir.glob("*.cdc"))
+                    if cdc_files:
+                        contract_file = cdc_files[0]  # Use the first .cdc file found
+            
+            if not contract_file or not contract_file.exists():
+                # Fallback: create a temporary contract file
+                contract_file = project_dir / "Contract.cdc"
+                contract_file.parent.mkdir(parents=True, exist_ok=True)
+                contract_file.write_text(contract_content)
+            
+            # Initialize MCP generator
+            mcp_generator = MCPServerGenerator()
+            
+            # Generate MCP server files
+            mcp_output_dir = project_dir / "mcp_server"
+            mcp_output_dir.mkdir(exist_ok=True)
+            
+            # Generate the MCP server
+            await mcp_generator.generate_mcp_server(
+                contract_file=str(contract_file),
+                output_dir=str(mcp_output_dir),
+                contract_name=requirements.get("contract_name", "Contract"),
+                contract_address=requirements.get("contract_address", "0x01"),
+                network=requirements.get("network", "testnet")
+            )
+            
+            console.print(f"✅ MCP server generated at: {mcp_output_dir}", style="green")
+            console.print("📁 Generated files:", style="cyan")
+            console.print(f"   • {mcp_output_dir / 'mcp_server.py'}", style="dim")
+            console.print(f"   • {mcp_output_dir / 'mcp_client.py'}", style="dim")
+            console.print(f"   • {mcp_output_dir / 'config.json'}", style="dim")
+            console.print(f"   • {mcp_output_dir / 'README.md'}", style="dim")
+            
+        except Exception as e:
+            console.print(f"⚠️  Failed to generate MCP server: {e}", style="yellow")
+            console.print("Contract generation completed successfully, but MCP server generation failed.", style="dim")
