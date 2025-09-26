@@ -28,6 +28,8 @@ class GroqProvider(LLMProvider):
             raise ImportError("Groq package not installed. Install with: pip install groq")
 
         self.client = Groq(api_key=api_key)
+        # Explicitly set provider type for downstream streaming wrappers and logging
+        self.provider_type = LLMProviderType.GROQ
 
     def validate_credentials(self) -> bool:
         """Validate Groq API credentials."""

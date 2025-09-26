@@ -778,14 +778,25 @@ async def generate_contract_with_context_streaming(
         )
         db.add(submission)
         db.commit()
+        # Ensure attributes are loaded and available post-commit
+        db.refresh(submission)
 
-        async def generate_stream():
+        async def generate_stream(): 
             """Stream the contract generation process."""
             from ..services.streaming_llm_provider import StreamingProgressTracker
+            from ..models.database import SessionLocal
+            import json
+
+            # Create a dedicated DB session for streaming lifecycle
+            stream_db = SessionLocal()
+            # Attach submission to the streaming session to avoid detached instance issues
+            submission_stream = stream_db.merge(submission)
+            # Use a dedicated LLMService bound to the streaming session
+            llm_service_stream = LLMService(stream_db)
             
             # Create progress tracker
             progress_tracker = StreamingProgressTracker(
-                total_phases=3,  # generating_contract, generating_config, saving_files
+                total_steps=100,
                 description="Generating smart contract"
             )
             
@@ -794,8 +805,8 @@ async def generate_contract_with_context_streaming(
                 contract_content = ""
                 config_content = None
                 
-                async for chunk in llm_service.generate_contract_with_external_context_streaming(
-                    submission,
+                async for chunk in llm_service_stream.generate_contract_with_external_context_streaming(
+                    submission_stream,
                     external_context=request.context or "",
                     progress_tracker=progress_tracker
                 ):
@@ -818,8 +829,8 @@ async def generate_contract_with_context_streaming(
                 # Save files locally
                 saved_locally = False
                 try:
-                    flow_service = FlowService(db)
-                    project_path = flow_service.create_project_structure(str(submission.id))
+                    flow_service = FlowService(stream_db)
+                    project_path = flow_service.create_project_structure(str(submission_stream.id))
                     flow_service.save_contract_files(
                         project_path,
                         contract_content,
@@ -830,7 +841,7 @@ async def generate_contract_with_context_streaming(
                     # Fallback manual save if Flow CLI is unavailable
                     try:
                         settings = _get_settings()
-                        proj = Path(settings.flow_projects_path) / str(submission.id)
+                        proj = _Path(settings.flow_projects_path) / str(submission_stream.id)
                         (proj / "contracts").mkdir(parents=True, exist_ok=True)
                         (proj / "transactions").mkdir(exist_ok=True)
                         (proj / "scripts").mkdir(exist_ok=True)
@@ -847,7 +858,7 @@ async def generate_contract_with_context_streaming(
                 
                 # Send final status
                 final_status = {
-                    "submission_id": str(submission.id),
+                    "submission_id": str(submission_stream.id),
                     "saved_locally": saved_locally,
                     "status": "completed"
                 }
@@ -858,6 +869,10 @@ async def generate_contract_with_context_streaming(
                 yield f"\n<!-- ERROR:{error_msg} -->\n"
                 raise
             finally:
+                try:
+                    stream_db.close()
+                except Exception:
+                    pass
                 progress_tracker.close()
 
         return StreamingResponse(

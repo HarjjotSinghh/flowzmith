@@ -13,6 +13,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 from src.api import router, websocket_router, knowledge_base_router
 from src.api.middleware import (

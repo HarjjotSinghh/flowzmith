@@ -9,13 +9,18 @@ Provides step-by-step guided workflows for contract submission, deployment, and 
 import os
 import sys
 import asyncio
+import json
 from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
+
+# Load .env file
+load_dotenv()
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -454,40 +459,61 @@ def generate_from_context(
         async with APIClient() as client:
             try:
                 if stream:
-                    # Use streaming mode with progress bar
+                    # Use streaming mode with live output
                     console.print("🔄 Starting contract generation with streaming...", style="blue")
                     
-                    contract_content = []
+                    streamed_text = ""
                     config_content = None
                     
-                    async for chunk in client.generate_contract_with_context_streaming(payload):
+                    async for chunk in client.stream_generate_contract_with_context(payload):
                         if chunk.get("type") == "content":
-                            content = chunk.get("data", "")
-                            contract_content.append(content)
-                            # Print the streamed content in real-time
-                            typer.echo(content, nl=False)
-                        elif chunk.get("type") == "config":
-                            config_content = chunk.get("data", {})
+                            content = chunk.get("chunk", "")
+                            streamed_text += content
+                            # Print streamed content in real-time
+                            sys.stdout.write(content)
+                            sys.stdout.flush()
+                            # Try to extract config if markers present
+                            if config_content is None and "<!-- CONFIG_START -->" in streamed_text and "<!-- CONFIG_END -->" in streamed_text:
+                                start = streamed_text.find("<!-- CONFIG_START -->") + len("<!-- CONFIG_START -->")
+                                end = streamed_text.find("<!-- CONFIG_END -->")
+                                if start > 0 and end > start:
+                                    config_content = streamed_text[start:end].strip()
                         elif chunk.get("type") == "error":
-                            error_msg = chunk.get("data", "Unknown error")
+                            error_msg = chunk.get("error", "Unknown error")
                             typer.secho(f"\n❌ Generation failed: {error_msg}", fg=typer.colors.RED)
                             return
                         elif chunk.get("type") == "status":
-                            status_msg = chunk.get("data", "")
-                            if status_msg:
-                                console.print(f"\n✅ {status_msg}", style="green")
+                            status_data = chunk.get("data", {})
+                            stage = status_data.get("stage")
+                            if stage:
+                                console.print(f"\n✅ {stage}", style="green")
+                        elif chunk.get("type") == "progress":
+                            progress_data = chunk.get("data", {})
+                            msg = progress_data.get("message")
+                            if msg:
+                                console.print(f"⚡ {msg}", style="cyan")
+                        elif chunk.get("type") == "complete":
+                            # Completed - break loop
+                            pass
                     
                     # Print final results
                     typer.secho("\n\n=== Generated flow.json ===\n", fg=typer.colors.GREEN)
                     try:
-                        typer.echo(json.dumps(config_content, indent=2))
+                        if config_content:
+                            # If config is JSON, pretty print; otherwise print raw
+                            try:
+                                typer.echo(json.dumps(json.loads(config_content), indent=2))
+                            except Exception:
+                                typer.echo(config_content)
+                        else:
+                            typer.echo("No configuration data detected in stream.")
                     except Exception:
                         typer.echo(str(config_content))
                     
                     typer.secho("\n✅ Contract generation completed successfully!", fg=typer.colors.GREEN)
                     
                 else:
-                    # Use non-streaming mode with progress bar
+                    # Use non-streaming mode
                     result = await client.generate_contract_with_context(payload)
                     
                     # Pretty print outputs

@@ -15,6 +15,8 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(self, api_key: str, model: str = "gpt-4"):
         super().__init__(api_key, model)
+        # Explicitly set provider type for downstream streaming wrappers and logging
+        self.provider_type = LLMProviderType.OPENAI
         openai.api_key = api_key
         self.client = openai.OpenAI(api_key=api_key)
 

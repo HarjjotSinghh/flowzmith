@@ -6,6 +6,11 @@ from typing import Dict, Any, Optional, List, AsyncGenerator
 import logging
 from enum import Enum
 from sqlalchemy.orm import Session
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
 
 from .llm_provider import (
     LLMProviderFactory,
@@ -25,6 +30,8 @@ from ..models import (
     PatternType
 )
 from ..config import get_settings
+from .openai_provider import OpenAIProvider  # ensure provider registration
+from .groq_provider import GroqProvider  # ensure provider registration
 
 logger = logging.getLogger(__name__)
 
@@ -36,47 +43,126 @@ class LLMService:
         self.db_session = db_session
         self.settings = get_settings()
         self.prompt_manager = PromptTemplateManager()
-        self._initialize_providers()
-        self.streaming_service = StreamingLLMService(self.providers)
-
-    def _initialize_providers(self):
-        """Initialize configured LLM providers."""
         self.providers: Dict[LLMProviderType, Any] = {}
 
+        openai_api_key = self._clean(os.getenv('OPENAI_API_KEY'))
+        groq_api_key = self._clean(os.getenv('GROQ_API_KEY'))
+
+        # Persist cleaned values back to settings
+        self.settings.openai_api_key = openai_api_key
+        self.settings.groq_api_key = groq_api_key
+
         # Initialize OpenAI provider if configured
-        if self.settings.openai_api_key:
+        if openai_api_key:
             try:
                 self.providers[LLMProviderType.OPENAI] = LLMProviderFactory.create_provider(
                     LLMProviderType.OPENAI,
-                    self.settings.openai_api_key,
-                    self.settings.openai_model
+                    openai_api_key,
+                    os.getenv('OPENAI_MODEL') or "gpt-4"
                 )
                 logger.info("OpenAI provider initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize OpenAI provider: {e}")
 
         # Initialize Groq provider if configured
-        if self.settings.groq_api_key:
-            try:
+        if groq_api_key:
+            try:    
                 self.providers[LLMProviderType.GROQ] = LLMProviderFactory.create_provider(
                     LLMProviderType.GROQ,
-                    self.settings.groq_api_key,
-                    self.settings.groq_model
+                    groq_api_key,
+                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-maverick-17b-128e-instruct"
                 )
                 logger.info("Groq provider initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize Groq provider: {e}")
 
-        if not self.providers:
+        if not openai_api_key and not groq_api_key:
             raise ValueError("No LLM providers configured. Please configure at least one provider.")
+        # Ensure providers actually initialized; fail fast with clear message if none
+        if not self.providers:
+            raise ValueError("No LLM providers initialized successfully. Check your API keys and provider configuration.")
+        self.streaming_service = StreamingLLMService(self.providers)
+
+    def _clean(self, val: Optional[str]) -> Optional[str]:
+            return val.strip().strip('\'"') if isinstance(val, str) else val
+
+    def _initialize_providers(self):
+        """Initialize configured LLM providers."""
+        self.providers: Dict[LLMProviderType, Any] = {}
+
+        # Read from pydantic settings (which loads .env), not raw os.environ
+        def _clean(val: Optional[str]) -> Optional[str]:
+            return val.strip().strip('\'"') if isinstance(val, str) else val
+
+        openai_api_key = _clean(os.getenv('OPENAI_API_KEY'))
+        groq_api_key = _clean(os.getenv('GROQ_API_KEY'))
+
+        # Persist cleaned values back to settings
+        self.settings.openai_api_key = openai_api_key
+        self.settings.groq_api_key = groq_api_key
+
+        # Initialize OpenAI provider if configured
+        if openai_api_key:
+            try:
+                self.providers[LLMProviderType.OPENAI] = LLMProviderFactory.create_provider(
+                    LLMProviderType.OPENAI,
+                    openai_api_key,
+                    os.getenv('OPENAI_MODEL') or "gpt-4"
+                )
+                logger.info("OpenAI provider initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize OpenAI provider: {e}")
+
+        # Initialize Groq provider if configured
+        if groq_api_key:
+            try:    
+                self.providers[LLMProviderType.GROQ] = LLMProviderFactory.create_provider(
+                    LLMProviderType.GROQ,
+                    groq_api_key,
+                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-maverick-17b-128e-instruct"
+                )
+                logger.info("Groq provider initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize Groq provider: {e}")
+
+        if not openai_api_key and not groq_api_key:
+            raise ValueError("No LLM providers configured. Please configure at least one provider.")
+        # # If API keys were provided but initialization failed, ensure we fail clearly here
+        # if not :
+        #     raise ValueError("No LLM providers initialized successfully. Check your API keys and provider configuration.")
 
     def get_preferred_provider(self) -> LLMProviderType:
         """Get the preferred LLM provider."""
-        if self.settings.preferred_provider in self.providers:
-            return self.settings.preferred_provider
+        # Try explicit preferred provider from env
+        preferred_provider = os.getenv('PREFERRED_PROVIDER')
+        if preferred_provider:
+            try:
+                preferred_enum = LLMProviderType[preferred_provider.upper()]
+                if preferred_enum in self.providers:
+                    return preferred_enum
+                else:
+                    logger.warning(f"Preferred provider '{preferred_provider}' not initialized; falling back.")
+            except Exception:
+                logger.warning(f"Invalid PREFERRED_PROVIDER value: {preferred_provider}; falling back.")
 
-        # Fall back to first available provider
-        return list(self.providers.keys())[0]
+        # Try default LLM provider fallback
+        default_llm_provider = os.getenv('DEFAULT_LLM_PROVIDER')
+        if default_llm_provider:
+            try:
+                default_enum = LLMProviderType[default_llm_provider.upper()]
+                if default_enum in self.providers:
+                    return default_enum
+                else:
+                    logger.warning(f"Default LLM provider '{default_llm_provider}' not initialized; falling back.")
+            except Exception:
+                logger.warning(f"Invalid DEFAULT_LLM_PROVIDER value: {default_llm_provider}; falling back.")
+
+        # Fall back to first available provider if any
+        if self.providers:
+            return next(iter(self.providers.keys()))
+
+        # No providers available
+        raise ValueError("No LLM providers are available. Please configure at least one provider.")
 
     async def generate_contract_from_submission(
         self,
@@ -84,7 +170,8 @@ class LLMService:
     ) -> GeneratedConfiguration:
         """Generate contract and configuration from a submission."""
         try:
-            provider = self.providers[self.get_preferred_provider()]
+            provider_type = self.get_preferred_provider()
+            provider = self.providers[provider_type]
 
             # Format the prompt based on input type
             if submission.input_type.value == "NATURAL_LANGUAGE":
@@ -134,7 +221,7 @@ class LLMService:
             self.db_session.commit()
 
             # Log the generation
-            logger.info(f"Generated contract for submission {submission.id} using {provider.provider.value}")
+            logger.info(f"Generated contract for submission {submission.id} using {provider_type.value}")
 
             return generated_config
 
@@ -181,8 +268,9 @@ class LLMService:
             self.db_session.add(generated_config)
             self.db_session.commit()
 
+            # Log the generation
             logger.info(
-                f"Generated contract (with external context) for submission {submission.id} using {provider.provider.value}"
+                f"Generated contract (with external context) for submission {submission.id} using {provider_type.value}"
             )
 
             return generated_config

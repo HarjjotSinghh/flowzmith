@@ -20,7 +20,7 @@ sentence-transformers>=2.2.0
 numpy<2.0.0
 
 # Blockchain & Flow
-flow-cli  # To be installed via Flow's official method
+# flow-cli  # To be installed via Flow's official method
 
 # Async Processing & Queueing
 celery==5.3.4
@@ -51,7 +51,7 @@ structlog==23.2.0
 prometheus-client==0.19.0
 
 # Utilities
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 click==8.1.7
 typer[all]>=0.9.0
 rich==13.7.0

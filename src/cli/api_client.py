@@ -13,6 +13,9 @@ from datetime import datetime
 import uuid
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from ..config import get_settings
 
 import logging
@@ -288,10 +291,11 @@ class APIClient:
         if len(preview) > 80:
             preview = preview[:77] + "..."
         logger.info("Generating contract with context: requirements_preview=%s, has_context=%s", preview, bool(generation_request.get("context")))
-        return await self.post("/api/v1/contracts/generate-with-context", json=generation_request)
+        # Pass a synthetic user identifier to satisfy API route requirements
+        return await self.post("/api/v1/contracts/generate-with-context", json=generation_request, params={"user_id": self._get_system_address()})
 
     async def generate_contract_with_context_streaming(self, generation_request: Dict[str, Any], callback: Callable[[str], None]) -> Dict[str, Any]:
-        """Generate contract with streaming response."""
+        """Generate contract with streaming response (WebSocket-based - legacy)."""
         preview = str(generation_request.get("requirements", ""))
         if len(preview) > 80:
             preview = preview[:77] + "..."
@@ -342,3 +346,75 @@ class APIClient:
             raise Exception("Streaming timeout")
         
         return result
+
+    async def stream_generate_contract_with_context(self, generation_request: Dict[str, Any]):
+        """HTTP streaming generator for contract generation using SSE-like text chunks.
+        Yields event dictionaries with keys: type ('content'|'status'|'progress'|'complete'|'error').
+        """
+        preview = str(generation_request.get("requirements", ""))
+        if len(preview) > 80:
+            preview = preview[:77] + "..."
+        logger.info("HTTP streaming contract generation: requirements_preview=%s, has_context=%s", preview, bool(generation_request.get("context")))
+
+        url = f"{self.base_url}/api/v1/contracts/generate-with-context/streaming"
+        params = {"user_id": self._get_system_address()}
+        headers = {"Accept": "text/event-stream"}
+
+        async with self.session.post(url, json=generation_request, params=params, headers=headers) as resp:
+            status = resp.status
+            if status >= 400:
+                # Try to read error body
+                try:
+                    err_text = await resp.text()
+                except Exception:
+                    err_text = f"HTTP {status}"
+                logger.error("Streaming API error: %s", err_text)
+                yield {"type": "error", "error": f"API Error {status}: {err_text}"}
+                return
+
+            # Stream content
+            async for raw_chunk in resp.content.iter_any():
+                try:
+                    chunk = raw_chunk.decode("utf-8", errors="ignore")
+                except Exception:
+                    chunk = str(raw_chunk)
+
+                if not chunk:
+                    continue
+
+                # Detect special markers for config and final status
+                if "<!-- CONFIG_START -->" in chunk and "<!-- CONFIG_END -->" in chunk:
+                    # Configuration block present
+                    start = chunk.find("<!-- CONFIG_START -->") + len("<!-- CONFIG_START -->")
+                    end = chunk.find("<!-- CONFIG_END -->")
+                    config_json = chunk[start:end].strip()
+                    # Emit a status update
+                    yield {"type": "status", "data": {"stage": "Configuration generated"}}
+                    # Also emit a progress message
+                    yield {"type": "progress", "data": {"message": "Validated generation configuration"}}
+                    # Do not emit config markers/content as regular content
+                    continue
+
+                if "<!-- FINAL_STATUS:" in chunk:
+                    try:
+                        marker_start = chunk.find("<!-- FINAL_STATUS:") + len("<!-- FINAL_STATUS:")
+                        marker_end = chunk.find("-->", marker_start)
+                        final_json = chunk[marker_start:marker_end]
+                        final_data = json.loads(final_json)
+                    except Exception:
+                        final_data = {"status": "completed"}
+                    yield {"type": "complete", "data": final_data}
+                    return
+
+                if "<!-- ERROR:" in chunk:
+                    try:
+                        marker_start = chunk.find("<!-- ERROR:") + len("<!-- ERROR:")
+                        marker_end = chunk.find("-->", marker_start)
+                        err_msg = chunk[marker_start:marker_end]
+                    except Exception:
+                        err_msg = "Streaming error"
+                    yield {"type": "error", "error": err_msg}
+                    return
+
+                # Regular content chunk
+                yield {"type": "content", "chunk": chunk}

@@ -6,6 +6,7 @@ Handles step-by-step contract creation with various input methods.
 
 import os
 import uuid
+import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from datetime import datetime
@@ -472,29 +473,99 @@ pub contract NFTMarketplace {
         prompt = self._build_context_aware_prompt(context_data)
 
         try:
-            # Show progress
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                console=console,
-            ) as progress:
-                task = progress.add_task("Analyzing context...", total=None)
+            # Submit to API for generation
+            # Build plain-text requirements and aggregated context to match server schema
+            req = context_data["requirements"]
+            requirements_text = (
+                f"Name: {req.get('contract_name', '')}\n"
+                f"Type: {req.get('contract_type', '')}\n"
+                f"Description: {req.get('description', '')}\n"
+                f"Network: {req.get('network', '')}\n"
+                f"Account Setup: {req.get('account_setup', '')}\n"
+            )
+            # Include additional details based on type
+            if req.get("contract_type") == "Token" and isinstance(req.get("token_details"), dict):
+                td = req["token_details"]
+                requirements_text += (
+                    "Token Details:\n"
+                    f"  - Initial Supply: {td.get('initial_supply', '')}\n"
+                    f"  - Token Name: {td.get('token_name', '')}\n"
+                    f"  - Token Symbol: {td.get('token_symbol', '')}\n"
+                    f"  - Decimals: {td.get('decimals', '')}\n"
+                    f"  - Vault Type: {td.get('vault_type', '')}\n"
+                )
+            elif req.get("contract_type") == "NFT" and isinstance(req.get("nft_details"), dict):
+                nd = req["nft_details"]
+                requirements_text += (
+                    "NFT Details:\n"
+                    f"  - Collection Name: {nd.get('collection_name', '')}\n"
+                    f"  - Max Supply: {nd.get('max_supply', '')}\n"
+                    f"  - Royalty Fee: {nd.get('royalty_fee', '')}%\n"
+                    f"  - Metadata Storage: {nd.get('metadata_storage', '')}\n"
+                )
+            # Include selected features
+            features = req.get("features", [])
+            if features:
+                requirements_text += "Features:\n" + "\n".join([f"  - {f}" for f in features]) + "\n"
 
-                # Submit to API for generation
-                generation_request = {
-                    "prompt": prompt,
-                    "context_files": context_data["markdown_files"],
-                    "requirements": context_data["requirements"],
-                    "output_format": "flow_project",
-                    "include_flow_json": True
-                }
+            # Aggregate markdown context into a single string
+            context_text_parts = []
+            for i, md in enumerate(context_data.get("markdown_files", [])):
+                fname = md.get("filename", f"context_{i+1}.md")
+                content = md.get("content", "")
+                context_text_parts.append(f"\n### {fname}\n\n{content}\n")
+            context_text = "".join(context_text_parts)
 
-                progress.update(task, description="Generating contract...")
+            generation_request = {
+                "requirements": requirements_text.strip(),
+                "context": context_text,
+                "pre_conditions": req.get("pre_conditions"),
+                "post_conditions": req.get("post_conditions"),
+                "network": req.get("network", "emulator"),
+            }
 
+            # Use streaming generation for real-time output
+            console.print("🔄 Starting real-time contract generation...", style="cyan")
+            
+            generated_content = ""
+            
+            # Stream chunks with real-time display
+            async for chunk in self.api_client.stream_generate_contract_with_context(generation_request):
+                if chunk.get("type") == "content":
+                    content = chunk.get("chunk", "")
+                    generated_content += content
+                    # Write content to stdout in real-time without extra newlines and flush immediately
+                    sys.stdout.write(content)
+                    sys.stdout.flush()
+                elif chunk.get("type") == "status":
+                    status = chunk.get("data", {})
+                    if status.get("stage"):
+                        console.print(f"\n📌 {status['stage']}", style="blue")
+                elif chunk.get("type") == "progress":
+                    progress_data = chunk.get("data", {})
+                    if progress_data.get("message"):
+                        console.print(f"⚡ {progress_data['message']}", style="cyan")
+                elif chunk.get("type") == "complete":
+                    final_data = chunk.get("data", {})
+                    console.print(f"\n✅ Generation complete! Generated {len(generated_content)} characters", style="green")
+                    if final_data.get("submission_id"):
+                        console.print(f"📄 Submission ID: {final_data['submission_id']}", style="dim")
+                    break
+                elif chunk.get("type") == "error":
+                    error_msg = chunk.get("error", "Unknown error")
+                    console.print(f"\n❌ Generation failed: {error_msg}", style="red")
+                    raise Exception(f"Contract generation failed: {error_msg}")
+                
+            return generated_content
+
+        except Exception as e:
+            console.print(f"\n❌ Error during streaming generation: {e}", style="red")
+            console.print("🔄 Falling back to non-streaming generation...", style="yellow")
+            
+            # Fallback to regular generation
+            try:
                 result = await self.api_client.generate_contract_with_context(generation_request)
-
-                progress.update(task, description="Contract generated successfully!")
-
+                
                 if result.get("status") == "success":
                     generated_content = result.get("content", "")
                     console.print(f"✅ Generated contract with {len(generated_content)} characters", style="green")
@@ -502,11 +573,11 @@ pub contract NFTMarketplace {
                 else:
                     console.print(f"❌ Generation failed: {result.get('error', 'Unknown error')}", style="red")
                     raise Exception(f"Contract generation failed: {result.get('error')}")
-
-        except Exception as e:
-            console.print(f"❌ Error during generation: {e}", style="red")
-            # Fallback to basic generation
-            return await self._fallback_generation(context_data["requirements"])
+                    
+            except Exception as fallback_e:
+                console.print(f"❌ Fallback generation also failed: {fallback_e}", style="red")
+                # Final fallback to basic generation
+                return await self._fallback_generation(context_data["requirements"])
 
     def _build_context_aware_prompt(self, context_data: Dict[str, Any]) -> str:
         """Build a context-aware prompt for contract generation."""
@@ -679,7 +750,7 @@ pub contract {requirements['contract_name']} {{
 
     // Collection resource
     pub resource Collection {{
-        pub var ownedNFTs: @{UInt64: NFT}
+        pub var ownedNFTs: @{{UInt64: NFT}}
 
         init() {{
             self.ownedNFTs <- {{}}

@@ -7,63 +7,70 @@ from typing import Optional, List
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from dotenv import load_dotenv
+load_dotenv()
 
 class Settings(BaseSettings):
     """Application settings with environment variable support."""
-
+    print(os.environ)
     # Application Configuration
     app_name: str = "Smart Contract LLM Builder"
     app_version: str = "1.0.0"
-    debug: bool = Field(default=False, env="DEBUG")
-    api_port: int = Field(default=8000, env="API_PORT")
-    log_level: str = Field(default="INFO", env="LOG_LEVEL")
-    host: str = Field(default="0.0.0.0", env="HOST")
-    port: int = Field(default=8000, env="PORT")
+    debug: bool = Field(default_factory=lambda: os.getenv("DEBUG", "false").lower() in ("true", "1", "yes"), env="DEBUG")
+    api_port: int = Field(default_factory=lambda: int(os.getenv("API_PORT", "8000")), env="API_PORT")
+    log_level: str = Field(default_factory=lambda: os.getenv("LOG_LEVEL", "INFO"), env="LOG_LEVEL")
+    host: str = Field(default_factory=lambda: os.getenv("HOST", "0.0.0.0"), env="HOST")
+    port: int = Field(default_factory=lambda: int(os.getenv("PORT", "8000")), env="PORT")
 
     # Database Configuration
     database_url: str = Field(
-        default="sqlite:///./smart_contract_llm.db",
+        default_factory=lambda: os.getenv("DATABASE_URL", "sqlite:///./smart_contract_llm.db"),
         env="DATABASE_URL"
     )
     vector_db_url: str = Field(
-        default="chroma:/tmp/chroma_db",
+        default_factory=lambda: os.getenv("VECTOR_DB_URL", "chroma:/tmp/chroma_db"),
         env="VECTOR_DB_URL"
     )
 
     # LLM Provider Configuration
-    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    groq_api_key: Optional[str] = Field(default=None, env="GROQ_API_KEY")
-    default_llm_provider: str = Field(default="openai", env="DEFAULT_LLM_PROVIDER")
+    openai_api_key: Optional[str] = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY"), env="OPENAI_API_KEY")
+    groq_api_key: Optional[str] = Field(default_factory=lambda: os.getenv("GROQ_API_KEY"), env="GROQ_API_KEY")
+    # Models (were missing before, map from .env)
+    openai_model: Optional[str] = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4"), env="OPENAI_MODEL")
+    groq_model: Optional[str] = Field(default_factory=lambda: os.getenv("GROQ_MODEL", "meta-llama/llama-4-maverick-17b-128e-instruct"), env="GROQ_MODEL")
+    # Preferred/default provider selection
+    preferred_provider: Optional[str] = Field(default_factory=lambda: os.getenv("PREFERRED_PROVIDER"), env="PREFERRED_PROVIDER")
+    default_llm_provider: str = Field(default_factory=lambda: os.getenv("DEFAULT_LLM_PROVIDER", "openai"), env="DEFAULT_LLM_PROVIDER")
 
     # Flow Blockchain Configuration
-    flow_network: str = Field(default="testnet", env="FLOW_NETWORK")
-    flow_account_address: Optional[str] = Field(default=None, env="FLOW_ACCOUNT_ADDRESS")
-    flow_private_key: Optional[str] = Field(default=None, env="FLOW_PRIVATE_KEY")
+    flow_network: str = Field(default_factory=lambda: os.getenv("FLOW_NETWORK", "testnet"), env="FLOW_NETWORK")
+    flow_account_address: Optional[str] = Field(default_factory=lambda: os.getenv("FLOW_ACCOUNT_ADDRESS"), env="FLOW_ACCOUNT_ADDRESS")
+    flow_private_key: Optional[str] = Field(default_factory=lambda: os.getenv("FLOW_PRIVATE_KEY"), env="FLOW_PRIVATE_KEY")
 
     # File Processing
-    max_file_size: int = Field(default=10485760, env="MAX_FILE_SIZE")  # 10MB
-    allowed_file_extensions: List[str] = Field(default=[".cdc", ".sol"])
+    max_file_size: int = Field(default_factory=lambda: int(os.getenv("MAX_FILE_SIZE", "10485760")), env="MAX_FILE_SIZE")  # 10MB
+    allowed_file_extensions: List[str] = Field(default_factory=lambda: os.getenv("ALLOWED_FILE_EXTENSIONS", ".cdc,.sol").split(","), env="ALLOWED_FILE_EXTENSIONS")
 
     # Security & Authentication
-    secret_key: str = Field(default="your-secret-key-change-in-production", env="SECRET_KEY")
+    secret_key: str = Field(default_factory=lambda: os.getenv("SECRET_KEY", "your-secret-key-change-in-production"), env="SECRET_KEY")
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+    access_token_expire_minutes: int = Field(default_factory=lambda: int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")), env="ACCESS_TOKEN_EXPIRE_MINUTES")
 
     # Performance & Scaling
-    max_concurrent_requests: int = Field(default=100, env="MAX_CONCURRENT_REQUESTS")
-    request_timeout: int = Field(default=300, env="REQUEST_TIMEOUT")  # 5 minutes
+    max_concurrent_requests: int = Field(default_factory=lambda: int(os.getenv("MAX_CONCURRENT_REQUESTS", "100")), env="MAX_CONCURRENT_REQUESTS")
+    request_timeout: int = Field(default_factory=lambda: int(os.getenv("REQUEST_TIMEOUT", "300")), env="REQUEST_TIMEOUT")  # 5 minutes
 
     # External Services
-    redis_url: str = Field(default="redis://localhost:6379", env="REDIS_URL")
+    redis_url: str = Field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"), env="REDIS_URL")
 
     # Documentation & Learning
-    enable_analytics: bool = Field(default=True, env="ENABLE_ANALYTICS")
-    data_retention_days: int = Field(default=365, env="DATA_RETENTION_DAYS")
+    enable_analytics: bool = Field(default_factory=lambda: os.getenv("ENABLE_ANALYTICS", "true").lower() in ("true", "1", "yes"), env="ENABLE_ANALYTICS")
+    data_retention_days: int = Field(default_factory=lambda: int(os.getenv("DATA_RETENTION_DAYS", "365")), env="DATA_RETENTION_DAYS")
 
     # File Paths
-    flow_projects_path: str = Field(default="./flow_projects", env="FLOW_PROJECTS_PATH")
-    vector_db_path: str = Field(default="./vector_db", env="VECTOR_DB_PATH")
-    log_path: str = Field(default="./logs", env="LOG_PATH")
+    flow_projects_path: str = Field(default_factory=lambda: os.getenv("FLOW_PROJECTS_PATH", "./flow_projects"), env="FLOW_PROJECTS_PATH")
+    vector_db_path: str = Field(default_factory=lambda: os.getenv("VECTOR_DB_PATH", "./vector_db"), env="VECTOR_DB_PATH")
+    log_path: str = Field(default_factory=lambda: os.getenv("LOG_PATH", "./logs"), env="LOG_PATH")
 
     class Config:
         env_file = ".env"
