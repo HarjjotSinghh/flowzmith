@@ -2,7 +2,7 @@
 Main LLM service for Smart Contract LLM Builder.
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, AsyncGenerator
 import logging
 from enum import Enum
 from sqlalchemy.orm import Session
@@ -12,6 +12,10 @@ from .llm_provider import (
     LLMProviderType,
     PromptTemplateManager,
     LLMResponse
+)
+from .streaming_llm_provider import (
+    StreamingLLMService,
+    StreamingProgressTracker
 )
 from ..models import (
     ContractSubmission,
@@ -33,6 +37,7 @@ class LLMService:
         self.settings = get_settings()
         self.prompt_manager = PromptTemplateManager()
         self._initialize_providers()
+        self.streaming_service = StreamingLLMService(self.providers)
 
     def _initialize_providers(self):
         """Initialize configured LLM providers."""
@@ -184,6 +189,72 @@ class LLMService:
         except Exception as e:
             logger.error(f"Context-based contract generation failed for submission {submission.id}: {e}")
             raise RuntimeError(f"Context-based contract generation failed: {e}")
+
+    async def generate_contract_with_external_context_streaming(
+        self,
+        submission: ContractSubmission,
+        external_context: Optional[str] = None,
+        progress_tracker: Optional[StreamingProgressTracker] = None
+    ) -> AsyncGenerator[str, None]:
+        """Generate contract with external context using streaming."""
+        try:
+            provider_type = self.get_preferred_provider()
+            
+            prompt = self.prompt_manager.format_prompt(
+                "cadence_contract_with_context",
+                requirements=submission.content,
+                external_context=external_context or "",
+                pre_conditions=submission.pre_conditions or {},
+                post_conditions=submission.post_conditions or {}
+            )
+            
+            # Update progress for contract generation phase
+            if progress_tracker:
+                progress_tracker.update_phase("generating_contract", 0.0)
+            
+            # Stream the contract generation
+            contract_content = ""
+            async for chunk in self.streaming_service.generate_contract_with_streaming(
+                provider_type=provider_type,
+                prompt=prompt,
+                progress_tracker=progress_tracker
+            ):
+                contract_content += chunk
+                yield chunk
+            
+            # Update progress for configuration generation
+            if progress_tracker:
+                progress_tracker.update_phase("generating_config", 0.0)
+            
+            # Generate configuration (non-streaming for now)
+            config_response = await self._generate_configuration(
+                self.providers[provider_type],
+                contract_content
+            )
+            
+            # Create and save the generated configuration
+            config_data = self._parse_config_response(config_response.content)
+            
+            generated_config = GeneratedConfiguration(
+                submission_id=submission.id,
+                config_content=config_data,
+                generated_contract_code=contract_content,
+                validation_status="PENDING"
+            )
+            
+            self.db_session.add(generated_config)
+            self.db_session.commit()
+            
+            logger.info(
+                f"Generated contract (with external context and streaming) for submission {submission.id} using {provider_type.value}"
+            )
+            
+            # Yield configuration as final chunk
+            yield f"\n\n<!-- CONFIG_START -->{config_response.content}<!-- CONFIG_END -->\n"
+            
+        except Exception as e:
+            logger.error(f"Streaming context-based contract generation failed for submission {submission.id}: {e}")
+            raise RuntimeError(f"Streaming context-based contract generation failed: {e}")
 
     async def _generate_configuration(
         self,

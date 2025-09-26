@@ -420,7 +420,8 @@ def version():
 def generate_from_context(
     requirements: str = typer.Option(None, help="High-level contract requirements in natural language"),
     context_dir: Path = typer.Option(Path("context"), help="Directory containing .md files to use as context"),
-    network: str = typer.Option("emulator", help="Target network for configuration (emulator|testnet|mainnet)")
+    network: str = typer.Option("emulator", help="Target network for configuration (emulator|testnet|mainnet)"),
+    stream: bool = typer.Option(True, help="Use streaming mode for real-time progress updates")
 ):
     """Generate a Cadence contract using local markdown context and print results."""
 
@@ -452,24 +453,60 @@ def generate_from_context(
         from src.cli.api_client import APIClient
         async with APIClient() as client:
             try:
-                result = await client.generate_contract_with_context(payload)
+                if stream:
+                    # Use streaming mode with progress bar
+                    console.print("🔄 Starting contract generation with streaming...", style="blue")
+                    
+                    contract_content = []
+                    config_content = None
+                    
+                    async for chunk in client.generate_contract_with_context_streaming(payload):
+                        if chunk.get("type") == "content":
+                            content = chunk.get("data", "")
+                            contract_content.append(content)
+                            # Print the streamed content in real-time
+                            typer.echo(content, nl=False)
+                        elif chunk.get("type") == "config":
+                            config_content = chunk.get("data", {})
+                        elif chunk.get("type") == "error":
+                            error_msg = chunk.get("data", "Unknown error")
+                            typer.secho(f"\n❌ Generation failed: {error_msg}", fg=typer.colors.RED)
+                            return
+                        elif chunk.get("type") == "status":
+                            status_msg = chunk.get("data", "")
+                            if status_msg:
+                                console.print(f"\n✅ {status_msg}", style="green")
+                    
+                    # Print final results
+                    typer.secho("\n\n=== Generated flow.json ===\n", fg=typer.colors.GREEN)
+                    try:
+                        typer.echo(json.dumps(config_content, indent=2))
+                    except Exception:
+                        typer.echo(str(config_content))
+                    
+                    typer.secho("\n✅ Contract generation completed successfully!", fg=typer.colors.GREEN)
+                    
+                else:
+                    # Use non-streaming mode with progress bar
+                    result = await client.generate_contract_with_context(payload)
+                    
+                    # Pretty print outputs
+                    typer.secho("\n=== Generated Cadence Contract (.cdc) ===\n", fg=typer.colors.GREEN)
+                    typer.echo(result.get("generated_contract_code", ""))
+
+                    typer.secho("\n=== Generated flow.json ===\n", fg=typer.colors.GREEN)
+                    try:
+                        cfg = result.get("config_content", {})
+                        typer.echo(json.dumps(cfg, indent=2))
+                    except Exception:
+                        typer.echo(str(result.get("config_content")))
+
+                    typer.secho("\nSaved to project ID:", fg=typer.colors.CYAN)
+                    typer.echo(str(result.get("submission_id")))
+                    
             except Exception as e:
                 typer.secho(f"Generation failed: {e}", fg=typer.colors.RED)
                 return
-
-        # Pretty print outputs
-        typer.secho("\n=== Generated Cadence Contract (.cdc) ===\n", fg=typer.colors.GREEN)
-        typer.echo(result.get("generated_contract_code", ""))
-
-        typer.secho("\n=== Generated flow.json ===\n", fg=typer.colors.GREEN)
-        try:
-            cfg = result.get("config_content", {})
-            typer.echo(json.dumps(cfg, indent=2))
-        except Exception:
-            typer.echo(str(result.get("config_content")))
-
-        typer.secho("\nSaved to project ID:", fg=typer.colors.CYAN)
-        typer.echo(str(result.get("submission_id")))
 
     asyncio.run(_run())
 

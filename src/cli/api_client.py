@@ -8,7 +8,7 @@ import json
 import asyncio
 import aiohttp
 import websockets
-from typing import Dict, Any, Optional, List, Callable
+from typing import Dict, Any, Optional, List, Callable, Iterator
 from datetime import datetime
 import uuid
 from pathlib import Path
@@ -289,3 +289,56 @@ class APIClient:
             preview = preview[:77] + "..."
         logger.info("Generating contract with context: requirements_preview=%s, has_context=%s", preview, bool(generation_request.get("context")))
         return await self.post("/api/v1/contracts/generate-with-context", json=generation_request)
+
+    async def generate_contract_with_context_streaming(self, generation_request: Dict[str, Any], callback: Callable[[str], None]) -> Dict[str, Any]:
+        """Generate contract with streaming response."""
+        preview = str(generation_request.get("requirements", ""))
+        if len(preview) > 80:
+            preview = preview[:77] + "..."
+        logger.info("Streaming contract generation: requirements_preview=%s, has_context=%s", preview, bool(generation_request.get("context")))
+        
+        # Connect WebSocket if not already connected
+        if not self.websocket:
+            await self.connect_websocket()
+        
+        # Send streaming generation request
+        await self.send_message({
+            "type": "generate_contract_streaming",
+            "data": generation_request
+        })
+        
+        # Collect streamed chunks
+        result = {"content": "", "config": None, "status": None}
+        
+        async def message_handler(data: Dict[str, Any]):
+            if data.get("type") == "stream_chunk":
+                chunk = data.get("chunk", "")
+                result["content"] += chunk
+                callback(chunk)
+            elif data.get("type") == "stream_config":
+                result["config"] = data.get("config")
+            elif data.get("type") == "stream_complete":
+                result["status"] = data.get("status")
+                result["submission_id"] = data.get("submission_id")
+            elif data.get("type") == "stream_error":
+                raise Exception(data.get("error", "Streaming error"))
+        
+        # Listen for streaming messages with timeout
+        start_time = datetime.now()
+        timeout = 300  # 5 minutes
+        
+        while not result["status"] and (datetime.now() - start_time).total_seconds() < timeout:
+            try:
+                message = await asyncio.wait_for(self.websocket.recv(), timeout=2.0)
+                data = json.loads(message)
+                await message_handler(data)
+            except asyncio.TimeoutError:
+                continue
+            except Exception as e:
+                logger.error("Error in streaming: %s", e)
+                raise
+        
+        if not result["status"]:
+            raise Exception("Streaming timeout")
+        
+        return result

@@ -2,10 +2,11 @@
 API routes for Smart Contract LLM Builder.
 """
 
-from typing import List, Optional
+import asyncio
+from typing import List, Optional, Dict, Any
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request, BackgroundTasks
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 import uuid
 
@@ -716,3 +717,158 @@ async def get_statistics(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Error handler should be added to the main FastAPI app, not the router
+
+# Streaming contract generation endpoint
+@router.post("/contracts/generate-with-context/streaming")
+async def generate_contract_with_context_streaming(
+    request: ContextGenerationRequest,
+    user_id: str,
+    request_ctx: Request = None,
+    db: Session = Depends(get_db)
+):
+    """Generate contract using external markdown context with streaming."""
+    try:
+        # Initialize services
+        user_service = UserService(db)
+        llm_service = LLMService(db)
+
+        # Resolve or create user
+        from ..models import User, PersonaType, ContractSubmission, InputType
+        import uuid as _uuid
+        from ..config import get_settings as _get_settings
+
+        resolved_user = None
+        try:
+            provided_user_uuid = _uuid.UUID(user_id)
+            resolved_user = db.query(User).filter(User.id == provided_user_uuid).first()
+        except Exception:
+            resolved_user = None
+
+        if not resolved_user:
+            client_ip = None
+            try:
+                client_ip = request_ctx.client.host if request_ctx and request_ctx.client else None
+            except Exception:
+                client_ip = None
+
+            if client_ip:
+                synthetic_email = f"ip-{str(client_ip).replace(':', '-') }@local"
+            else:
+                synthetic_email = f"anonymous-{_uuid.uuid4()}@local"
+
+            resolved_user = db.query(User).filter(User.email == synthetic_email).first()
+            if not resolved_user:
+                resolved_user = User(
+                    email=synthetic_email,
+                    persona_type=PersonaType.NON_TECHNICAL,
+                    preferences={"source": "api", "identifier": client_ip},
+                    data_retention_consent=False
+                )
+                db.add(resolved_user)
+                db.commit()
+                db.refresh(resolved_user)
+
+        # Create a submission using NATURAL_LANGUAGE with provided requirements
+        submission = ContractSubmission(
+            user_id=resolved_user.id,
+            input_type=InputType.NATURAL_LANGUAGE,
+            content=request.requirements,
+            pre_conditions=request.pre_conditions,
+            post_conditions=request.post_conditions
+        )
+        db.add(submission)
+        db.commit()
+
+        async def generate_stream():
+            """Stream the contract generation process."""
+            from ..services.streaming_llm_provider import StreamingProgressTracker
+            
+            # Create progress tracker
+            progress_tracker = StreamingProgressTracker(
+                total_phases=3,  # generating_contract, generating_config, saving_files
+                description="Generating smart contract"
+            )
+            
+            try:
+                # Start streaming contract generation
+                contract_content = ""
+                config_content = None
+                
+                async for chunk in llm_service.generate_contract_with_external_context_streaming(
+                    submission,
+                    external_context=request.context or "",
+                    progress_tracker=progress_tracker
+                ):
+                    # Check if this is configuration data
+                    if "<!-- CONFIG_START -->" in chunk:
+                        # Extract config content
+                        config_start = chunk.find("<!-- CONFIG_START -->") + len("<!-- CONFIG_START -->")
+                        config_end = chunk.find("<!-- CONFIG_END -->")
+                        if config_start > 0 and config_end > 0:
+                            config_content = chunk[config_start:config_end]
+                            # Don't send the config markers to the client
+                            continue
+                    
+                    contract_content += chunk
+                    yield chunk
+                
+                # Update progress for file saving
+                progress_tracker.update_phase("saving_files", 0.0)
+                
+                # Save files locally
+                saved_locally = False
+                try:
+                    flow_service = FlowService(db)
+                    project_path = flow_service.create_project_structure(str(submission.id))
+                    flow_service.save_contract_files(
+                        project_path,
+                        contract_content,
+                        json.loads(config_content) if config_content else {}
+                    )
+                    saved_locally = True
+                except Exception:
+                    # Fallback manual save if Flow CLI is unavailable
+                    try:
+                        settings = _get_settings()
+                        proj = Path(settings.flow_projects_path) / str(submission.id)
+                        (proj / "contracts").mkdir(parents=True, exist_ok=True)
+                        (proj / "transactions").mkdir(exist_ok=True)
+                        (proj / "scripts").mkdir(exist_ok=True)
+                        contract_name = "SmartContract"  # Default name
+                        with open(proj / "contracts" / f"{contract_name}.cdc", "w") as f:
+                            f.write(contract_content)
+                        with open(proj / "flow.json", "w") as f:
+                            json.dump(json.loads(config_content) if config_content else {}, f, indent=2)
+                        saved_locally = True
+                    except Exception:
+                        saved_locally = False
+                
+                progress_tracker.update_phase("saving_files", 1.0)
+                
+                # Send final status
+                final_status = {
+                    "submission_id": str(submission.id),
+                    "saved_locally": saved_locally,
+                    "status": "completed"
+                }
+                yield f"\n<!-- FINAL_STATUS:{json.dumps(final_status)} -->\n"
+                
+            except Exception as e:
+                error_msg = f"Error during streaming generation: {str(e)}"
+                yield f"\n<!-- ERROR:{error_msg} -->\n"
+                raise
+            finally:
+                progress_tracker.close()
+
+        return StreamingResponse(
+            generate_stream(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
