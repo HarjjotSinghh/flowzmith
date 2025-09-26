@@ -416,5 +416,63 @@ def version():
     console.print("GitHub: https://github.com/HarjjotSinghh/smart-contract-llm", style="dim")
 
 
+@app.command("generate-from-context")
+def generate_from_context(
+    requirements: str = typer.Option(None, help="High-level contract requirements in natural language"),
+    context_dir: Path = typer.Option(Path("context"), help="Directory containing .md files to use as context"),
+    network: str = typer.Option("emulator", help="Target network for configuration (emulator|testnet|mainnet)")
+):
+    """Generate a Cadence contract using local markdown context and print results."""
+
+    async def _run():
+        # Read all markdown files
+        context_pieces = []
+        if context_dir.exists() and context_dir.is_dir():
+            for p in sorted(context_dir.rglob("*.md")):
+                try:
+                    text = p.read_text(encoding="utf-8", errors="ignore")
+                    header = f"\n### {p.name}\n\n"
+                    context_pieces.append(header + text)
+                except Exception:
+                    pass
+        context_text = "\n\n".join(context_pieces)
+
+        # Prompt for requirements if not provided
+        reqs = requirements or typer.prompt("Describe the contract you want to build")
+
+        payload = {
+            "requirements": reqs,
+            "context": context_text,
+            "pre_conditions": {},
+            "post_conditions": {},
+            "network": network,
+        }
+
+        # Call API and print results
+        from src.cli.api_client import APIClient
+        async with APIClient() as client:
+            try:
+                result = await client.generate_contract_with_context(payload)
+            except Exception as e:
+                typer.secho(f"Generation failed: {e}", fg=typer.colors.RED)
+                return
+
+        # Pretty print outputs
+        typer.secho("\n=== Generated Cadence Contract (.cdc) ===\n", fg=typer.colors.GREEN)
+        typer.echo(result.get("generated_contract_code", ""))
+
+        typer.secho("\n=== Generated flow.json ===\n", fg=typer.colors.GREEN)
+        try:
+            cfg = result.get("config_content", {})
+            typer.echo(json.dumps(cfg, indent=2))
+        except Exception:
+            typer.echo(str(result.get("config_content")))
+
+        typer.secho("\nSaved to project ID:", fg=typer.colors.CYAN)
+        typer.echo(str(result.get("submission_id")))
+
+    asyncio.run(_run())
+
+
 if __name__ == "__main__":
     app()

@@ -228,6 +228,14 @@ class DeleteDataResponse(BaseModel):
 
 
 # Contract Generation Schemas
+class ContextGenerationRequest(BaseModel):
+    requirements: str
+    context: str = ""
+    pre_conditions: Optional[Dict[str, Any]] = {}
+    post_conditions: Optional[Dict[str, Any]] = {}
+    network: str = "emulator"
+
+
 class ContractGenerationRequest(BaseModel):
     description: str
     network: str = "testnet"

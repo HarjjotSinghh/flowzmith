@@ -139,6 +139,36 @@ Return only the Cadence contract code without any explanations.""",
             description="Template for generating Cadence smart contracts"
         )
 
+        # New: Cadence contract generation template with external context
+        self.templates["cadence_contract_with_context"] = PromptTemplate(
+            name="cadence_contract_with_context",
+            template="""You are an expert Cadence smart contract developer for the Flow blockchain.
+
+Use the provided external markdown context to guide the design, APIs, transactions, and scripts:
+
+=== External Context Start ===
+{external_context}
+=== External Context End ===
+
+Now generate a complete Cadence smart contract based on these requirements:
+{requirements}
+
+The contract should:
+1. Strictly follow Cadence best practices and Flow project layout
+2. Include proper error handling and capability/security checks
+3. Be deployable on Flow (testnet/mainnet/emulator)
+4. Include necessary resource definitions, interfaces, and events
+5. Provide example transactions and scripts as comments where relevant
+
+Additional context:
+- Pre-conditions: {pre_conditions}
+- Post-conditions: {post_conditions}
+
+Return only the Cadence contract code without any explanations.""",
+            variables=["requirements", "external_context", "pre_conditions", "post_conditions"],
+            description="Template for generating Cadence contracts using external context"
+        )
+
         # Configuration generation template
         self.templates["flow_config"] = PromptTemplate(
             name="flow_config",

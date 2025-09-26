@@ -280,3 +280,12 @@ class APIClient:
                 callback(data)
 
         await self.listen_messages(message_handler)
+
+    # Context-based Generation Methods
+    async def generate_contract_with_context(self, generation_request: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate contract using markdown context and AI."""
+        preview = str(generation_request.get("requirements", ""))
+        if len(preview) > 80:
+            preview = preview[:77] + "..."
+        logger.info("Generating contract with context: requirements_preview=%s, has_context=%s", preview, bool(generation_request.get("context")))
+        return await self.post("/api/v1/contracts/generate-with-context", json=generation_request)

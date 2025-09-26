@@ -44,7 +44,8 @@ from ..schemas import (
     TransactionApprovalRequest,
     StatisticsResponse,
     HealthResponse,
-    ErrorResponse
+    ErrorResponse,
+    ContextGenerationRequest
 )
 
 # Create main router
@@ -147,24 +148,24 @@ async def update_user_profile(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Contract submission routes
-@router.post("/contracts", response_model=ContractGenerationResponse)
-async def generate_contract(
-    request: ContractGenerationRequest,
+# Context-based contract generation route
+@router.post("/contracts/generate-with-context", response_model=ContractGenerationResponse)
+async def generate_contract_with_context(
+    request: ContextGenerationRequest,
     user_id: str,
     request_ctx: Request = None,
     db: Session = Depends(get_db)
 ):
-    """Generate contract from user input."""
+    """Generate contract using external markdown context and save locally."""
     try:
-        # Create submission
+        # Initialize services (FlowService lazily due to potential CLI absence)
         user_service = UserService(db)
         llm_service = LLMService(db)
-        flow_service = FlowService(db)
 
-        # Resolve or create user if not existing
-        from ..models import User, PersonaType, ContractSubmission
+        # Resolve or create user (similar to /contracts)
+        from ..models import User, PersonaType, ContractSubmission, InputType
         import uuid as _uuid
+        from ..config import get_settings as _get_settings
 
         resolved_user = None
         try:
@@ -173,7 +174,6 @@ async def generate_contract(
         except Exception:
             resolved_user = None
 
-        # If user not found, derive synthetic email from client IP for web/API
         if not resolved_user:
             client_ip = None
             try:
@@ -182,14 +182,11 @@ async def generate_contract(
                 client_ip = None
 
             if client_ip:
-                synthetic_email = f"ip-{str(client_ip).replace(':', '-')}@local"
+                synthetic_email = f"ip-{str(client_ip).replace(':', '-') }@local"
             else:
                 synthetic_email = f"anonymous-{_uuid.uuid4()}@local"
 
-            # Try find by synthetic email
             resolved_user = db.query(User).filter(User.email == synthetic_email).first()
-
-            # Create minimal user if still not found
             if not resolved_user:
                 resolved_user = User(
                     email=synthetic_email,
@@ -201,39 +198,64 @@ async def generate_contract(
                 db.commit()
                 db.refresh(resolved_user)
 
-        # Create contract submission
+        # Create a submission using NATURAL_LANGUAGE with provided requirements
         submission = ContractSubmission(
             user_id=resolved_user.id,
-            input_type=request.input_type,
-            content=request.content,
+            input_type=InputType.NATURAL_LANGUAGE,
+            content=request.requirements,
             pre_conditions=request.pre_conditions,
             post_conditions=request.post_conditions
         )
         db.add(submission)
         db.commit()
 
-        # Generate contract and configuration
-        generated_config = await llm_service.generate_contract_from_submission(submission)
+        # Generate contract with external context
+        generated_config = await llm_service.generate_contract_with_external_context(
+            submission,
+            external_context=request.context or ""
+        )
 
         # Validate configuration
         await llm_service.validate_configuration(generated_config)
 
-        # Deploy if requested
-        deployment_logs = []
-        if request.network != "emulator":
-            deployment_log = await flow_service.deploy_contract(
-                generated_config,
-                network=flow_service.FlowNetwork(request.network)
+        # Save files locally regardless of deployment
+        saved_locally = False
+        try:
+            flow_service = FlowService(db)
+            project_path = flow_service.create_project_structure(str(submission.id))
+            flow_service.save_contract_files(
+                project_path,
+                generated_config.generated_contract_code,
+                generated_config.config_content
             )
-            deployment_logs.append(DeploymentLogResponse.from_orm(deployment_log))
+            saved_locally = True
+        except Exception:
+            # Fallback manual save if Flow CLI is unavailable
+            try:
+                settings = _get_settings()
+                import os, json
+                from pathlib import Path as _Path
+                proj = _Path(settings.flow_projects_path) / str(submission.id)
+                (proj / "contracts").mkdir(parents=True, exist_ok=True)
+                (proj / "transactions").mkdir(exist_ok=True)
+                (proj / "scripts").mkdir(exist_ok=True)
+                contract_name = generated_config.config_content.get("contracts", {}).get("default") or "SmartContract"
+                with open(proj / "contracts" / f"{contract_name}.cdc", "w") as f:
+                    f.write(generated_config.generated_contract_code)
+                with open(proj / "flow.json", "w") as f:
+                    json.dump(generated_config.config_content, f, indent=2)
+                saved_locally = True
+            except Exception:
+                saved_locally = False
 
+        # No deployment here; just return the generation results
         return ContractGenerationResponse(
             submission_id=submission.id,
             config_id=generated_config.id,
             generated_contract_code=generated_config.generated_contract_code,
             config_content=generated_config.config_content,
             validation_status=generated_config.validation_status,
-            deployment_logs=deployment_logs
+            deployment_logs=[]
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -238,6 +238,16 @@ class ContractGenerationResponse(BaseModel):
         from_attributes = True
 
 
+# Add context-based generation request schema
+class ContextGenerationRequest(BaseModel):
+    """Schema for context-based contract generation request."""
+    requirements: str = Field(..., min_length=1)
+    context: Optional[str] = None
+    pre_conditions: Optional[Dict[str, Any]] = None
+    post_conditions: Optional[Dict[str, Any]] = None
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+
+
 class DeploymentRequest(BaseModel):
     """Schema for deployment request."""
     config_id: UUID

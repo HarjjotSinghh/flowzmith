@@ -58,7 +58,8 @@ class ContractCreator:
             ("2", "Upload CADENCE (.cdc) File", "Provide existing Flow contract file"),
             ("3", "Upload Solidity (.sol) File", "Provide Solidity file for conversion"),
             ("4", "Paste Contract Code Directly", "Type or paste contract code"),
-            ("5", "Use Template/Example", "Start from pre-built template")
+            ("5", "Use Template/Example", "Start from pre-built template"),
+            ("6", "Markdown Context + AI Generation", "Provide markdown docs for AI to learn from")
         ]
 
         table = Table(show_header=True, header_style="bold blue")
@@ -73,7 +74,7 @@ class ContractCreator:
 
         choice = Prompt.ask(
             "\nSelect an option",
-            choices=["1", "2", "3", "4", "5"],
+            choices=["1", "2", "3", "4", "5", "6"],
             default="1"
         )
 
@@ -82,7 +83,8 @@ class ContractCreator:
             "2": "cadence_file",
             "3": "solidity_file",
             "4": "direct_code",
-            "5": "template"
+            "5": "template",
+            "6": "markdown_context"
         }
 
         return method_map[choice]
@@ -141,6 +143,8 @@ class ContractCreator:
             return await self._get_direct_code_input()
         elif input_method == "template":
             return await self._get_template_selection()
+        elif input_method == "markdown_context":
+            return await self._get_markdown_context_input()
         else:
             raise Exception(f"Unknown input method: {input_method}")
 
@@ -328,6 +332,423 @@ pub contract NFTMarketplace {
         choice = Prompt.ask("Select template", choices=list(templates.keys()))
         return templates[choice]["code"]
 
+    async def _get_markdown_context_input(self) -> str:
+        """Get contract requirements using markdown context files."""
+        console.print("\n📚 Markdown Context + AI Generation", style="blue")
+        console.print("This mode uses your markdown documentation to generate smart contracts.", style="dim")
+
+        # Step 1: Get markdown files
+        markdown_files = await self._get_markdown_files()
+
+        # Step 2: Get contract requirements
+        contract_requirements = await self._get_enhanced_contract_requirements()
+
+        # Step 3: Combine context and requirements
+        context_data = {
+            "markdown_files": markdown_files,
+            "requirements": contract_requirements,
+            "generation_mode": "markdown_context"
+        }
+
+        return await self._generate_contract_from_context(context_data)
+
+    async def _get_markdown_files(self) -> List[Dict[str, str]]:
+        """Get markdown files for context."""
+        console.print("\n📁 Provide markdown documentation files:", style="blue")
+        console.print("These files will be used as context for AI contract generation.", style="dim")
+
+        files = []
+
+        while True:
+            file_path = Prompt.ask("Enter markdown file path (or leave empty to finish)")
+
+            if not file_path.strip():
+                break
+
+            path = Path(file_path)
+
+            if not path.exists():
+                console.print(f"❌ File not found: {file_path}", style="red")
+                continue
+
+            if not path.suffix.lower() in ['.md', '.markdown']:
+                console.print(f"❌ File must be a markdown file (.md or .markdown)", style="red")
+                continue
+
+            try:
+                content = path.read_text(encoding='utf-8')
+                files.append({
+                    "filename": path.name,
+                    "content": content,
+                    "path": str(path)
+                })
+                console.print(f"✅ Loaded: {path.name} ({len(content)} characters)", style="green")
+            except Exception as e:
+                console.print(f"❌ Error reading file: {e}", style="red")
+
+        if not files:
+            console.print("❌ No markdown files provided. Using default context.", style="yellow")
+            # Load default context files
+            default_context_path = Path(__file__).parent.parent.parent / "context"
+            if default_context_path.exists():
+                for md_file in default_context_path.glob("*.md"):
+                    try:
+                        content = md_file.read_text(encoding='utf-8')
+                        files.append({
+                            "filename": md_file.name,
+                            "content": content,
+                            "path": str(md_file)
+                        })
+                        console.print(f"📄 Added default context: {md_file.name}", style="dim")
+                    except Exception as e:
+                        console.print(f"⚠️  Could not load default context {md_file.name}: {e}", style="yellow")
+
+        return files
+
+    async def _get_enhanced_contract_requirements(self) -> Dict[str, Any]:
+        """Get enhanced contract requirements with Flow-specific details."""
+        console.print("\n🎯 Define your Flow smart contract requirements:", style="blue")
+
+        requirements = {
+            "contract_name": Prompt.ask("Contract name", default="MyFlowContract"),
+            "contract_type": Prompt.ask(
+                "Contract type",
+                choices=["Token", "NFT", "Marketplace", "DAO", "Vesting", "Custom"],
+                default="Token"
+            ),
+            "description": Prompt.ask(
+                "Brief description",
+                default="A Flow blockchain smart contract"
+            ),
+            "network": Prompt.ask(
+                "Target network",
+                choices=["emulator", "testnet", "mainnet"],
+                default="testnet"
+            ),
+            "account_setup": Prompt.ask(
+                "Account setup",
+                choices=["single", "multi", "proxy"],
+                default="single"
+            )
+        }
+
+        # Flow-specific requirements
+        if requirements["contract_type"] == "Token":
+            requirements["token_details"] = {
+                "initial_supply": Prompt.ask("Initial supply", default="1000.0"),
+                "token_name": Prompt.ask("Token name", default="My Token"),
+                "token_symbol": Prompt.ask("Token symbol", default="MTK"),
+                "decimals": Prompt.ask("Decimals", default="8"),
+                "vault_type": Prompt.ask("Vault type", choices=["standard", "custom"], default="standard")
+            }
+        elif requirements["contract_type"] == "NFT":
+            requirements["nft_details"] = {
+                "collection_name": Prompt.ask("Collection name", default="My Collection"),
+                "max_supply": Prompt.ask("Maximum supply (0 for unlimited)", default="0"),
+                "royalty_fee": Prompt.ask("Royalty fee (%)", default="2.5"),
+                "metadata_storage": Prompt.ask("Metadata storage", choices=["onchain", "offchain"], default="onchain")
+            }
+
+        # Additional Flow features
+        console.print("\n🔧 Additional Flow features:", style="cyan")
+        requirements["features"] = []
+
+        if Confirm.ask("Include transaction scripts?"):
+            requirements["features"].append("transaction_scripts")
+
+        if Confirm.ask("Include deployment scripts?"):
+            requirements["features"].append("deployment_scripts")
+
+        if Confirm.ask("Include test cases?"):
+            requirements["features"].append("test_cases")
+
+        return requirements
+
+    async def _generate_contract_from_context(self, context_data: Dict[str, Any]) -> str:
+        """Generate contract from markdown context using AI."""
+        console.print("\n🤖 Generating smart contract from context...", style="blue")
+
+        # Prepare the prompt with context
+        prompt = self._build_context_aware_prompt(context_data)
+
+        try:
+            # Show progress
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=console,
+            ) as progress:
+                task = progress.add_task("Analyzing context...", total=None)
+
+                # Submit to API for generation
+                generation_request = {
+                    "prompt": prompt,
+                    "context_files": context_data["markdown_files"],
+                    "requirements": context_data["requirements"],
+                    "output_format": "flow_project",
+                    "include_flow_json": True
+                }
+
+                progress.update(task, description="Generating contract...")
+
+                result = await self.api_client.generate_contract_with_context(generation_request)
+
+                progress.update(task, description="Contract generated successfully!")
+
+                if result.get("status") == "success":
+                    generated_content = result.get("content", "")
+                    console.print(f"✅ Generated contract with {len(generated_content)} characters", style="green")
+                    return generated_content
+                else:
+                    console.print(f"❌ Generation failed: {result.get('error', 'Unknown error')}", style="red")
+                    raise Exception(f"Contract generation failed: {result.get('error')}")
+
+        except Exception as e:
+            console.print(f"❌ Error during generation: {e}", style="red")
+            # Fallback to basic generation
+            return await self._fallback_generation(context_data["requirements"])
+
+    def _build_context_aware_prompt(self, context_data: Dict[str, Any]) -> str:
+        """Build a context-aware prompt for contract generation."""
+        requirements = context_data["requirements"]
+
+        prompt = f"""Generate a complete Flow blockchain smart contract based on the following context and requirements:
+
+## Contract Requirements:
+- Name: {requirements['contract_name']}
+- Type: {requirements['contract_type']}
+- Description: {requirements['description']}
+- Network: {requirements['network']}
+- Account Setup: {requirements['account_setup']}
+
+## Additional Context Files:
+"""
+
+        # Add markdown context
+        for i, md_file in enumerate(context_data["markdown_files"]):
+            prompt += f"""
+### Context File {i+1}: {md_file['filename']}
+{md_file['content'][:1000]}...  # Truncated for brevity
+"""
+
+        # Add specific requirements
+        if requirements["contract_type"] == "Token" and "token_details" in requirements:
+            details = requirements["token_details"]
+            prompt += f"""
+## Token Details:
+- Initial Supply: {details['initial_supply']}
+- Token Name: {details['token_name']}
+- Token Symbol: {details['token_symbol']}
+- Decimals: {details['decimals']}
+- Vault Type: {details['vault_type']}
+"""
+
+        # Generation instructions
+        prompt += """
+## Generation Requirements:
+1. Generate a complete Cadence (.cdc) smart contract file
+2. Include proper resource definitions, interfaces, and error handling
+3. Follow Flow blockchain best practices
+4. Include comprehensive documentation comments
+5. Make the contract production-ready with proper access controls
+6. Generate a complete flow.json configuration file
+7. Include deployment scripts if requested
+8. Include transaction scripts if requested
+9. Include test cases if requested
+
+## Output Format:
+Provide the complete smart contract code and all necessary configuration files in a structured format that can be directly deployed to the Flow blockchain.
+"""
+
+        return prompt
+
+    async def _fallback_generation(self, requirements: Dict[str, Any]) -> str:
+        """Fallback generation when context-based generation fails."""
+        console.print("🔄 Using fallback generation mode...", style="yellow")
+
+        # Simple template based on requirements
+        if requirements["contract_type"] == "Token":
+            return self._generate_token_contract_template(requirements)
+        elif requirements["contract_type"] == "NFT":
+            return self._generate_nft_contract_template(requirements)
+        else:
+            return self._generate_generic_contract_template(requirements)
+
+    def _generate_token_contract_template(self, requirements: Dict[str, Any]) -> str:
+        """Generate a basic token contract template."""
+        token_details = requirements.get("token_details", {})
+
+        contract = f'''// {requirements['contract_name']} - Generated Smart Contract
+// Contract Type: {requirements['contract_type']}
+// Network: {requirements['network']}
+
+pub contract {requirements['contract_name']} {{
+
+    // Events
+    pub event TokensMinted(amount: UFix64, recipient: Address)
+    pub event TokensTransferred(from: Address, to: Address, amount: UFix64)
+    pub event TokensBurned(amount: UFix64, burner: Address)
+
+    // Contract state
+    pub var totalSupply: UFix64
+    pub let name: String
+    pub let symbol: String
+    pub var decimals: UInt8
+
+    // Vault resource
+    pub resource Vault {{
+        pub var balance: UFix64
+
+        init(balance: UFix64) {{
+            self.balance = balance
+        }}
+
+        pub fun withdraw(amount: UFix64): @Vault {{
+            self.balance = self.balance - amount
+            return <-create Vault(balance: amount)
+        }}
+
+        pub fun deposit(from: @Vault) {{
+            self.balance = self.balance + from.balance
+            destroy from
+        }}
+
+        destroy() {{
+            {requirements['contract_name']}.totalSupply = {requirements['contract_name']}.totalSupply - self.balance
+            emit TokensBurned(amount: self.balance, burner: self.owner?.address!)
+        }}
+    }}
+
+    // Receiver interface
+    pub resource interface Receiver {{
+        pub fun deposit(from: @Vault)
+    }}
+
+    // Provider interface
+    pub resource interface Provider {{
+        pub fun withdraw(amount: UFix64): @Vault
+        pub fun balance: UFix64
+    }}
+
+    // Functions
+    init() {{
+        self.totalSupply = {token_details.get('initial_supply', '1000.0')}
+        self.name = "{token_details.get('token_name', 'My Token')}"
+        self.symbol = "{token_details.get('token_symbol', 'MTK')}"
+        self.decimals = {token_details.get('decimals', '8')}
+
+        // Create initial vault for contract creator
+        let vault <- create Vault(balance: self.totalSupply)
+        self.account.save(<-vault, to: /storage/MainVault)
+        self.account.link<&Vault>(/public/MainVault, target: /storage/MainVault)
+
+        emit TokensMinted(amount: self.totalSupply, recipient: self.account.address)
+    }}
+}}
+'''
+        return contract
+
+    def _generate_nft_contract_template(self, requirements: Dict[str, Any]) -> str:
+        """Generate a basic NFT contract template."""
+        nft_details = requirements.get("nft_details", {})
+
+        contract = f'''// {requirements['contract_name']} - Generated Smart Contract
+// Contract Type: {requirements['contract_type']}
+// Network: {requirements['network']}
+
+pub contract {requirements['contract_name']} {{
+
+    // Events
+    pub event NFTMinted(id: UInt64, metadata: String, recipient: Address)
+    pub event NFTTransferred(from: Address, to: Address, id: UInt64)
+
+    // Contract state
+    pub var totalSupply: UInt64
+    pub let collectionName: String
+
+    // NFT resource
+    pub resource NFT: NFTStandard.NFT {{
+        pub let id: UInt64
+        pub let metadata: String
+
+        init(id: UInt64, metadata: String) {{
+            self.id = id
+            self.metadata = metadata
+        }}
+    }}
+
+    // Collection resource
+    pub resource Collection {{
+        pub var ownedNFTs: @{UInt64: NFT}
+
+        init() {{
+            self.ownedNFTs <- {{}}
+        }}
+
+        pub fun deposit(token: @NFT) {{
+            let id = token.id
+            self.ownedNFTs[id] <-! token
+        }}
+
+        pub fun withdraw(id: UInt64): @NFT {{
+            let token <- self.ownedNFTs.remove(key: id)!
+            return <-token
+        }}
+
+        pub fun getIDs(): [UInt64] {{
+            return self.ownedNFTs.keys
+        }}
+
+        destroy() {{
+            destroy self.ownedNFTs
+        }}
+    }}
+
+    // Public functions
+    pub fun mintNFT(metadata: String): @NFT {{
+        self.totalSupply = self.totalSupply + 1
+        let newNFT <- create NFT(id: self.totalSupply, metadata: metadata)
+        emit NFTMinted(id: self.totalSupply, metadata: metadata, recipient: self.account.address)
+        return <-newNFT
+    }}
+
+    init() {{
+        self.totalSupply = 0
+        self.collectionName = "{nft_details.get('collection_name', 'My Collection')}"
+
+        // Create collection for contract creator
+        self.account.save(<-create Collection(), to: /storage/NFTCollection)
+        self.account.link<&Collection>(/public/NFTCollection, target: /storage/NFTCollection)
+    }}
+}}
+'''
+        return contract
+
+    def _generate_generic_contract_template(self, requirements: Dict[str, Any]) -> str:
+        """Generate a generic contract template."""
+        contract = f'''// {requirements['contract_name']} - Generated Smart Contract
+// Contract Type: {requirements['contract_type']}
+// Network: {requirements['network']}
+
+pub contract {requirements['contract_name']} {{
+
+    // Events
+    pub event ContractInitialized()
+
+    // Contract state
+    pub let contractOwner: Address
+
+    // Resources and functions will be added based on your specific requirements
+    // This is a template that needs to be customized
+
+    init() {{
+        self.contractOwner = self.account.address
+        emit ContractInitialized()
+    }}
+}}
+'''
+        return contract
+
     async def _review_contract(self, requirements: Dict[str, Any], contract_content: str) -> bool:
         """Show contract summary and ask for confirmation."""
         console.print("\n📊 Contract Summary:", style="blue")
@@ -379,6 +800,16 @@ pub contract NFTMarketplace {
         elif requirements["contract_type"] == "NFT" and "nft_details" in requirements:
             contract_data["metadata"]["nft_details"] = requirements["nft_details"]
 
+        # Add Flow project generation requirements
+        if input_method == "markdown_context" or "features" in requirements:
+            contract_data["generate_flow_project"] = True
+            contract_data["flow_config"] = {
+                "network": requirements["network"],
+                "account_setup": requirements.get("account_setup", "single"),
+                "features": requirements.get("features", []),
+                "include_flow_json": True
+            }
+
         # Connect to WebSocket for real-time updates
         try:
             connection_id = await self.api_client.connect_websocket()
@@ -389,6 +820,10 @@ pub contract NFTMarketplace {
 
         # Submit contract with progress tracking
         result = await self._submit_with_progress(contract_data)
+
+        # Handle Flow project output
+        if result.get("status") == "success" and contract_data.get("generate_flow_project"):
+            await self._handle_flow_project_output(result, requirements)
 
         return result
 
@@ -427,3 +862,201 @@ pub contract NFTMarketplace {
                 progress.update(task, description=f"Error: {e}")
                 console.print(f"\n❌ Contract creation failed: {e}", style="red")
                 return {"status": "failed", "error": str(e)}
+
+    async def _handle_flow_project_output(self, result: Dict[str, Any], requirements: Dict[str, Any]) -> None:
+        """Handle and save Flow project output locally."""
+        console.print("\n💾 Saving Flow project files...", style="blue")
+
+        # Create project directory
+        project_name = requirements["contract_name"]
+        base_dir = Path("flow_projects")
+        project_dir = base_dir / project_name
+
+        try:
+            project_dir.mkdir(parents=True, exist_ok=True)
+            console.print(f"📁 Created project directory: {project_dir}", style="green")
+        except Exception as e:
+            console.print(f"❌ Failed to create project directory: {e}", style="red")
+            return
+
+        # Extract and save generated files
+        generated_files = result.get("generated_files", {})
+
+        # Save main contract file
+        if "contract_cdc" in generated_files:
+            contract_file = project_dir / f"{requirements['contract_name']}.cdc"
+            try:
+                contract_file.write_text(generated_files["contract_cdc"], encoding='utf-8')
+                console.print(f"✅ Saved contract: {contract_file}", style="green")
+            except Exception as e:
+                console.print(f"❌ Failed to save contract file: {e}", style="red")
+
+        # Save flow.json
+        if "flow_json" in generated_files:
+            flow_json_file = project_dir / "flow.json"
+            try:
+                import json
+                flow_json_file.write_text(json.dumps(generated_files["flow_json"], indent=2), encoding='utf-8')
+                console.print(f"✅ Saved flow.json: {flow_json_file}", style="green")
+            except Exception as e:
+                console.print(f"❌ Failed to save flow.json: {e}", style="red")
+
+        # Save additional files based on features
+        if "transaction_scripts" in generated_files:
+            tx_dir = project_dir / "transactions"
+            tx_dir.mkdir(exist_ok=True)
+            for script_name, script_content in generated_files["transaction_scripts"].items():
+                script_file = tx_dir / f"{script_name}.cdc"
+                try:
+                    script_file.write_text(script_content, encoding='utf-8')
+                    console.print(f"✅ Saved transaction script: {script_file}", style="green")
+                except Exception as e:
+                    console.print(f"❌ Failed to save transaction script {script_name}: {e}", style="red")
+
+        if "deployment_scripts" in generated_files:
+            deploy_dir = project_dir / "scripts"
+            deploy_dir.mkdir(exist_ok=True)
+            for script_name, script_content in generated_files["deployment_scripts"].items():
+                script_file = deploy_dir / f"{script_name}.cdc"
+                try:
+                    script_file.write_text(script_content, encoding='utf-8')
+                    console.print(f"✅ Saved deployment script: {script_file}", style="green")
+                except Exception as e:
+                    console.print(f"❌ Failed to save deployment script {script_name}: {e}", style="red")
+
+        if "test_cases" in generated_files:
+            test_dir = project_dir / "tests"
+            test_dir.mkdir(exist_ok=True)
+            for test_name, test_content in generated_files["test_cases"].items():
+                test_file = test_dir / f"{test_name}.cdc"
+                try:
+                    test_file.write_text(test_content, encoding='utf-8')
+                    console.print(f"✅ Saved test case: {test_file}", style="green")
+                except Exception as e:
+                    console.print(f"❌ Failed to save test case {test_name}: {e}", style="red")
+
+        # Create README file
+        readme_content = self._generate_readme_content(requirements, generated_files)
+        readme_file = project_dir / "README.md"
+        try:
+            readme_file.write_text(readme_content, encoding='utf-8')
+            console.print(f"✅ Saved README: {readme_file}", style="green")
+        except Exception as e:
+            console.print(f"❌ Failed to save README: {e}", style="red")
+
+        # Display project summary
+        console.print("\n📊 Flow Project Summary:", style="blue")
+        summary_table = Table(show_header=False, box=None)
+        summary_table.add_column("Item", style="cyan")
+        summary_table.add_column("Value", style="white")
+
+        summary_table.add_row("Project Directory", str(project_dir))
+        summary_table.add_row("Contract Name", requirements["contract_name"])
+        summary_table.add_row("Network", requirements["network"])
+        summary_table.add_row("Files Generated", str(len(generated_files)))
+
+        console.print(summary_table)
+
+        # Show next steps
+        console.print("\n🚀 Next Steps:", style="green")
+        console.print("1. Navigate to project directory:", style="white")
+        console.print(f"   cd {project_dir}", style="cyan")
+        console.print("2. Install dependencies:", style="white")
+        console.print("   flow dependencies install", style="cyan")
+        console.print("3. Deploy to network:", style="white")
+        console.print("   flow project deploy", style="cyan")
+
+    def _generate_readme_content(self, requirements: Dict[str, Any], generated_files: Dict[str, Any]) -> str:
+        """Generate README content for the Flow project."""
+        readme = f"""# {requirements['contract_name']}
+
+{requirements['description']}
+
+## Project Overview
+- **Contract Type**: {requirements['contract_type']}
+- **Target Network**: {requirements['network']}
+- **Generated**: Smart Contract LLM Builder CLI
+
+## Project Structure
+```
+{requirements['contract_name']}/
+├── {requirements['contract_name']}.cdc      # Main smart contract
+├── flow.json                              # Flow project configuration
+"""
+
+        if "transaction_scripts" in generated_files:
+            readme += "├── transactions/                          # Transaction scripts\n"
+        if "deployment_scripts" in generated_files:
+            readme += "├── scripts/                               # Deployment scripts\n"
+        if "test_cases" in generated_files:
+            readme += "├── tests/                                 # Test cases\n"
+
+        readme += """└── README.md                              # This file
+```
+
+## Setup Instructions
+
+1. **Install Flow CLI**
+   ```bash
+   sh -ci "$(curl -fsSL https://storage.googleapis.com/flow-cli/install.sh)"
+   ```
+
+2. **Navigate to Project**
+   ```bash
+   cd {requirements['contract_name']}
+   ```
+
+3. **Install Dependencies**
+   ```bash
+   flow dependencies install
+   ```
+
+4. **Start Flow Emulator (for testing)**
+   ```bash
+   flow emulator start
+   ```
+
+5. **Deploy Contract**
+   ```bash
+   flow project deploy
+   ```
+
+## Features"""
+
+        features = requirements.get("features", [])
+        if "transaction_scripts" in features:
+            readme += "\n- ✅ Transaction scripts included"
+        if "deployment_scripts" in features:
+            readme += "\n- ✅ Deployment scripts included"
+        if "test_cases" in features:
+            readme += "\n- ✅ Test cases included"
+
+        readme += """
+
+## Contract Details
+
+This contract was generated using the Smart Contract LLM Builder CLI with markdown context and AI assistance.
+
+### Generated Files:
+"""
+
+        for file_type, content in generated_files.items():
+            if isinstance(content, dict):
+                readme += f"- {file_type.replace('_', ' ').title()}: {len(content)} files\n"
+            else:
+                readme += f"- {file_type.replace('_', ' ').title()}: 1 file\n"
+
+        readme += f"""
+## Network Configuration
+
+- **Target Network**: {requirements['network']}
+- **Account Setup**: {requirements.get('account_setup', 'single')}
+
+## Support
+
+For issues or questions about this generated contract, please refer to the original documentation context used for generation or consult the Flow blockchain documentation.
+
+---
+Generated by Smart Contract LLM Builder CLI
+"""
+        return readme

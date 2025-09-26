@@ -59,6 +59,7 @@ pyyaml==6.0.1
 requests==2.31.0
 asyncio-mqtt==0.13.0
 pytest-mock==3.11.1
+tqdm>=4.67.0
 
 # Knowledge Base & Vector Storage
 chromadb>=0.4.0

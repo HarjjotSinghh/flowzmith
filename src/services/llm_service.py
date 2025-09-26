@@ -137,6 +137,54 @@ class LLMService:
             logger.error(f"Contract generation failed for submission {submission.id}: {e}")
             raise RuntimeError(f"Contract generation failed: {e}")
 
+    async def generate_contract_with_external_context(
+        self,
+        submission: ContractSubmission,
+        external_context: Optional[str] = None
+    ) -> GeneratedConfiguration:
+        """Generate contract and configuration using external markdown context."""
+        try:
+            provider = self.providers[self.get_preferred_provider()]
+
+            prompt = self.prompt_manager.format_prompt(
+                "cadence_contract_with_context",
+                requirements=submission.content,
+                external_context=external_context or "",
+                pre_conditions=submission.pre_conditions or {},
+                post_conditions=submission.post_conditions or {}
+            )
+
+            # Generate the contract code
+            response = await provider.generate_contract(prompt)
+
+            # Generate the flow.json configuration
+            config_response = await self._generate_configuration(
+                provider,
+                response.content
+            )
+
+            # Create and save the generated configuration
+            config_data = self._parse_config_response(config_response.content)
+
+            generated_config = GeneratedConfiguration(
+                submission_id=submission.id,
+                config_content=config_data,
+                generated_contract_code=response.content,
+                validation_status="PENDING"
+            )
+
+            self.db_session.add(generated_config)
+            self.db_session.commit()
+
+            logger.info(
+                f"Generated contract (with external context) for submission {submission.id} using {provider.provider.value}"
+            )
+
+            return generated_config
+        except Exception as e:
+            logger.error(f"Context-based contract generation failed for submission {submission.id}: {e}")
+            raise RuntimeError(f"Context-based contract generation failed: {e}")
+
     async def _generate_configuration(
         self,
         provider: Any,
