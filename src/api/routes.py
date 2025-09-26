@@ -19,6 +19,8 @@ from ..services import (
     LearningService,
     DataControlService
 )
+from ..cli.contract_creator import ContractCreator
+from ..cli.api_client import APIClient
 from ..schemas import (
     UserCreate,
     UserLogin,
@@ -44,10 +46,10 @@ from ..schemas import (
     DeploymentResponse,
     TransactionApprovalRequest,
     StatisticsResponse,
-    HealthResponse,
     ErrorResponse,
     ContextGenerationRequest
 )
+from .schemas import HealthResponse
 
 # Create main router
 router = APIRouter()
@@ -81,7 +83,7 @@ async def health_check(db: Session = Depends(get_db)):
 
         return HealthResponse(
             status="healthy",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.utcnow().isoformat(),
             version="1.0.0",
             database_connected=db_connected,
             llm_providers=llm_providers,
@@ -89,6 +91,117 @@ async def health_check(db: Session = Depends(get_db)):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/contracts/generate-flow-project")
+async def generate_flow_project(
+    contract_data: dict,
+    user_id: str = None,
+    request: Request = None,
+    db: Session = Depends(get_db)
+):
+    """Generate a complete Flow project with contract, transactions, scripts, tests, and flow.json."""
+    try:
+        # Initialize API client and contract creator
+        api_client = APIClient(base_url="http://localhost:8000")
+        contract_creator = ContractCreator(api_client)
+        
+        # Prepare requirements from contract_data
+        requirements = {
+            "name": contract_data.get("contract_name", contract_data.get("name", "Contract")),
+            "type": contract_data.get("contract_type", contract_data.get("type", "custom")),
+            "description": contract_data.get("description", ""),
+            "network": contract_data.get("network", "testnet"),
+            "metadata": contract_data.get("metadata", {})
+        }
+        
+        # Get contract content
+        contract_content = contract_data.get("content", "")
+        input_method = contract_data.get("input_method", "api")
+        
+        # Create a mock result object for file generation
+        result = {
+            "contract_id": str(uuid.uuid4()),
+            "status": "success",
+            "contract_code": contract_content,
+            "message": "Contract generated successfully"
+        }
+        
+        # Generate and save all files using the ContractCreator
+        project_path = await contract_creator._save_contract_to_filesystem(
+            result, requirements, contract_content, input_method
+        )
+        
+        # Save to database as well
+        await contract_creator._save_contract_to_database(
+            result, requirements, contract_content, input_method, 0.0
+        )
+        
+        # Get the generated files information
+        from pathlib import Path
+        project_dir = Path(project_path)
+        
+        # Collect information about generated files
+        generated_files = {
+            "contract": None,
+            "flow_json": None,
+            "transactions": [],
+            "scripts": [],
+            "tests": []
+        }
+        
+        # Check for contract file
+        contracts_dir = project_dir / "contracts"
+        if contracts_dir.exists():
+            for file in contracts_dir.glob("*.cdc"):
+                generated_files["contract"] = str(file.relative_to(project_dir))
+                break
+        
+        # Check for flow.json
+        flow_json = project_dir / "flow.json"
+        if flow_json.exists():
+            generated_files["flow_json"] = "flow.json"
+        
+        # Check for transactions
+        transactions_dir = project_dir / "transactions"
+        if transactions_dir.exists():
+            generated_files["transactions"] = [
+                str(file.relative_to(project_dir)) 
+                for file in transactions_dir.glob("*.cdc")
+            ]
+        
+        # Check for scripts
+        scripts_dir = project_dir / "scripts"
+        if scripts_dir.exists():
+            generated_files["scripts"] = [
+                str(file.relative_to(project_dir)) 
+                for file in scripts_dir.glob("*.cdc")
+            ]
+        
+        # Check for tests
+        tests_dir = project_dir / "tests"
+        if tests_dir.exists():
+            generated_files["tests"] = [
+                str(file.relative_to(project_dir)) 
+                for file in tests_dir.glob("*.cdc")
+            ]
+        
+        return {
+            "status": "success",
+            "message": "Flow project generated successfully",
+            "contract_id": result["contract_id"],
+            "project_path": project_path,
+            "project_directory": project_dir.name,
+            "generated_files": generated_files,
+            "requirements": requirements,
+            "input_method": input_method
+        }
+        
+    except Exception as e:
+        import traceback
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate Flow project: {str(e)}\n{traceback.format_exc()}"
+        )
 
 # User routes
 @router.post("/users", response_model=UserResponse)
@@ -153,7 +266,7 @@ async def update_user_profile(
 @router.post("/contracts/generate-with-context", response_model=ContractGenerationResponse)
 async def generate_contract_with_context(
     request: ContextGenerationRequest,
-    user_id: str,
+    user_id: str = None,
     request_ctx: Request = None,
     db: Session = Depends(get_db)
 ):
@@ -219,19 +332,54 @@ async def generate_contract_with_context(
         # Validate configuration
         await llm_service.validate_configuration(generated_config)
 
-        # Save files locally regardless of deployment
+        # Save files locally using ContractCreator for comprehensive file generation
         saved_locally = False
+        generated_files = {}
         try:
-            flow_service = FlowService(db)
-            project_path = flow_service.create_project_structure(str(submission.id))
-            flow_service.save_contract_files(
-                project_path,
-                generated_config.generated_contract_code,
-                generated_config.config_content
+            # Initialize ContractCreator and APIClient
+            api_client = APIClient()
+            contract_creator = ContractCreator(api_client, db)
+            
+            # Create a mock result object with the generated contract
+            class MockResult:
+                def __init__(self, contract_code, config_content):
+                    self.generated_contract_code = contract_code
+                    self.config_content = config_content
+                    self.generated_files = {
+                        'flow.json': config_content,
+                        'transactions': {},
+                        'scripts': {},
+                        'tests': {}
+                    }
+            
+            mock_result = MockResult(generated_config.generated_contract_code, generated_config.config_content)
+            
+            # Use ContractCreator to save comprehensive project files
+            project_path = contract_creator._save_contract_to_filesystem(
+                mock_result,
+                str(submission.id),
+                request.requirements
             )
+            
+            # Also save to database
+            contract_creator._save_contract_to_database(
+                mock_result,
+                str(submission.id),
+                request.requirements,
+                resolved_user.id
+            )
+            
             saved_locally = True
-        except Exception:
-            # Fallback manual save if Flow CLI is unavailable
+            generated_files = {
+                'project_path': str(project_path),
+                'contract_file': f"{project_path}/contracts/SmartContract.cdc",
+                'flow_json': f"{project_path}/flow.json",
+                'transactions_dir': f"{project_path}/transactions",
+                'scripts_dir': f"{project_path}/scripts",
+                'tests_dir': f"{project_path}/tests"
+            }
+        except Exception as e:
+            # Fallback manual save if ContractCreator fails
             try:
                 settings = _get_settings()
                 import os, json
@@ -246,11 +394,16 @@ async def generate_contract_with_context(
                 with open(proj / "flow.json", "w") as f:
                     json.dump(generated_config.config_content, f, indent=2)
                 saved_locally = True
+                generated_files = {
+                    'project_path': str(proj),
+                    'contract_file': f"{proj}/contracts/{contract_name}.cdc",
+                    'flow_json': f"{proj}/flow.json"
+                }
             except Exception:
                 saved_locally = False
 
         # No deployment here; just return the generation results
-        return ContractGenerationResponse(
+        response = ContractGenerationResponse(
             submission_id=submission.id,
             config_id=generated_config.id,
             generated_contract_code=generated_config.generated_contract_code,
@@ -258,6 +411,15 @@ async def generate_contract_with_context(
             validation_status=generated_config.validation_status,
             deployment_logs=[]
         )
+        
+        # Add generated files information to config_content for client access
+        if saved_locally and generated_files:
+            response.config_content["generated_files"] = generated_files
+            response.config_content["project_saved"] = True
+        else:
+            response.config_content["project_saved"] = False
+            
+        return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -722,7 +884,7 @@ async def get_statistics(db: Session = Depends(get_db)):
 @router.post("/contracts/generate-with-context/streaming")
 async def generate_contract_with_context_streaming(
     request: ContextGenerationRequest,
-    user_id: str,
+    user_id: str = None,
     request_ctx: Request = None,
     db: Session = Depends(get_db)
 ):
@@ -873,7 +1035,7 @@ async def generate_contract_with_context_streaming(
                     stream_db.close()
                 except Exception:
                     pass
-                progress_tracker.close()
+                progress_tracker.complete()
 
         return StreamingResponse(
             generate_stream(),

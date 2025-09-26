@@ -306,6 +306,11 @@ class ErrorResponse(BaseModel):
     details: Optional[Dict[str, Any]] = None
     timestamp: datetime
 
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
 
 class WebSocketMessage(BaseModel):
     """Schema for WebSocket messages."""

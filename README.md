@@ -254,6 +254,12 @@ For production deployment with PostgreSQL:
 
 ## Usage Examples
 
+### This one works (internal notes)
+
+```bash
+python cli.py generate-from-context --stream --requirements "Create a simple NFT contract"
+```
+
 ### Generate and Deploy a Simple NFT Contract
 
 **Via API:**

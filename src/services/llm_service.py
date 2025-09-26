@@ -236,7 +236,8 @@ class LLMService:
     ) -> GeneratedConfiguration:
         """Generate contract and configuration using external markdown context."""
         try:
-            provider = self.providers[self.get_preferred_provider()]
+            provider_type = self.get_preferred_provider()
+            provider = self.providers[provider_type]
 
             prompt = self.prompt_manager.format_prompt(
                 "cadence_contract_with_context",

@@ -43,6 +43,9 @@ Organization/
    ```
 
 ## Features
+- ✅ Transaction scripts included
+- ✅ Deployment scripts included
+- ✅ Test cases included
 
 ## Contract Details
 

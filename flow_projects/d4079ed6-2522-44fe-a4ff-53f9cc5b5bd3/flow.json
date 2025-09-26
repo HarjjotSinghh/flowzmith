@@ -1,0 +1,54 @@
+{
+  "contracts": {
+    "SimpleERC20Token": {
+      "source": "./SimpleERC20Token.cdc",
+      "aliases": {
+        "testnet": "0xFungibleToken",
+        "mainnet": "0xFungibleToken"
+      }
+    },
+    "FungibleToken": {
+      "source": "./FungibleToken.cdc",
+      "aliases": {
+        "testnet": "0xFungibleToken",
+        "mainnet": "0xFungibleToken"
+      }
+    }
+  },
+  "networks": {
+    "testnet": {
+      "host": "access.devnet.nodes.onflow.org",
+      "port": 9000,
+      "protocol": "grpc"
+    },
+    "mainnet": {
+      "host": "access.mainnet.nodes.onflow.org",
+      "port": 9000,
+      "protocol": "grpc"
+    }
+  },
+  "accounts": {
+    "testnet-account": {
+      "address": "0xTestnetAccountAddress",
+      "key": "testnet-account-private-key"
+    },
+    "mainnet-account": {
+      "address": "0xMainnetAccountAddress",
+      "key": "mainnet-account-private-key"
+    }
+  },
+  "deployments": {
+    "testnet": [
+      {
+        "account": "testnet-account",
+        "contract": "SimpleERC20Token"
+      }
+    ],
+    "mainnet": [
+      {
+        "account": "mainnet-account",
+        "contract": "SimpleERC20Token"
+      }
+    ]
+  }
+}

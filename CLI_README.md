@@ -246,4 +246,4 @@ For issues and questions:
 
 ---
 
-**Built with ❤️ using Typer and Rich**
+**Built with ❤️ by [HarjjotSinghh](https://harjot.co) using Typer and Rich**

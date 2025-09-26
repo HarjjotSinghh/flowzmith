@@ -245,8 +245,11 @@ class ContractGenerationRequest(BaseModel):
 
 class ContractGenerationResponse(BaseModel):
     submission_id: UUID
-    status: str
-    estimated_completion_time: Optional[datetime]
+    config_id: UUID
+    generated_contract_code: str
+    config_content: Dict[str, Any]
+    validation_status: str
+    deployment_logs: List[Dict[str, Any]]
 
 
 class DeploymentRequest(BaseModel):
@@ -284,7 +287,8 @@ class ErrorResponse(BaseModel):
     error: str
     message: str
     status_code: int
-    timestamp: datetime
+    timestamp: str
+    details: Optional[Dict[str, Any]] = None
 
 
 # WebSocket Schemas

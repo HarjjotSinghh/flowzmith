@@ -1,0 +1,35 @@
+{
+  "contract_name": "Contract",
+  "contract_type": "generic",
+  "network": "testnet",
+  "input_method": "test",
+  "requirements": {
+    "name": "TestToken",
+    "type": "Token",
+    "description": "A simple test token for testing saving functionality",
+    "network": "testnet",
+    "generate_flow_project": true
+  },
+  "generated_at": "2025-09-27T02:29:35.189704",
+  "result": {
+    "status": "success",
+    "contract": {
+      "name": "TestToken",
+      "code": "\naccess(all) contract TestToken {\n    access(all) var totalSupply: UFix64\n    \n    init() {\n        self.totalSupply = 1000.0\n    }\n    \n    access(all) fun getTotalSupply(): UFix64 {\n        return self.totalSupply\n    }\n}\n"
+    },
+    "flow_project": {
+      "contracts": {
+        "TestToken.cdc": "\naccess(all) contract TestToken {\n    access(all) var totalSupply: UFix64\n    \n    init() {\n        self.totalSupply = 1000.0\n    }\n    \n    access(all) fun getTotalSupply(): UFix64 {\n        return self.totalSupply\n    }\n}\n"
+      },
+      "transactions": {},
+      "scripts": {},
+      "tests": {},
+      "flow_json": {
+        "contracts": {
+          "TestToken": "./contracts/TestToken.cdc"
+        }
+      },
+      "readme": "# TestToken Contract\n\nA simple test token contract."
+    }
+  }
+}

@@ -12,7 +12,6 @@ load_dotenv()
 
 class Settings(BaseSettings):
     """Application settings with environment variable support."""
-    print(os.environ)
     # Application Configuration
     app_name: str = "Smart Contract LLM Builder"
     app_version: str = "1.0.0"

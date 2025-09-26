@@ -122,12 +122,12 @@ class StreamingGroqProvider(StreamingLLMProvider):
             # Estimate total tokens for progress tracking
             estimated_total = len(prompt.split()) * 2  # Rough estimate
             
-            # Create streaming response
+            # Create streaming response with conservative token limits for Groq
             stream = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 temperature=temperature,
-                max_tokens=max_tokens or 4000,
+                max_tokens=max_tokens or 2000,  # Reduced from 4000 to 2000 for Groq API limits
                 top_p=0.9,
                 stream=True
             )

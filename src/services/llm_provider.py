@@ -229,7 +229,64 @@ Provide insights in JSON format with pattern types and confidence scores.""",
         if missing_vars:
             raise ValueError(f"Missing required variables: {missing_vars}")
 
+        # Apply context truncation for templates with external_context
+        if template_name == "cadence_contract_with_context" and "external_context" in kwargs:
+            kwargs["external_context"] = self._truncate_context(kwargs["external_context"])
+
         return template.template.format(**kwargs)
+
+    def _truncate_context(self, context: str, max_chars: int = 15000) -> str:
+        """
+        Truncate external context to fit within API limits while preserving important information.
+        
+        Args:
+            context: The external context string
+            max_chars: Maximum characters to keep (default 15000 for Groq API)
+        
+        Returns:
+            Truncated context string
+        """
+        if len(context) <= max_chars:
+            return context
+        
+        logger.warning(f"Context too large ({len(context)} chars), truncating to {max_chars} chars")
+        
+        # Try to preserve structure by keeping the beginning and important sections
+        lines = context.split('\n')
+        truncated_lines = []
+        current_length = 0
+        
+        # Keep important sections (headers, code blocks, etc.)
+        for line in lines:
+            line_length = len(line) + 1  # +1 for newline
+            
+            # Always keep headers and important markers
+            if (line.strip().startswith('#') or 
+                line.strip().startswith('```') or 
+                line.strip().startswith('## ') or
+                line.strip().startswith('### ') or
+                'contract' in line.lower() or
+                'cadence' in line.lower() or
+                'flow' in line.lower()):
+                if current_length + line_length <= max_chars:
+                    truncated_lines.append(line)
+                    current_length += line_length
+                else:
+                    break
+            # Keep regular lines if we have space
+            elif current_length + line_length <= max_chars:
+                truncated_lines.append(line)
+                current_length += line_length
+            else:
+                break
+        
+        truncated_context = '\n'.join(truncated_lines)
+        
+        # Add truncation notice
+        if len(truncated_context) < len(context):
+            truncated_context += f"\n\n[... Context truncated from {len(context)} to {len(truncated_context)} characters for API limits ...]"
+        
+        return truncated_context
 
     def add_template(self, template: PromptTemplate):
         """Add a custom prompt template."""

@@ -7,6 +7,8 @@ Handles step-by-step contract creation with various input methods.
 import os
 import uuid
 import sys
+import time
+import json
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from datetime import datetime
@@ -20,6 +22,9 @@ from rich.panel import Panel
 from rich.text import Text
 
 from .api_client import APIClient
+from .file_generators import FlowFileGenerator
+from ..models.database import get_db
+from ..models.generated_contract import GeneratedContract, ContractType, NetworkType, GenerationMethod
 
 console = Console()
 
@@ -28,24 +33,39 @@ class ContractCreator:
 
     def __init__(self, api_client: APIClient):
         self.api_client = api_client
+        self.file_generator = FlowFileGenerator()
 
     async def create_contract_interactive(self) -> Dict[str, Any]:
-        """Guide user through interactive contract creation."""
+        """Guide user through interactive contract creation with automatic context loading."""
         console.print("🚀 Smart Contract Creation", style="bold blue")
-        console.print("Let's create your smart contract step by step.", style="dim")
+        console.print("Creating your smart contract with AI assistance using available documentation context.", style="dim")
 
-        # Step 1: Select input method
-        input_method = await self._select_input_method()
+        # Automatically load context from /context/ directory
+        console.print("📚 Loading documentation context...", style="blue")
+        context_files = await self._load_default_context()
+        
+        if context_files:
+            console.print(f"✅ Loaded {len(context_files)} context files for AI assistance", style="green")
+            for file_info in context_files:
+                console.print(f"  📄 {file_info['filename']} ({len(file_info['content'])} characters)", style="dim")
+        else:
+            console.print("⚠️  No context files found. Proceeding with basic generation.", style="yellow")
 
-        # Step 2: Get contract requirements
-        requirements = await self._get_contract_requirements()
+        # Step 1: Get contract requirements (enhanced for context-aware generation)
+        requirements = await self._get_enhanced_contract_requirements()
 
-        # Step 3: Get contract content
-        contract_content = await self._get_contract_content(input_method)
+        # Step 2: Generate contract using context and AI
+        console.print("\n🤖 Generating contract with AI assistance...", style="blue")
+        context_data = {
+            "markdown_files": context_files,
+            "requirements": requirements,
+            "generation_mode": "markdown_context"
+        }
+        contract_content = await self._generate_contract_from_context(context_data)
 
-        # Step 4: Review and confirm
+        # Step 3: Review and confirm
         if await self._review_contract(requirements, contract_content):
-            return await self._submit_contract(requirements, contract_content, input_method)
+            return await self._submit_contract(requirements, contract_content, "markdown_context")
         else:
             console.print("❌ Contract creation cancelled", style="yellow")
             return {"status": "cancelled"}
@@ -404,6 +424,40 @@ pub contract NFTMarketplace {
                     except Exception as e:
                         console.print(f"⚠️  Could not load default context {md_file.name}: {e}", style="yellow")
 
+        return files
+
+    async def _load_default_context(self) -> List[Dict[str, str]]:
+        """Automatically load all markdown files from the /context/ directory."""
+        files = []
+        
+        # Get the context directory path
+        context_path = Path(__file__).parent.parent.parent / "context"
+        
+        if not context_path.exists():
+            console.print(f"⚠️  Context directory not found: {context_path}", style="yellow")
+            return files
+        
+        # Recursively find all markdown files in context directory and subdirectories
+        markdown_patterns = ["*.md", "*.markdown"]
+        
+        for pattern in markdown_patterns:
+            for md_file in context_path.rglob(pattern):
+                try:
+                    content = md_file.read_text(encoding='utf-8', errors='ignore')
+                    # Get relative path from context directory for better organization
+                    relative_path = md_file.relative_to(context_path)
+                    files.append({
+                        "filename": md_file.name,
+                        "content": content,
+                        "path": str(md_file),
+                        "relative_path": str(relative_path)
+                    })
+                except Exception as e:
+                    console.print(f"⚠️  Could not load context file {md_file.name}: {e}", style="yellow")
+        
+        # Sort files by relative path for consistent ordering
+        files.sort(key=lambda x: x.get("relative_path", x["filename"]))
+        
         return files
 
     async def _get_enhanced_contract_requirements(self) -> Dict[str, Any]:
@@ -851,6 +905,9 @@ pub contract {requirements['contract_name']} {{
         """Submit contract to API."""
         console.print("\n🚀 Creating contract...", style="blue")
 
+        # Track generation start time
+        generation_start_time = time.time()
+
         # Prepare contract data
         contract_data = {
             "contract_name": requirements["contract_name"],
@@ -892,7 +949,14 @@ pub contract {requirements['contract_name']} {{
         # Submit contract with progress tracking
         result = await self._submit_with_progress(contract_data)
 
-        # Handle Flow project output
+        # Calculate generation time
+        generation_time = time.time() - generation_start_time
+
+        # Always save contract to flow_projects directory and database
+        await self._save_contract_to_filesystem(result, requirements, contract_content, input_method)
+        await self._save_contract_to_database(result, requirements, contract_content, input_method, generation_time)
+
+        # Handle Flow project output (for additional files)
         if result.get("status") == "success" and contract_data.get("generate_flow_project"):
             await self._handle_flow_project_output(result, requirements)
 
@@ -1131,3 +1195,272 @@ For issues or questions about this generated contract, please refer to the origi
 Generated by Smart Contract LLM Builder CLI
 """
         return readme
+
+    async def _save_contract_to_filesystem(self, result: Dict[str, Any], requirements: Dict[str, Any], 
+                                         contract_content: str, input_method: str) -> str:
+        """Save contract to flow_projects directory with all supporting files and return the project path."""
+        try:
+            # Create flow_projects directory if it doesn't exist
+            flow_projects_dir = Path("flow_projects")
+            flow_projects_dir.mkdir(exist_ok=True)
+            
+            # Generate unique project name using contract ID if available, otherwise timestamp
+            contract_name = requirements.get("contract_name", requirements.get("name", "Contract"))
+            contract_id = result.get("contract_id", str(uuid.uuid4()))
+            project_dir = flow_projects_dir / contract_id
+            project_dir.mkdir(exist_ok=True)
+            
+            # Create contracts directory
+            contracts_dir = project_dir / "contracts"
+            contracts_dir.mkdir(exist_ok=True)
+            
+            # Save main contract file in contracts directory
+            contract_file = contracts_dir / f"{contract_name}.cdc"
+            contract_file.write_text(contract_content, encoding='utf-8')
+            console.print(f"✅ Saved contract: {contract_file}", style="green")
+            
+            # Get contract type for file generation
+            contract_type = requirements.get("contract_type", requirements.get("type", "custom"))
+            
+            # Generate and save flow.json
+            flow_json_content = self.file_generator.generate_flow_json(
+                contract_name, 
+                contract_type, 
+                requirements.get("network", "testnet")
+            )
+            flow_json_file = project_dir / "flow.json"
+            flow_json_file.write_text(json.dumps(flow_json_content, indent=2), encoding='utf-8')
+            console.print(f"✅ Saved flow.json: {flow_json_file}", style="green")
+            
+            # Generate and save transactions
+            transactions = self.file_generator.generate_transactions(contract_name, contract_type)
+            if transactions:
+                transactions_dir = project_dir / "transactions"
+                transactions_dir.mkdir(exist_ok=True)
+                for tx_name, tx_content in transactions.items():
+                    tx_file = transactions_dir / f"{tx_name}.cdc"
+                    tx_file.write_text(tx_content, encoding='utf-8')
+                    console.print(f"✅ Saved transaction: {tx_file}", style="green")
+            
+            # Generate and save scripts
+            scripts = self.file_generator.generate_scripts(contract_name, contract_type)
+            if scripts:
+                scripts_dir = project_dir / "scripts"
+                scripts_dir.mkdir(exist_ok=True)
+                for script_name, script_content in scripts.items():
+                    script_file = scripts_dir / f"{script_name}.cdc"
+                    script_file.write_text(script_content, encoding='utf-8')
+                    console.print(f"✅ Saved script: {script_file}", style="green")
+            
+            # Generate and save tests
+            tests = self.file_generator.generate_tests(contract_name, contract_type)
+            if tests:
+                tests_dir = project_dir / "tests"
+                tests_dir.mkdir(exist_ok=True)
+                for test_name, test_content in tests.items():
+                    test_file = tests_dir / f"{test_name}.cdc"
+                    test_file.write_text(test_content, encoding='utf-8')
+                    console.print(f"✅ Saved test: {test_file}", style="green")
+            
+            # Save metadata file
+            metadata = {
+                "contract_id": contract_id,
+                "contract_name": contract_name,
+                "contract_type": contract_type,
+                "network": requirements.get("network", "testnet"),
+                "input_method": input_method,
+                "requirements": requirements,
+                "generated_at": datetime.now().isoformat(),
+                "result": result,
+                "files_generated": {
+                    "contract": f"contracts/{contract_name}.cdc",
+                    "flow_json": "flow.json",
+                    "transactions": list(transactions.keys()) if transactions else [],
+                    "scripts": list(scripts.keys()) if scripts else [],
+                    "tests": list(tests.keys()) if tests else []
+                }
+            }
+            
+            metadata_file = project_dir / "metadata.json"
+            metadata_file.write_text(json.dumps(metadata, indent=2), encoding='utf-8')
+            console.print(f"✅ Saved metadata: {metadata_file}", style="green")
+            
+            # Create comprehensive README
+            readme_content = f"""# {contract_name}
+
+Generated by Smart Contract LLM Builder
+
+## Contract Details
+- **ID**: {contract_id}
+- **Name**: {contract_name}
+- **Type**: {contract_type}
+- **Network**: {requirements.get("network", "testnet")}
+- **Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+- **Input Method**: {input_method}
+
+## Project Structure
+```
+{contract_id}/
+├── contracts/
+│   └── {contract_name}.cdc          # Main contract
+├── transactions/                    # Transaction scripts
+{chr(10).join([f"│   └── {tx}.cdc" for tx in (transactions.keys() if transactions else [])])}
+├── scripts/                         # Query scripts  
+{chr(10).join([f"│   └── {script}.cdc" for script in (scripts.keys() if scripts else [])])}
+├── tests/                           # Test files
+{chr(10).join([f"│   └── {test}.cdc" for test in (tests.keys() if tests else [])])}
+├── flow.json                        # Flow configuration
+├── metadata.json                    # Generation metadata
+└── README.md                        # This file
+```
+
+## Description
+{requirements.get("description", "No description provided")}
+
+## Getting Started
+
+1. **Install Flow CLI** (if not already installed):
+   ```bash
+   sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-cli/master/install.sh)"
+   ```
+
+2. **Navigate to project directory**:
+   ```bash
+   cd {project_dir}
+   ```
+
+3. **Deploy to testnet**:
+   ```bash
+   flow project deploy --network testnet
+   ```
+
+4. **Run transactions** (example):
+   ```bash
+   flow transactions send ./transactions/setup_account.cdc --network testnet
+   ```
+
+5. **Execute scripts** (example):
+   ```bash
+   flow scripts execute ./scripts/get_balance.cdc --network testnet
+   ```
+
+## Files Generated
+
+### Contract
+- `contracts/{contract_name}.cdc` - Main smart contract
+
+### Transactions
+{chr(10).join([f"- `transactions/{tx}.cdc`" for tx in (transactions.keys() if transactions else ["None generated"])])}
+
+### Scripts  
+{chr(10).join([f"- `scripts/{script}.cdc`" for script in (scripts.keys() if scripts else ["None generated"])])}
+
+### Tests
+{chr(10).join([f"- `tests/{test}.cdc`" for test in (tests.keys() if tests else ["None generated"])])}
+
+## Next Steps
+1. Review and customize the generated files as needed
+2. Update account addresses in flow.json
+3. Add your private keys to flow.json (keep them secure!)
+4. Test the contract on testnet before mainnet deployment
+5. Consider adding more comprehensive tests
+
+## Support
+For more information about Flow and Cadence development, visit:
+- [Flow Documentation](https://docs.onflow.org/)
+- [Cadence Language Reference](https://docs.onflow.org/cadence/)
+"""
+            
+            readme_file = project_dir / "README.md"
+            readme_file.write_text(readme_content, encoding='utf-8')
+            console.print(f"✅ Saved README: {readme_file}", style="green")
+            
+            # Display project summary
+            console.print("\n📊 Flow Project Summary:", style="blue")
+            summary_table = Table(show_header=False, box=None)
+            summary_table.add_column("Item", style="cyan")
+            summary_table.add_column("Value", style="white")
+
+            summary_table.add_row("Project ID", contract_id)
+            summary_table.add_row("Project Directory", str(project_dir))
+            summary_table.add_row("Contract Name", contract_name)
+            summary_table.add_row("Contract Type", contract_type)
+            summary_table.add_row("Network", requirements.get("network", "testnet"))
+            summary_table.add_row("Transactions", str(len(transactions)) if transactions else "0")
+            summary_table.add_row("Scripts", str(len(scripts)) if scripts else "0")
+            summary_table.add_row("Tests", str(len(tests)) if tests else "0")
+
+            console.print(summary_table)
+            
+            console.print(f"\n✅ Complete Flow project saved to: {project_dir}", style="bold green")
+            return str(project_dir)
+            
+        except Exception as e:
+            console.print(f"❌ Failed to save contract to filesystem: {e}", style="red")
+            import traceback
+            console.print(f"Error details: {traceback.format_exc()}", style="red")
+            return ""
+
+    async def _save_contract_to_database(self, result: Dict[str, Any], requirements: Dict[str, Any], 
+                                       contract_content: str, input_method: str, generation_time: float) -> None:
+        """Save contract metadata to database."""
+        try:
+            # Map input method to generation method enum
+            generation_method_map = {
+                "natural_language": GenerationMethod.AI_ASSISTED,
+                "markdown_context": GenerationMethod.AI_ASSISTED,
+                "file_input": GenerationMethod.AI_ASSISTED,
+                "direct_code": GenerationMethod.MANUAL,
+                "template": GenerationMethod.TEMPLATE_BASED,
+                "test": GenerationMethod.AI_ASSISTED  # For testing
+            }
+            
+            # Map contract type to enum
+            contract_type_map = {
+                "token": ContractType.TOKEN,
+                "nft": ContractType.NFT,
+                "defi": ContractType.DEFI,
+                "dao": ContractType.GOVERNANCE,
+                "marketplace": ContractType.MARKETPLACE,
+                "generic": ContractType.CUSTOM,
+                "custom": ContractType.CUSTOM
+            }
+            
+            # Map network to enum
+            network_map = {
+                "mainnet": NetworkType.MAINNET,
+                "testnet": NetworkType.TESTNET,
+                "emulator": NetworkType.EMULATOR
+            }
+            
+            # Create database record
+            contract_record = GeneratedContract(
+                name=requirements.get("name", "Contract"),
+                contract_type=contract_type_map.get(requirements.get("type", "custom"), ContractType.CUSTOM),
+                network=network_map.get(requirements.get("network", "testnet"), NetworkType.TESTNET),
+                generation_method=generation_method_map.get(input_method, GenerationMethod.AI_ASSISTED),
+                description=requirements.get("description", ""),
+                requirements_text=requirements.get("description", ""),
+                context_used=json.dumps(requirements.get("context_files", [])) if requirements.get("context_files") else None,
+                contract_code=contract_content,
+                project_directory=str(Path("/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm/flow_projects") / f"{requirements.get('name', 'Contract')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
+                contract_file_path=str(Path("/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm/flow_projects") / f"{requirements.get('name', 'Contract')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}" / "Contract.cdc"),
+                generation_time_seconds=int(generation_time),
+                has_transactions=bool(result.get("flow_project", {}).get("transactions")),
+                has_scripts=bool(result.get("flow_project", {}).get("scripts")),
+                has_tests=bool(result.get("flow_project", {}).get("tests")),
+                flow_json_config=json.dumps(result.get("flow_project", {}).get("flow_json", {})) if result.get("flow_project", {}).get("flow_json") else None,
+                features=json.dumps(requirements.get("features", [])) if requirements.get("features") else None
+            )
+            
+            # Save to database
+            db = next(get_db())
+            db.add(contract_record)
+            db.commit()
+            db.refresh(contract_record)
+            
+            console.print(f"✅ Contract metadata saved to database (ID: {contract_record.id})", style="green")
+            
+        except Exception as e:
+            console.print(f"❌ Failed to save contract to database: {e}", style="red")
+            # Don't raise the exception to avoid breaking the main flow

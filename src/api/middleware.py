@@ -507,13 +507,14 @@ def create_error_response(
     details: Optional[Dict[str, Any]] = None
 ) -> JSONResponse:
     """Create a standardized error response."""
+    error_response = ErrorResponse(
+        error=error,
+        message=message,
+        status_code=status_code,
+        details=details,
+        timestamp=datetime.utcnow().isoformat()
+    )
     return JSONResponse(
         status_code=status_code,
-        content=ErrorResponse(
-            error=error,
-            message=message,
-            status_code=status_code,
-            details=details,
-            timestamp=datetime.utcnow()
-        ).dict()
+        content=error_response.model_dump(mode='json')
     )

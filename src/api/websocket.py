@@ -71,7 +71,7 @@ class ConnectionManager:
                 WebSocketMessage(
                     type="connection_established",
                     data={"connection_id": connection_id},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -209,7 +209,7 @@ class WebSocketHandler:
                 WebSocketMessage(
                     type="error",
                     data={"message": "Invalid JSON format"},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -219,7 +219,7 @@ class WebSocketHandler:
                 WebSocketMessage(
                     type="error",
                     data={"message": "Internal server error"},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -236,7 +236,7 @@ class WebSocketHandler:
                 WebSocketMessage(
                     type="subscription_confirmed",
                     data={"subscription_type": subscription_type},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -245,7 +245,7 @@ class WebSocketHandler:
                 WebSocketMessage(
                     type="error",
                     data={"message": "Authentication required for subscriptions"},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -262,7 +262,7 @@ class WebSocketHandler:
                 WebSocketMessage(
                     type="unsubscription_confirmed",
                     data={"subscription_type": subscription_type},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict(),
                 websocket
             )
@@ -273,7 +273,7 @@ class WebSocketHandler:
             WebSocketMessage(
                 type="pong",
                 data={"timestamp": datetime.utcnow().isoformat()},
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict(),
             websocket
         )
@@ -293,7 +293,7 @@ class WebSocketHandler:
             WebSocketMessage(
                 type="status",
                 data=status_data,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict(),
             websocket
         )
@@ -304,7 +304,7 @@ class WebSocketHandler:
             WebSocketMessage(
                 type="error",
                 data={"message": f"Unknown message type: {message_type}"},
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict(),
             websocket
         )

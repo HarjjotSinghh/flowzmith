@@ -13,7 +13,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from pydantic import ValidationError
 
-from ..schemas import ErrorResponse
+from src.schemas import ErrorResponse
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +235,7 @@ class ErrorHandler:
                     message="Internal server error",
                     status_code=500,
                     details={"handler_error": str(handler_error)},
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.utcnow().isoformat()
                 ).dict()
             )
 
@@ -269,7 +269,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -282,7 +282,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -295,7 +295,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -308,7 +308,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -321,7 +321,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -334,9 +334,8 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
-            ).dict(),
-            headers={"Retry-After": "60"}
+                timestamp=datetime.utcnow().isoformat()
+            ).dict()
         )
 
     def _handle_configuration_error(self, request: Request, exc: ConfigurationError) -> JSONResponse:
@@ -348,7 +347,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -361,12 +360,12 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
     def _handle_flow_error(self, request: Request, exc: FlowError) -> JSONResponse:
-        """Handle Flow blockchain errors."""
+        """Handle Flow errors."""
         return JSONResponse(
             status_code=exc.status_code,
             content=ErrorResponse(
@@ -374,7 +373,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -387,7 +386,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -400,7 +399,7 @@ class ErrorHandler:
                 message=exc.message,
                 status_code=exc.status_code,
                 details=exc.details,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -412,62 +411,59 @@ class ErrorHandler:
                 error="HTTP_ERROR",
                 message=exc.detail,
                 status_code=exc.status_code,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
     def _handle_request_validation_error(self, request: Request, exc: RequestValidationError) -> JSONResponse:
         """Handle request validation errors."""
-        errors = []
-        for error in exc.errors():
-            field_path = " -> ".join(str(loc) for loc in error["loc"])
-            errors.append(f"{field_path}: {error['msg']}")
-
         return JSONResponse(
             status_code=422,
             content=ErrorResponse(
-                error="REQUEST_VALIDATION_ERROR",
-                message="Invalid request data",
+                error="VALIDATION_ERROR",
+                message="Request validation failed",
                 status_code=422,
                 details={
-                    "validation_errors": errors,
-                    "body": exc.body
+                    "validation_errors": [
+                        {
+                            "field": ".".join(str(loc) for loc in error["loc"]),
+                            "message": error["msg"],
+                            "type": error["type"]
+                        }
+                        for error in exc.errors()
+                    ]
                 },
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
     def _handle_sqlalchemy_error(self, request: Request, exc: SQLAlchemyError) -> JSONResponse:
         """Handle SQLAlchemy errors."""
-        logger.error(f"Database error: {exc}")
-
         return JSONResponse(
             status_code=500,
             content=ErrorResponse(
                 error="DATABASE_ERROR",
                 message="Database operation failed",
                 status_code=500,
-                details={"error_type": type(exc).__name__},
-                timestamp=datetime.utcnow()
-            ).dict()
-        )
-
-    def _handle_generic_error(self, request: Request, exc: Exception) -> JSONResponse:
-        """Handle generic/unexpected errors."""
-        # Log full traceback for debugging
-        logger.error(f"Unexpected error: {exc}", exc_info=True)
-
-        return JSONResponse(
-            status_code=500,
-            content=ErrorResponse(
-                error="INTERNAL_ERROR",
-                message="An unexpected error occurred",
-                status_code=500,
                 details={
                     "error_type": type(exc).__name__,
                     "error_message": str(exc)
                 },
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow().isoformat()
+            ).dict()
+        )
+
+    def _handle_generic_error(self, request: Request, exc: Exception) -> JSONResponse:
+        """Handle generic exceptions with detailed error information."""
+        logger.error(f"Unexpected error: {str(exc)}", exc_info=True)
+        
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(
+                error="Internal Server Error",
+                message="An unexpected error occurred. Please try again later.",
+                status_code=500,
+                timestamp=datetime.utcnow().isoformat()
             ).dict()
         )
 
@@ -517,7 +513,7 @@ def create_error_response(
             message=message,
             status_code=status_code,
             details=details,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow().isoformat()
         ).dict()
     )
 
