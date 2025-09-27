@@ -1,3 +1,5 @@
+<img src="https://files.harjot.co/banner.png"></img>
+
 # Flowzmith
 
 AI-powered smart contract generation and deployment platform for Flow blockchain using Cadence programming language.
