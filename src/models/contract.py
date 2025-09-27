@@ -53,6 +53,7 @@ class ContractSubmission(Base):
     user = relationship("User", back_populates="contract_submissions")
     deployment_logs = relationship("DeploymentLog", back_populates="contract_submission")
     generated_config = relationship("GeneratedConfiguration", back_populates="contract_submission", uselist=False)
+    cli_logs = relationship("CLILog", back_populates="contract_submission", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<ContractSubmission(id={self.id}, input_type={self.input_type}, status={self.status})>"

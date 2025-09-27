@@ -27,6 +27,8 @@ from .flow_automation_service import FlowAutomationService
 from ..models.database import get_db
 from ..models.generated_contract import GeneratedContract, ContractType, NetworkType, GenerationMethod
 from ..mcp_generator.mcp_server_generator import MCPServerGenerator
+from ..services.cadence_code_generator import CadenceCodeGenerator
+from ..services.llm_service import LLMService
 
 console = Console()
 
@@ -37,6 +39,8 @@ class ContractCreator:
         self.api_client = api_client
         self.file_generator = FlowFileGenerator()
         self.flow_automation = FlowAutomationService()
+        self.llm_service = LLMService(db_session)
+        self.cadence_generator = CadenceCodeGenerator(self.llm_service)
         self.db_session = db_session
 
     async def create_contract_interactive(self) -> Dict[str, Any]:
@@ -69,7 +73,7 @@ class ContractCreator:
 
         # Step 3: Review and confirm
         if await self._review_contract(requirements, contract_content):
-            return await self._submit_contract(requirements, contract_content, "markdown_context")
+            return await self._submit_contract_with_additional_files(requirements, contract_content, "markdown_context")
         else:
             console.print("❌ Contract creation cancelled", style="yellow")
             return {"status": "cancelled"}
@@ -905,6 +909,86 @@ pub contract {requirements['contract_name']} {{
 
         return Confirm.ask("\nProceed with contract creation?")
 
+    async def _submit_contract_with_additional_files(self, requirements: Dict[str, Any], contract_content: str, input_method: str) -> Dict[str, Any]:
+        """Submit contract and generate additional Cadence files (tests, transactions, scripts)."""
+
+        # First, submit the main contract
+        result = await self._submit_contract(requirements, contract_content, input_method)
+
+        if result.get("status") != "success":
+            return result
+
+        # Generate additional Cadence files using the LLM
+        console.print("\n🤖 Generating tests, transactions, and scripts...", style="blue")
+
+        try:
+            additional_files = await self.cadence_generator.generate_contract_files(
+                contract_code=contract_content,
+                contract_name=requirements.get("contract_name", "Contract"),
+                contract_type=requirements.get("contract_type", "custom"),
+                network=requirements.get("network", "testnet"),
+                requirements=requirements
+            )
+
+            # Save the additional files
+            project_path = result.get("project_path")
+            if project_path:
+                await self._save_additional_cadence_files(project_path, additional_files, requirements)
+
+            # Update result with additional files info
+            result["additional_files"] = additional_files
+            result["has_tests"] = bool(additional_files.get("tests"))
+            result["has_transactions"] = bool(additional_files.get("transactions"))
+            result["has_scripts"] = bool(additional_files.get("scripts"))
+
+        except Exception as e:
+            console.print(f"⚠️  Failed to generate additional files: {e}", style="yellow")
+            console.print("Contract generation completed successfully, but additional files could not be generated.", style="dim")
+
+        return result
+
+    async def _save_additional_cadence_files(self, project_path: str, additional_files: Dict[str, Any], requirements: Dict[str, Any]):
+        """Save the generated tests, transactions, and scripts to the project directory."""
+        project_dir = Path(project_path)
+
+        # Save tests
+        if additional_files.get("tests"):
+            tests_dir = project_dir / "tests"
+            tests_dir.mkdir(exist_ok=True)
+            for filename, content in additional_files["tests"].items():
+                test_file = tests_dir / filename
+                test_file.write_text(content, encoding='utf-8')
+                console.print(f"✅ Saved test: {test_file}", style="green")
+
+        # Save transactions
+        if additional_files.get("transactions"):
+            transactions_dir = project_dir / "transactions"
+            transactions_dir.mkdir(exist_ok=True)
+            for filename, content in additional_files["transactions"].items():
+                tx_file = transactions_dir / filename
+                tx_file.write_text(content, encoding='utf-8')
+                console.print(f"✅ Saved transaction: {tx_file}", style="green")
+
+        # Save scripts
+        if additional_files.get("scripts"):
+            scripts_dir = project_dir / "scripts"
+            scripts_dir.mkdir(exist_ok=True)
+            for filename, content in additional_files["scripts"].items():
+                script_file = scripts_dir / filename
+                script_file.write_text(content, encoding='utf-8')
+                console.print(f"✅ Saved script: {script_file}", style="green")
+
+        # Update metadata file with additional files info
+        metadata_file = project_dir / "metadata.json"
+        if metadata_file.exists():
+            try:
+                metadata = json.loads(metadata_file.read_text())
+                metadata["additional_files"] = additional_files
+                metadata_file.write_text(json.dumps(metadata, indent=2))
+                console.print("✅ Updated metadata with additional files", style="green")
+            except Exception as e:
+                console.print(f"⚠️  Failed to update metadata: {e}", style="yellow")
+
     async def _submit_contract(self, requirements: Dict[str, Any], contract_content: str, input_method: str) -> Dict[str, Any]:
         """Submit contract to API."""
         console.print("\n🚀 Creating contract...", style="blue")
@@ -1452,11 +1536,12 @@ For more information about Flow and Cadence development, visit:
                 project_directory=str(Path("/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm/flow_projects") / f"{requirements.get('name', 'Contract')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
                 contract_file_path=str(Path("/Users/harjjotsinghh/Desktop/Main/D Drive/Projects/smart-contract-llm/flow_projects") / f"{requirements.get('name', 'Contract')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}" / "Contract.cdc"),
                 generation_time_seconds=int(generation_time),
-                has_transactions=bool(result.get("flow_project", {}).get("transactions")),
-                has_scripts=bool(result.get("flow_project", {}).get("scripts")),
-                has_tests=bool(result.get("flow_project", {}).get("tests")),
+                has_transactions=result.get("has_transactions", False),
+                has_scripts=result.get("has_scripts", False),
+                has_tests=result.get("has_tests", False),
                 flow_json_config=json.dumps(result.get("flow_project", {}).get("flow_json", {})) if result.get("flow_project", {}).get("flow_json") else None,
-                features=json.dumps(requirements.get("features", [])) if requirements.get("features") else None
+                features=json.dumps(requirements.get("features", [])) if requirements.get("features") else None,
+                additional_files_info=json.dumps(result.get("additional_files", {}))
             )
             
             # Save to database

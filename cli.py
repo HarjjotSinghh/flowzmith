@@ -31,6 +31,7 @@ from src.models.database import get_db, create_tables, check_database_connection
 from src.cli import APIClient, ContractCreator, DeploymentManager, DocumentationSearch
 from src.cli.flow_manager import FlowProjectManager
 from src.cli.deployment_service import ContractDeploymentService
+from src.services.flow_service import strip_markdown_code_blocks
 from rich.text import Text
 
 banner = """
@@ -102,9 +103,8 @@ def show_welcome():
         g = int(base_g + (target_g - base_g) * factor)
         b = int(base_b + (target_b - base_b) * factor)
         gradient_lines.append(f"[rgb({r},{g},{b})]{line}[/]")
-    console.print("\n")
-    console.print("\n".join(gradient_lines))
-    console.print("\n")
+    banner_display = "\n".join(gradient_lines)
+    console.print(Panel(banner_display, border_style="bright_blue", expand=True))
 
     welcome_text = f"""
 # 🚀 Flowzmith CLI
@@ -220,7 +220,6 @@ def setup():
 def flow_auto():
     """Automated Flow workflow: Generate contract, create MCP server, and deploy to Flow."""
     logger.info("Running flow_auto command")
-    show_welcome()
     console.print("🚀 Automated Flow Workflow", style="bold blue")
     console.print("This will generate a contract, create an MCP server, and deploy to Flow blockchain.", style="cyan")
 
@@ -260,7 +259,6 @@ def flow_auto():
 def create_contract():
     """Create a new smart contract with step-by-step guidance."""
     logger.info("Running create_contract command")
-    show_welcome()
 
     # Check environment first
     async def async_checks():
@@ -893,52 +891,61 @@ def flow_generate_and_deploy(
     async def run():
         try:
             from datetime import datetime
-            client = APIClient()
-            deployment_service = ContractDeploymentService(client)
-            
-            # Use local variables to avoid scope issues
-            req_text = requirements
-            proj_name = project_name
-            
-            if not req_text:
-                req_text = typer.prompt("Enter contract requirements")
-            
-            if not proj_name:
-                proj_name = f"Contract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
-            console.print(f"[bold blue]Generating and deploying contract:[/bold blue] {proj_name}")
-            console.print(f"[bold blue]Requirements:[/bold blue] {req_text}")
-            
-            # Generate contract
-            generation_request = {
-                "requirements": req_text,
-                "context_dir": str(context_dir),
-                "network": network
-            }
-            result = await client.generate_contract_with_context(generation_request)
-            
-            if not result.get("success"):
-                console.print(f"[bold red]Contract generation failed:[/bold red] {result.get('error')}")
-                return
-            
-            console.print("[bold green]✅ Contract generated successfully![/bold green]")
-            
-            # Deploy with Flow CLI
-            deployment_result = await deployment_service.deploy_with_flow_cli(
-                result.get("contract"), 
-                result.get("flow_json"), 
-                proj_name, 
-                network
-            )
-            
-            if deployment_result.get("success"):
-                console.print("[bold green]✅ Contract deployed successfully![/bold green]")
-                console.print(f"[bold cyan]Project path:[/bold cyan] {deployment_result.get('project_path')}")
-                if deployment_result.get("transaction_id"):
-                    console.print(f"[bold cyan]Transaction ID:[/bold cyan] {deployment_result['transaction_id']}")
-            else:
-                console.print(f"[bold red]❌ Deployment failed:[/bold red] {deployment_result.get('error')}")
+            async with APIClient() as client:
+                deployment_service = ContractDeploymentService()
                 
+                # Use local variables to avoid scope issues
+                req_text = requirements
+                proj_name = project_name
+                
+                if not req_text:
+                    req_text = typer.prompt("Enter contract requirements")
+                
+                if not proj_name:
+                    proj_name = f"Contract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                
+                console.print(f"[bold blue]Generating and deploying contract:[/bold blue] {proj_name}")
+                console.print(f"[bold blue]Requirements:[/bold blue] {req_text}")
+                
+                # Generate contract
+                generation_request = {
+                    "requirements": req_text,
+                    "context_dir": str(context_dir),
+                    "network": network
+                }
+                result = await client.generate_contract_with_context(generation_request)
+                
+                # Check if generation was successful by verifying expected response fields
+                if not result.get("submission_id") or not result.get("generated_contract_code"):
+                    error_msg = result.get('error', 'Unknown error - missing required response fields')
+                    console.print(f"[bold red]Contract generation failed:[/bold red] {error_msg}")
+                    return
+                
+                console.print("[bold green]✅ Contract generated successfully![/bold green]")
+                console.print(f"[bold cyan]Submission ID:[/bold cyan] {result.get('submission_id')}")
+                console.print(f"[bold cyan]Validation Status:[/bold cyan] {result.get('validation_status', 'Unknown')}")
+                
+                # Deploy with Flow CLI
+                # Strip markdown code blocks from contract content before deployment
+                clean_contract_content = strip_markdown_code_blocks(result.get("generated_contract_code"))
+                
+                deployment_result = await deployment_service.deploy_contract_automatically(
+                    contract_name=proj_name,
+                    contract_content=clean_contract_content, 
+                    network=network,
+                    auto_deploy=True
+                )
+                
+                if deployment_result.get("status") == "deployed":
+                    console.print("[bold green]✅ Contract deployed successfully![/bold green]")
+                    console.print(f"[bold cyan]Project ID:[/bold cyan] {deployment_result.get('project_id')}")
+                    console.print(f"[bold cyan]Project Directory:[/bold cyan] {deployment_result.get('project_dir')}")
+                    if deployment_result.get("deployment_output"):
+                        console.print(f"[bold cyan]Deployment Output:[/bold cyan] {deployment_result.get('deployment_output')}")
+                else:
+                    console.print(f"[bold red]❌ Deployment failed:[/bold red] {deployment_result.get('error')}")
+                    console.print(f"[bold yellow]Status:[/bold yellow] {deployment_result.get('status')}")
+                    
         except Exception as e:
             console.print(f"[bold red]Error:[/bold red] {str(e)}")
     
@@ -946,4 +953,5 @@ def flow_generate_and_deploy(
 
 
 if __name__ == "__main__":
+    show_welcome()
     app()

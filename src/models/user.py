@@ -40,8 +40,9 @@ class User(Base):
     data_retention_consent = Column(Boolean, default=False)
 
     # Relationships
-    contract_submissions = relationship("ContractSubmission", back_populates="user")
+    contract_submissions = relationship("ContractSubmission", back_populates="user", cascade="all, delete-orphan")
     data_control = relationship("UserDataControl", back_populates="user", uselist=False)
+    cli_logs = relationship("CLILog", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, persona_type={self.persona_type})>"

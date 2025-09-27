@@ -5,6 +5,8 @@ OpenAI LLM provider implementation.
 import openai
 from typing import Dict, Any, Optional
 import logging
+import json
+from .llm_provider import PromptTemplateManager, LLMResponse, LLMProviderType, PromptTemplate
 from .llm_provider import LLMProvider, LLMProviderType, LLMResponse
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,10 @@ class OpenAIProvider(LLMProvider):
         max_tokens: Optional[int] = None
     ) -> LLMResponse:
         """Generate contract code using OpenAI."""
+        prompt_manager = PromptTemplateManager()
+        if system_prompt is None:
+            # Use the detailed Cadence 1.0 template as default system prompt
+            system_prompt = prompt_manager.get_template("cadence_v1_detailed").template
         try:
             messages = []
 
@@ -83,27 +89,12 @@ class OpenAIProvider(LLMProvider):
         contract_code: str
     ) -> LLMResponse:
         """Analyze deployment logs for learning."""
+        prompt_manager = PromptTemplateManager()
+        system_prompt = "You are an expert Flow blockchain deployment analyst. Analyze deployment logs to identify patterns, errors, and optimization opportunities. Provide structured insights in JSON format, ensuring Cadence 1.0 compliance checks."
+        prompt_template = prompt_manager.get_template("log_analysis")
+        prompt = prompt_template.template.format(contract_code=contract_code, logs=logs)
         try:
-            system_prompt = """You are an expert Flow blockchain deployment analyst.
-            Analyze deployment logs to identify patterns, errors, and optimization opportunities.
-            Provide structured insights in JSON format."""
-
-            prompt = f"""
-Contract Code:
-{contract_code}
-
-Deployment Logs:
-{logs}
-
-Analyze these logs and provide insights on:
-1. Error patterns and their root causes
-2. Success patterns and what worked well
-3. Optimization opportunities
-4. Security considerations
-5. Configuration improvements
-
-Return a JSON response with these insights."""
-
+            # Use the formatted log analysis template with 1.0 awareness
             return await self.generate_contract(
                 prompt=prompt,
                 system_prompt=system_prompt,
@@ -120,26 +111,40 @@ Return a JSON response with these insights."""
         contract_code: str
     ) -> LLMResponse:
         """Validate generated configuration."""
-        try:
-            system_prompt = """You are an expert Flow blockchain configuration validator.
-            Validate flow.json configurations for correctness and completeness."""
+        prompt_manager = PromptTemplateManager()
+        # Adapt flow_config for validation
+        validation_template = PromptTemplate(
+            name="config_validation",
+            template="""Validate the following flow.json configuration for the Cadence 1.0 smart contract:
 
-            prompt = f"""
 Contract Code:
 {contract_code}
 
-Configuration:
-{config}
+Configuration to Validate:
+{config_json}
 
-Validate this configuration for:
-1. Correct contract interface definitions
-2. Proper network settings
-3. Valid account addresses
-4. Complete alias definitions
-5. Deployment compatibility
+Validation Checklist (Cadence 1.0):
+1. Correct contract interface definitions (inheritance, no restricted types)
+2. Proper network settings with 1.0 accounts and entitlements
+3. Valid account addresses and capability controllers
+4. Complete alias definitions for deployed contracts
+5. Deployment compatibility (v2 token support if applicable)
+6. No deprecated syntax or migration issues
 
-Return a JSON response with validation results and any errors found."""
-
+Return a JSON response with:
+- valid: boolean
+- issues: list of problems
+- suggestions: list of fixes
+- compliance_score: 0-100""",
+            variables=["contract_code", "config_json"],
+            description="Validation template for 1.0 configs"
+        )
+        prompt = validation_template.template.format(
+            contract_code=contract_code,
+            config_json=json.dumps(config, indent=2)
+        )
+        system_prompt = "You are an expert Flow blockchain configuration validator for Cadence 1.0. Ensure full migration compliance."
+        try:
             return await self.generate_contract(
                 prompt=prompt,
                 system_prompt=system_prompt,

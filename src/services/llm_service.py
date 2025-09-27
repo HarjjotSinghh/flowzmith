@@ -279,6 +279,30 @@ class LLMService:
             logger.error(f"Context-based contract generation failed for submission {submission.id}: {e}")
             raise RuntimeError(f"Context-based contract generation failed: {e}")
 
+    async def generate_with_system_prompt(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.7,
+        max_tokens: int = 4000
+    ) -> LLMResponse:
+        """Generate text using a system prompt and user prompt."""
+        try:
+            provider_type = self.get_preferred_provider()
+            provider = self.providers[provider_type]
+
+            # Combine system and user prompts
+            full_prompt = f"{system_prompt}\n\n{user_prompt}"
+
+            response = await provider.generate_contract(full_prompt, temperature=temperature, max_tokens=max_tokens)
+
+            logger.info(f"Generated text with system prompt using {provider_type.value}")
+            return response
+
+        except Exception as e:
+            logger.error(f"System prompt generation failed: {e}")
+            raise RuntimeError(f"Text generation failed: {e}")
+
     async def generate_contract_with_external_context_streaming(
         self,
         submission: ContractSubmission,

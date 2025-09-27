@@ -425,3 +425,35 @@ class FlowDeploymentStatsResponse(BaseModel):
     success_rate: float
     networks: Dict[str, int]
     recent_deployments: List[FlowDeploymentResponse]
+
+
+class CLILogStatus(str, Enum):
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+    TIMEOUT = "TIMEOUT"
+
+class CLILogCreate(BaseModel):
+    session_id: UUID
+    command: str = Field(..., max_length=500)
+    full_output: str
+    extracted_data: Optional[Dict[str, Any]] = None
+    start_time: datetime
+    user_id: Optional[UUID] = None
+    contract_submission_id: Optional[UUID] = None
+
+class CLILogResponse(BaseModel):
+    id: UUID
+    session_id: UUID
+    command: str
+    full_output: str
+    extracted_data: Optional[Dict[str, Any]]
+    start_time: datetime
+    end_time: Optional[datetime]
+    duration_ms: Optional[int]
+    status: CLILogStatus
+    user_id: Optional[UUID]
+    contract_submission_id: Optional[UUID]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from tqdm.asyncio import tqdm_asyncio
 
 from .llm_provider import LLMProvider, LLMResponse, LLMProviderType
+from .llm_provider import PromptTemplateManager
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,9 @@ class StreamingOpenAIProvider(StreamingLLMProvider):
         progress_callback: Optional[Callable[[str, float], None]] = None
     ) -> AsyncGenerator[str, None]:
         """Generate contract code with streaming support."""
+        prompt_manager = PromptTemplateManager()
+        if system_prompt is None:
+            system_prompt = prompt_manager.get_template("cadence_v1_detailed").template
         try:
             messages = []
             if system_prompt:
@@ -113,6 +117,9 @@ class StreamingGroqProvider(StreamingLLMProvider):
         progress_callback: Optional[Callable[[str, float], None]] = None
     ) -> AsyncGenerator[str, None]:
         """Generate contract code with streaming support."""
+        prompt_manager = PromptTemplateManager()
+        if system_prompt is None:
+            system_prompt = prompt_manager.get_template("cadence_v1_detailed").template
         try:
             messages = []
             if system_prompt:

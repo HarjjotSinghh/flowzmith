@@ -22,6 +22,9 @@ load_dotenv()
 import logging
 logger = logging.getLogger(__name__)
 
+# Import the markdown stripping function
+from ..services.flow_service import strip_markdown_code_blocks
+
 class FlowProjectManager:
     """Manages Flow CLI operations for contract projects."""
     
@@ -85,8 +88,11 @@ class FlowProjectManager:
             contracts_dir = project_dir / "contracts"
             contracts_dir.mkdir(parents=True, exist_ok=True)
             
+            # Strip markdown code blocks from contract content before writing
+            clean_contract_content = strip_markdown_code_blocks(contract_content)
+            
             contract_file = contracts_dir / f"{contract_name}.cdc"
-            contract_file.write_text(contract_content, encoding="utf-8")
+            contract_file.write_text(clean_contract_content, encoding="utf-8")
             logger.info("Contract file written: %s", contract_file)
             
             # Update flow.json to include the contract

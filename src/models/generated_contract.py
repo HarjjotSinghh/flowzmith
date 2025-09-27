@@ -71,7 +71,10 @@ class GeneratedContract(Base):
     
     # Features and capabilities
     features = Column(JSON, nullable=True)  # List of features implemented
-    
+
+    # Additional generated files
+    additional_files_info = Column(JSON, nullable=True)  # Information about generated tests, transactions, scripts
+
     # Generation statistics
     context_files_count = Column(Integer, default=0)
     context_size_chars = Column(Integer, default=0)
@@ -103,6 +106,7 @@ class GeneratedContract(Base):
             'flow_json_config': self.flow_json_config,
             'token_metadata': self.token_metadata,
             'features': self.features,
+            'additional_files_info': self.additional_files_info,
             'context_files_count': self.context_files_count,
             'context_size_chars': self.context_size_chars,
             'generation_time_seconds': self.generation_time_seconds,

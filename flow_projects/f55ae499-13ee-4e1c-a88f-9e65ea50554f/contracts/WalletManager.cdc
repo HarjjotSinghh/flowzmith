@@ -1,26 +1,25 @@
-```cadence
 // WalletManager.cdc
 
-pub contract WalletManager {
+contract WalletManager {
 
     // Events
-    pub event WalletCreated(address: Address, walletID: UInt64)
-    pub event WalletUpdated(address: Address, walletID: UInt64, newBalance: UFix64)
-    pub event WalletDeleted(address: Address, walletID: UInt64)
+    event WalletCreated(address: Address, walletID: UInt64)
+    event WalletUpdated(address: Address, walletID: UInt64, newBalance: UFix64)
+    event WalletDeleted(address: Address, walletID: UInt64)
 
     // Resource Interface
-    pub resource interface IWallet {
-        pub fun deposit(withdraw: @Token)
-        pub fun withdraw(amount: UFix64): @Token
-        pub fun getBalance(): UFix64
-        pub fun getID(): UInt64
+    resource interface IWallet {
+        fun deposit(withdraw: @Token)
+        fun withdraw(amount: UFix64): @Token
+        fun getBalance(): UFix64
+        fun getID(): UInt64
     }
 
     // Resource
-    pub resource Wallet: IWallet {
-        pub let id: UInt64
-        pub var balance: UFix64
-        pub let owner: Address
+    resource Wallet: IWallet {
+        let id: UInt64
+        var balance: UFix64
+        let owner: Address
 
         init(id: UInt64, owner: Address) {
             pre {
@@ -31,7 +30,7 @@ pub contract WalletManager {
             self.owner = owner
         }
 
-        pub fun deposit(withdraw: @Token) {
+        fun deposit(withdraw: @Token) {
             pre {
                 withdraw.balance > 0.0: "Withdrawal balance must be positive"
             }
@@ -39,7 +38,7 @@ pub contract WalletManager {
             destroy withdraw
         }
 
-        pub fun withdraw(amount: UFix64): @Token {
+        fun withdraw(amount: UFix64): @Token {
             pre {
                 amount > 0.0: "Withdrawal amount must be positive"
                 amount <= self.balance: "Insufficient balance"
@@ -48,24 +47,24 @@ pub contract WalletManager {
             return <-create Token(balance: amount)
         }
 
-        pub fun getBalance(): UFix64 {
+        fun getBalance(): UFix64 {
             return self.balance
         }
 
-        pub fun getID(): UInt64 {
+        fun getID(): UInt64 {
             return self.id
         }
     }
 
     // Mapping of wallet IDs to their respective resources
-    pub var wallets: @{UInt64: Wallet}
+    var wallets: @{UInt64: Wallet}
 
     init() {
         self.wallets <- {}
     }
 
     // Function to create a new wallet
-    pub fun createWallet(): UInt64 {
+    fun createWallet(): UInt64 {
         let newID = UInt64(self.wallets.length + 1)
         let newWallet <- create Wallet(id: newID, owner: self.account.address)
         self.wallets[newID] <-! newWallet
@@ -74,7 +73,7 @@ pub contract WalletManager {
     }
 
     // Function to get a wallet capability
-    pub fun getWalletCapability(walletID: UInt64): Capability<&Wallet> {
+    fun getWalletCapability(walletID: UInt64): Capability<&Wallet> {
         pre {
             self.wallets[walletID] != nil: "Wallet does not exist"
         }
@@ -82,7 +81,7 @@ pub contract WalletManager {
     }
 
     // Function to update a wallet balance
-    pub fun updateWalletBalance(walletID: UInt64, newBalance: UFix64) {
+    fun updateWalletBalance(walletID: UInt64, newBalance: UFix64) {
         pre {
             self.wallets[walletID] != nil: "Wallet does not exist"
         }
@@ -92,7 +91,7 @@ pub contract WalletManager {
     }
 
     // Function to delete a wallet
-    pub fun deleteWallet(walletID: UInt64) {
+    fun deleteWallet(walletID: UInt64) {
         pre {
             self.wallets[walletID] != nil: "Wallet does not exist"
         }
@@ -102,8 +101,8 @@ pub contract WalletManager {
     }
 
     // Token Resource (example, might need to be adjusted based on actual token contract)
-    pub resource Token {
-        pub var balance: UFix64
+    resource Token {
+        var balance: UFix64
 
         init(balance: UFix64) {
             self.balance = balance
@@ -121,10 +120,9 @@ transaction {
 }
 
 // Example script to get a wallet balance
-pub fun main(account: Address, walletID: UInt64): UFix64 {
+fun main(account: Address, walletID: UInt64): UFix64 {
     let walletManager = getAccount(account).contracts.get("WalletManager")?.borrow<&WalletManager>()!
     let walletCap = walletManager.getWalletCapability(walletID: walletID)
     let wallet = walletCap.borrow()!
     return wallet.getBalance()
 }
-```

@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional, Iterator, Any as AnyType
 import requests
 
 from .llm_provider import LLMProvider, LLMProviderType, LLMResponse
+from .llm_provider import PromptTemplateManager, PromptTemplate
 
 # Try to import the official Groq SDK (if installed)
 try:
@@ -30,7 +31,7 @@ class GroqHTTPClient:
 
     def __init__(self, api_key: str, base_url: Optional[str] = None, timeout: int = 300):
         self.api_key = api_key
-        self.base_url = (base_url or os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")).rstrip("/")
+        self.base_url = (base_url or os.getenv("GROQ_BASE_URL", "https://api.groq.com")).rstrip("/")
         self.timeout = timeout
 
     class _Chat:
@@ -106,9 +107,9 @@ class GroqHTTPClient:
                         resp.raise_for_status()
                         return resp.json()
 
-        @property
-        def completions(self):
-            return GroqHTTPClient._Chat._Completions(self._outer)
+            @property
+            def completions(self):
+                return GroqHTTPClient._Chat._Completions(self._outer)
 
         def __init__(self, outer):
             self._outer = outer
@@ -123,7 +124,7 @@ class GroqProvider(LLMProvider):
 
     def __init__(self, api_key: str, model: str = "llama2-70b-4096"):
         # Initialize client before calling super() because validate_credentials() needs it
-        self.base_url = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+        self.base_url = os.getenv("GROQ_BASE_URL", "https://api.groq.com")
         self.provider_type = LLMProviderType.GROQ
 
         # Try to initialize the official SDK client if available and usable
@@ -178,6 +179,10 @@ class GroqProvider(LLMProvider):
         max_tokens: Optional[int] = None
     ) -> LLMResponse:
         """Generate contract code using Groq (non-streaming)."""
+        prompt_manager = PromptTemplateManager()
+        if system_prompt is None:
+            # Use the detailed Cadence 1.0 template as default system prompt
+            system_prompt = prompt_manager.get_template("cadence_v1_detailed").template
         try:
             messages = []
             if system_prompt:
@@ -242,12 +247,17 @@ class GroqProvider(LLMProvider):
         contract_code: str
     ) -> LLMResponse:
         """Analyze deployment logs for learning."""
-        system_prompt = (
-            "You are an expert Flow blockchain deployment analyst. "
-            "Provide structured JSON insights."
-        )
-        prompt = f"Contract Code:\n{contract_code}\n\nDeployment Logs:\n{logs}\n\nProvide JSON insights."
-        return await self.generate_contract(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
+        prompt_manager = PromptTemplateManager()
+        system_prompt = "You are an expert Flow blockchain deployment analyst. Analyze deployment logs to identify patterns, errors, and optimization opportunities. Provide structured insights in JSON format, ensuring Cadence 1.0 compliance checks."
+        prompt_template = prompt_manager.get_template("log_analysis")
+        prompt = prompt_template.template.format(contract_code=contract_code, logs=logs)
+        try:
+            # Use the formatted log analysis template with 1.0 awareness
+            return await self.generate_contract(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
+
+        except Exception as e:
+            logger.error(f"Groq log analysis failed: {e}")
+            raise RuntimeError(f"Groq log analysis error: {e}")
 
     async def validate_configuration(
         self,
@@ -255,9 +265,50 @@ class GroqProvider(LLMProvider):
         contract_code: str
     ) -> LLMResponse:
         """Validate generated configuration."""
-        system_prompt = "You are an expert Flow blockchain configuration validator."
-        prompt = f"Contract Code:\n{contract_code}\n\nConfiguration:\n{config}\n\nValidate and return JSON."
-        return await self.generate_contract(prompt=prompt, system_prompt=system_prompt, temperature=0.1)
+        prompt_manager = PromptTemplateManager()
+        # Adapt flow_config for validation
+        validation_template = PromptTemplate(
+            name="config_validation",
+            template="""Validate the following flow.json configuration for the Cadence 1.0 smart contract:
+
+Contract Code:
+{contract_code}
+
+Configuration to Validate:
+{config_json}
+
+Validation Checklist (Cadence 1.0):
+1. Correct contract interface definitions (inheritance, no restricted types)
+2. Proper network settings with 1.0 accounts and entitlements
+3. Valid account addresses and capability controllers
+4. Complete alias definitions for deployed contracts
+5. Deployment compatibility (v2 token support if applicable)
+6. No deprecated syntax or migration issues
+
+Return a JSON response with:
+- valid: boolean
+- issues: list of problems
+- suggestions: list of fixes
+- compliance_score: 0-100""",
+            variables=["contract_code", "config_json"],
+            description="Validation template for 1.0 configs"
+        )
+        prompt = validation_template.template.format(
+            contract_code=contract_code,
+            config_json=json.dumps(config, indent=2)
+        )
+        system_prompt = "You are an expert Flow blockchain configuration validator for Cadence 1.0. Ensure full migration compliance."
+        try:
+            # Use the formatted validation template with 1.0 awareness
+            return await self.generate_contract(
+                prompt=prompt,
+                system_prompt=system_prompt,
+                temperature=0.1
+            )
+
+        except Exception as e:
+            logger.error(f"Groq configuration validation failed: {e}")
+            raise RuntimeError(f"Groq validation error: {e}")
 
     def _calculate_cost(self, total_tokens: int) -> float:
         """Approximate cost placeholder."""

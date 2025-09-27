@@ -19,7 +19,7 @@ from .contract_analyzer import (
     Event, 
     AccessLevel
 )
-from .system_prompt import get_mcp_generation_system_prompt, get_contract_analysis_prompt
+from .system_prompt import get_mcp_generation_system_prompt, get_cadence_v1_mcp_analysis_prompt, get_contract_analysis_prompt
 
 
 class MCPServerGenerator:
@@ -90,9 +90,13 @@ class MCPServerGenerator:
         """Get the system prompt for AI-powered MCP generation."""
         return get_mcp_generation_system_prompt()
 
-    def get_contract_analysis_prompt(self, contract_content: str) -> str:
+    def get_cadence_v1_mcp_analysis_prompt(self, contract_content: str) -> str:
         """Get the contract analysis prompt for AI-powered analysis."""
-        return get_contract_analysis_prompt(contract_content)
+        return get_cadence_v1_mcp_analysis_prompt(contract_content)
+
+    def get_contract_analysis_prompt(self, contract_content: str) -> str:
+        """Legacy method - use get_cadence_v1_mcp_analysis_prompt for 1.0 compliance."""
+        return self.get_cadence_v1_mcp_analysis_prompt(contract_content)
 
     async def generate_mcp_server_with_ai(self, contract_file: str, output_dir: str,
                                         contract_name: str, contract_address: str, network: str,
@@ -121,8 +125,8 @@ class MCPServerGenerator:
         # If AI client is provided, use it for enhanced analysis
         if ai_client:
             try:
-                # Get AI analysis of the contract
-                analysis_prompt = self.get_contract_analysis_prompt(contract_content)
+                # Get AI analysis of the contract using 1.0 specific prompt
+                analysis_prompt = self.get_cadence_v1_mcp_analysis_prompt(contract_content)
                 ai_analysis = await ai_client.analyze_contract(analysis_prompt)
                 
                 # Use AI analysis to enhance the generation

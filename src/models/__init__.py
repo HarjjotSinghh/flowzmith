@@ -9,6 +9,7 @@ from .generated_contract import GeneratedContract, ContractType, NetworkType, Ge
 from .deployment import DeploymentLog, TransactionProposal, DeploymentStatus, TransactionType, ApprovalStatus
 from .documentation import DocumentationKnowledgeBase, ContentType
 from .learning import LearningFeedbackLoop, PatternType
+from .cli_log import CLILog
 
 __all__ = [
     # Database utilities
@@ -51,4 +52,5 @@ __all__ = [
     # Learning models
     "LearningFeedbackLoop",
     "PatternType",
+    "CLILog",
 ]

@@ -568,3 +568,105 @@ access(all) contract Organization {
 ```
 
 ---
+
+```cadence
+import NonFungibleToken from 0x631e88ae7f1d7c20
+import MetadataViews from 0x631e88ae7f1d7c20
+import ViewResolver from 0x631e88ae7f1d7c20
+
+access(all) contract SimpleNFT: NonFungibleToken {
+    access(all) var totalSupply: UInt64  // Use 'var' for mutable fields
+
+    access(all) resource NFT: NonFungibleToken.NFT {
+        access(all) let id: UInt64
+        
+        init(id: UInt64) {
+            self.id = id
+        }
+        
+        access(all) view fun getViews(): [Type] {
+            return []
+        }
+        
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
+            return nil
+        }
+
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <-SimpleNFT.createEmptyCollection(nftType: Type<@SimpleNFT.NFT>()) as! @{NonFungibleToken.Collection}
+        }
+    }
+
+    // CORRECT: Minter resource accesses contract fields directly
+    access(all) resource NFTMinter {
+        access(all) fun mintNFT(recipient: &{NonFungibleToken.Receiver}) {
+            let newNFT <- create NFT(id: SimpleNFT.totalSupply)
+            recipient.deposit(token: <-newNFT)
+            SimpleNFT.totalSupply = SimpleNFT.totalSupply + 1  // Direct access
+        }
+    }
+
+    access(all) resource Collection: NonFungibleToken.Collection {
+        access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
+
+        access(NonFungibleToken.Withdraw) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
+            let token <- self.ownedNFTs.remove(key: withdrawID)!
+            return <-token as! @{NonFungibleToken.NFT}
+        }
+
+        access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
+            let nft <- token as! @SimpleNFT.NFT
+            self.ownedNFTs[nft.id] <-! nft
+        }
+
+        access(all) view fun getIDs(): [UInt64] {
+            return self.ownedNFTs.keys
+        }
+
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}? {
+            return &self.ownedNFTs[id] as &{NonFungibleToken.NFT}?
+        }
+
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <-SimpleNFT.createEmptyCollection(nftType: Type<@SimpleNFT.NFT>()) as! @{NonFungibleToken.Collection}
+        }
+
+        /// getSupportedNFTTypes returns a dictionary of supported NFT types
+        /// and a boolean indicating if the type is supported
+        access(all) view fun getSupportedNFTTypes(): {Type: Bool} {
+            return {Type<@SimpleNFT.NFT>(): true}
+        }
+
+        /// isSupportedNFTType checks if the given type is supported
+        /// by the collection
+        access(all) view fun isSupportedNFTType(type: Type): Bool {
+            return type == Type<@SimpleNFT.NFT>()
+        }
+
+        init() {
+            self.ownedNFTs <- {}
+        }
+    }
+
+    access(all) fun createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection} {
+        return <-create Collection() as! @{NonFungibleToken.Collection}
+    }
+
+    access(all) view fun getContractViews(resourceType: Type?): [Type] {
+        return []
+    }
+
+    access(all) fun resolveContractView(resourceType: Type?, viewType: Type): AnyStruct? {
+        return nil
+    }
+
+    init() {
+        self.totalSupply = 0
+        self.account.storage.save(<-create NFTMinter(), to: /storage/NFTMinter)
+        self.account.storage.save(<-create Collection(), to: /storage/Collection)
+        
+        let collectionCap = self.account.capabilities.storage.issue<&Collection>(/storage/Collection)
+        self.account.capabilities.publish(collectionCap, at: /public/Collection)
+    }
+}
+```
