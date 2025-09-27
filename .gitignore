@@ -4,3 +4,14 @@ imports
 .env
 __pycache__
 .turbo
+.metro-cache
+.DS_Store
+caches
+cache
+flow_projects
+flow_projects_testnet
+
+specs/
+.claude/
+.cursor/
+.specify/

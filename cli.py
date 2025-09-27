@@ -528,7 +528,7 @@ def version():
     console.print("Flowzmith CLI", style="blue")
     console.print("Version: 1.0.0", style="white")
     console.print("Built with Typer and Rich", style="dim")
-    console.print("GitHub: https://github.com/HarjjotSinghh/smart-contract-llm", style="dim")
+    console.print("GitHub: https://github.com/HarjjotSinghh/flowzmith", style="dim")
 
 
 @app.command("generate-from-context")

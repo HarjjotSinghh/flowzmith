@@ -62,7 +62,7 @@ class FlowFileGenerator:
             "version": "1.0",
             "contracts": {
                 contract_name: {
-                    "source": f"./cadence/contracts/{contract_name}.cdc",
+                    "source": f"./contracts/{contract_name}.cdc",
                     "aliases": {
                         "emulator": "0xf8d6e0586b0a20c7",
                         "testnet": "0x01",

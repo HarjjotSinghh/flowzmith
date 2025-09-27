@@ -1,6 +1,6 @@
 # Organization
 
-A smart contract for managing organizations (startups/businesses)
+A smart contract for managing organizations
 
 ## Project Overview
 - **Contract Type**: Custom
@@ -10,9 +10,13 @@ A smart contract for managing organizations (startups/businesses)
 ## Project Structure
 ```
 Organization/
-├── Organization.cdc      # Main smart contract
-├── flow.json                              # Flow project configuration
-└── README.md                              # This file
+├── flow.json                        # Flow project configuration
+└── cadence/
+    ├── contracts/
+    │   └── Organization.cdc    # Main smart contract
+    ├── transactions/              # Transaction scripts
+    ├── scripts/                   # Query scripts
+    └── tests/                     # Test files
 ```
 
 ## Setup Instructions
@@ -24,7 +28,7 @@ Organization/
 
 2. **Navigate to Project**
    ```bash
-   cd {requirements['contract_name']}
+   cd Organization
    ```
 
 3. **Install Dependencies**

@@ -10,6 +10,7 @@ import json
 import asyncio
 import subprocess
 import shutil
+import re
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
@@ -77,8 +78,11 @@ class FlowProjectManager:
             
             logger.info("Flow init completed for project %s", project_id)
             
+            # Generate proper keys and fix flow.json configuration
+            await self._setup_flow_config_with_keys(project_dir, network)
+            
             # Write the contract file
-            contracts_dir = project_dir / "cadence" / "contracts"
+            contracts_dir = project_dir / "contracts"
             contracts_dir.mkdir(parents=True, exist_ok=True)
             
             contract_file = contracts_dir / f"{contract_name}.cdc"
@@ -123,15 +127,182 @@ class FlowProjectManager:
                 "error": str(e),
                 "project_id": project_id
             }
-    
+
+    async def _setup_flow_config_with_keys(self, project_dir: Path, network: str):
+        """Setup flow.json with proper keys and account configuration."""
+        flow_config_file = project_dir / "flow.json"
+        
+        try:
+            # Generate new keys using Flow CLI
+            key_result = await self._run_command(["flow", "keys", "generate"], cwd=project_dir)
+            if key_result.get("returncode") != 0:
+                raise Exception(f"Key generation failed: {key_result.get('stderr')}")
+            
+            # Parse the key generation output
+            key_output = key_result.get("stdout", "")
+            private_key = None
+            public_key = None
+            
+            for line in key_output.split('\n'):
+                if 'Private Key' in line and ':' in line:
+                    private_key = line.split(':', 1)[1].strip()
+                elif 'Public Key' in line and ':' in line:
+                    public_key = line.split(':', 1)[1].strip()
+            
+            if not private_key or not public_key:
+                # Fallback to parsing different output format
+                lines = key_output.strip().split('\n')
+                for i, line in enumerate(lines):
+                    if 'private key' in line.lower() and i + 1 < len(lines):
+                        private_key = lines[i + 1].strip()
+                    elif 'public key' in line.lower() and i + 1 < len(lines):
+                        public_key = lines[i + 1].strip()
+            
+            if not private_key:
+                logger.warning("Could not parse generated private key, using fallback")
+                # Use a known valid emulator key as fallback
+                private_key = "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+                public_key = "f8d6e0586b0a20c7"
+            
+            logger.info("Generated keys for project, private_key length: %d", len(private_key) if private_key else 0)
+            
+            # Read existing flow.json
+            if flow_config_file.exists():
+                config = json.loads(flow_config_file.read_text(encoding="utf-8"))
+            else:
+                config = {}
+            
+            # Setup proper configuration based on network
+            if network == "emulator":
+                # For emulator, use a consistent key across all projects to avoid conflicts
+                # Use the default emulator service account key
+                emulator_private_key = "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+                
+                config.update({
+                    "networks": {
+                        "emulator": "127.0.0.1:3569",
+                        "testnet": "access.devnet.nodes.onflow.org:9000",
+                        "mainnet": "access.mainnet.nodes.onflow.org:9000"
+                    },
+                    "accounts": {
+                        "emulator-account": {
+                            "address": "service",
+                            "key": {
+                                "type": "file",
+                                "location": "./emulator-account.pkey"
+                            }
+                        }
+                    },
+                    "deployments": {},
+                    "contracts": {}
+                })
+                
+                # Write the consistent private key to the key file
+                key_file = project_dir / "emulator-account.pkey"
+                key_file.write_text(f"0x{emulator_private_key}", encoding="utf-8")
+                logger.info("Created emulator key file with consistent key: %s", key_file)
+            else:
+                # For testnet/mainnet, use credentials from environment variables
+                flow_account_address = os.getenv("FLOW_ACCOUNT_ADDRESS")
+                flow_private_key = os.getenv("FLOW_PRIVATE_KEY")
+                
+                if not flow_account_address or not flow_private_key:
+                    logger.error("Missing testnet credentials in environment variables")
+                    raise ValueError("FLOW_ACCOUNT_ADDRESS and FLOW_PRIVATE_KEY must be set for testnet deployment")
+                
+                config.update({
+                    "networks": {
+                        "emulator": "127.0.0.1:3569",
+                        "testnet": "access.devnet.nodes.onflow.org:9000",
+                        "mainnet": "access.mainnet.nodes.onflow.org:9000"
+                    },
+                    "accounts": {
+                        "testnet-account": {
+                            "address": flow_account_address,
+                            "key": {
+                                "type": "hex",
+                                "index": 0,
+                                "signatureAlgorithm": "ECDSA_secp256k1",
+                                "hashAlgorithm": "SHA2_256",
+                                "privateKey": flow_private_key
+                            }
+                        }
+                    },
+                    "deployments": {},
+                    "contracts": {}
+                })
+            
+            # Write the updated configuration
+            flow_config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
+            logger.info("Updated flow.json with proper keys for network: %s", network)
+            
+        except Exception as e:
+            logger.error("Failed to setup flow config with keys: %s", str(e))
+            # Create a basic working configuration as fallback
+            await self._create_fallback_flow_config(project_dir, network)
+
+    async def _create_fallback_flow_config(self, project_dir: Path, network: str):
+        """Create a fallback flow.json configuration that works."""
+        flow_config_file = project_dir / "flow.json"
+        
+        if network == "emulator":
+            # Use the known working emulator service account
+            config = {
+                "networks": {
+                    "emulator": "127.0.0.1:3569",
+                    "testnet": "access.devnet.nodes.onflow.org:9000",
+                    "mainnet": "access.mainnet.nodes.onflow.org:9000"
+                },
+                "accounts": {
+                    "emulator-account": {
+                        "address": "service",
+                        "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+                    }
+                },
+                "deployments": {},
+                "contracts": {}
+            }
+        else:
+            # For testnet/mainnet, use credentials from environment variables
+            flow_account_address = os.getenv("FLOW_ACCOUNT_ADDRESS")
+            flow_private_key = os.getenv("FLOW_PRIVATE_KEY")
+            
+            accounts = {}
+            if flow_account_address and flow_private_key:
+                accounts["testnet-account"] = {
+                    "address": flow_account_address,
+                    "key": {
+                        "type": "hex",
+                        "index": 0,
+                        "signatureAlgorithm": "ECDSA_secp256k1",
+                        "hashAlgorithm": "SHA2_256",
+                        "privateKey": flow_private_key
+                    }
+                }
+            
+            config = {
+                "networks": {
+                    "emulator": "127.0.0.1:3569",
+                    "testnet": "access.devnet.nodes.onflow.org:9000",
+                    "mainnet": "access.mainnet.nodes.onflow.org:9000"
+                },
+                "accounts": accounts,
+                "deployments": {},
+                "contracts": {}
+            }
+        
+        flow_config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
+        logger.info("Created fallback flow.json configuration for network: %s", network)
+
     async def deploy_contract(self, project_id: str, network: str = "emulator", 
-                            account_name: str = "emulator-account") -> Dict[str, Any]:
+                            account_name: str = "emulator-account", update: bool = False) -> Dict[str, Any]:
         """Deploy contract to the specified network.
         
         Args:
             project_id: Project identifier
             network: Target network for deployment
             account_name: Account name to deploy to
+            update: Whether to force update existing contracts
             
         Returns:
             Dict containing deployment result
@@ -151,31 +322,48 @@ class FlowProjectManager:
             emulator_process = None
             if network == "emulator":
                 emulator_process = await self._start_emulator(project_dir)
-                # Wait a bit for emulator to start
-                await asyncio.sleep(3)
+                # Only wait if we actually started a new emulator
+                if emulator_process:
+                    await asyncio.sleep(3)
             
             # Deploy using flow project deploy
             deploy_cmd = ["flow", "project", "deploy", f"--network={network}"]
+            if update:
+                deploy_cmd.append("--update")
+            start_time = datetime.now()
             deploy_result = await self._run_command(deploy_cmd, cwd=project_dir, timeout=120)
+            end_time = datetime.now()
+            execution_time_ms = int((end_time - start_time).total_seconds() * 1000)
             
             # Stop emulator if we started it
             if emulator_process:
                 await self._stop_emulator(emulator_process)
             
             if deploy_result.get("returncode") == 0:
+                # Parse deployment output for transaction hash and contract address
+                deployment_output = deploy_result.get("stdout", "")
+                deployment_info = self._parse_deployment_output(deployment_output)
+                
                 # Update metadata
                 await self._update_project_metadata(project_dir, {
                     "deployed_at": datetime.now().isoformat(),
                     "deployment_network": network,
-                    "deployment_status": "deployed"
+                    "deployment_status": "deployed",
+                    "transaction_hash": deployment_info.get("transaction_hash"),
+                    "contract_address": deployment_info.get("contract_address")
                 })
                 
-                logger.info("Contract deployed successfully: project_id=%s", project_id)
+                logger.info("Contract deployed successfully: project_id=%s, tx_hash=%s", 
+                           project_id, deployment_info.get("transaction_hash"))
                 return {
                     "status": "success",
                     "project_id": project_id,
                     "network": network,
-                    "deployment_output": deploy_result.get("stdout", ""),
+                    "deployment_output": deployment_output,
+                    "transaction_hash": deployment_info.get("transaction_hash"),
+                    "contract_address": deployment_info.get("contract_address"),
+                    "account_address": deployment_info.get("account_address"),
+                    "execution_time_ms": execution_time_ms,
                     "deployed_at": datetime.now().isoformat()
                 }
             else:
@@ -184,7 +372,8 @@ class FlowProjectManager:
                 return {
                     "status": "failed",
                     "error": error_msg,
-                    "project_id": project_id
+                    "project_id": project_id,
+                    "execution_time_ms": execution_time_ms
                 }
                 
         except Exception as e:
@@ -334,6 +523,95 @@ class FlowProjectManager:
                 "stderr": str(e)
             }
     
+    def _parse_deployment_output(self, output: str) -> Dict[str, Any]:
+        """Parse Flow CLI deployment output to extract transaction hash and other info.
+        
+        Args:
+            output: Raw output from flow project deploy command
+            
+        Returns:
+            Dict containing parsed deployment information
+        """
+        deployment_info = {
+            "transaction_hash": None,
+            "contract_address": None,
+            "account_address": None
+        }
+        
+        try:
+            # Common patterns in Flow CLI output
+            # Transaction ID pattern: "Transaction ID: 0x..."
+            tx_pattern = r"Transaction ID:\s*(0x[0-9a-fA-F]+)"
+            tx_match = re.search(tx_pattern, output)
+            if tx_match:
+                deployment_info["transaction_hash"] = tx_match.group(1)
+            
+            # Alternative transaction hash patterns
+            tx_patterns = [
+                r"tx_id:\s*(0x[0-9a-fA-F]+)",
+                r"transaction_id:\s*(0x[0-9a-fA-F]+)",
+                r"Transaction:\s*(0x[0-9a-fA-F]+)",
+                r"(0x[0-9a-fA-F]{64})"  # 64-char hex string with 0x prefix
+            ]
+            
+            for pattern in tx_patterns:
+                if not deployment_info["transaction_hash"]:
+                    match = re.search(pattern, output, re.IGNORECASE)
+                    if match:
+                        deployment_info["transaction_hash"] = match.group(1)
+                        break
+            
+            # Contract address patterns
+            # Pattern 1: "Contract deployed at: 0x..."
+            addr_pattern = r"Contract deployed at:\s*(0x[0-9a-fA-F]+)"
+            addr_match = re.search(addr_pattern, output)
+            if addr_match:
+                deployment_info["contract_address"] = addr_match.group(1)
+            
+            # Pattern 2: "ContractName -> 0x... (transaction_hash) [status]" (most common format)
+            if not deployment_info["contract_address"]:
+                # This pattern captures: ContractName -> 0xAddress (TransactionHash) [status]
+                contract_deploy_pattern = r"(\w+)\s*->\s*(0x[0-9a-fA-F]+)\s*\(([0-9a-fA-F]+)\)"
+                contract_match = re.search(contract_deploy_pattern, output)
+                if contract_match:
+                    deployment_info["contract_address"] = contract_match.group(2)
+                    deployment_info["transaction_hash"] = "0x" + contract_match.group(3)
+                    deployment_info["account_address"] = contract_match.group(2)  # Same as contract address for emulator
+                else:
+                    # Fallback to simpler pattern without transaction hash
+                    simple_pattern = r"\w+\s*->\s*(0x[0-9a-fA-F]+)"
+                    simple_match = re.search(simple_pattern, output)
+                    if simple_match:
+                        deployment_info["contract_address"] = simple_match.group(1)
+                        deployment_info["account_address"] = simple_match.group(1)
+            
+            # Account address pattern: "Account: 0x..."
+            account_pattern = r"Account:\s*(0x[0-9a-fA-F]+)"
+            account_match = re.search(account_pattern, output)
+            if account_match:
+                deployment_info["account_address"] = account_match.group(1)
+            
+            # Alternative account patterns
+            account_patterns = [
+                r"Deploying to account:\s*(0x[0-9a-fA-F]+)",
+                r"Using account:\s*(0x[0-9a-fA-F]+)",
+                r"Account address:\s*(0x[0-9a-fA-F]+)"
+            ]
+            
+            for pattern in account_patterns:
+                if not deployment_info["account_address"]:
+                    match = re.search(pattern, output, re.IGNORECASE)
+                    if match:
+                        deployment_info["account_address"] = match.group(1)
+                        break
+            
+            logger.debug("Parsed deployment info: %s", deployment_info)
+            
+        except Exception as e:
+            logger.warning("Failed to parse deployment output: %s", str(e))
+        
+        return deployment_info
+    
     async def _update_flow_config(self, project_dir: Path, contract_name: str, network: str):
         """Update flow.json configuration to include the contract."""
         flow_config_file = project_dir / "flow.json"
@@ -341,70 +619,24 @@ class FlowProjectManager:
         if flow_config_file.exists():
             config = json.loads(flow_config_file.read_text(encoding="utf-8"))
         else:
-            # Create basic config if it doesn't exist - this should not happen as flow.json should already be generated
+            # This should not happen as flow.json should already be properly configured
             logger.warning("flow.json not found, creating basic config for network: %s", network)
-            if network == "emulator":
-                config = {
-                    "version": "1.0",
-                    "contracts": {},
-                    "networks": {
-                        "emulator": "127.0.0.1:3569"
-                    },
-                    "accounts": {
-                        "emulator-account": {
-                            "address": os.getenv("FLOW_ACCOUNT_ADDRESS", "f8d6e0586b0a20c7"),
-                            "key": os.getenv("FLOW_PRIVATE_KEY", "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee")
-                        }
-                    },
-                    "deployments": {
-                        "emulator": {
-                            "emulator-account": []
-                        }
-                    }
-                }
-            else:
-                config = {
-                    "version": "1.0",
-                    "contracts": {},
-                    "networks": {
-                        "testnet": "access.devnet.nodes.onflow.org:9000",
-                        "mainnet": "access.mainnet.nodes.onflow.org:9000"
-                    },
-                    "accounts": {},
-                    "deployments": {}
-                }
+            await self._create_fallback_flow_config(project_dir, network)
+            config = json.loads(flow_config_file.read_text(encoding="utf-8"))
         
         # Add contract to contracts section
         if "contracts" not in config:
             config["contracts"] = {}
             
-        # Set contract source path and aliases based on network
-        if network == "emulator":
-            config["contracts"][contract_name] = {
-                "source": f"./cadence/contracts/{contract_name}.cdc",
-                "aliases": {
-                    "emulator": "f8d6e0586b0a20c7"
-                }
+        # Set contract configuration with proper format
+        config["contracts"][contract_name] = {
+            "source": f"./contracts/{contract_name}.cdc",
+            "aliases": {
+                "emulator": "0xf8d6e0586b0a20c7",
+                "testnet": "0x01",
+                "mainnet": "0x01"
             }
-        else:
-            config["contracts"][contract_name] = {
-                "source": f"./cadence/contracts/{contract_name}.cdc",
-                "aliases": {
-                    "testnet": "0x01",
-                    "mainnet": "0x01"
-                }
-            }
-        
-        # Ensure accounts section exists
-        if "accounts" not in config:
-            config["accounts"] = {}
-        
-        # Add emulator account if network is emulator and it doesn't exist
-        if network == "emulator" and "emulator-account" not in config["accounts"]:
-            config["accounts"]["emulator-account"] = {
-                "address": os.getenv("FLOW_ACCOUNT_ADDRESS", "f8d6e0586b0a20c7"),
-                "key": os.getenv("FLOW_PRIVATE_KEY", "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee")
-            }
+        }
         
         # Ensure deployments section exists
         if "deployments" not in config:
@@ -414,8 +646,25 @@ class FlowProjectManager:
         if network not in config["deployments"]:
             config["deployments"][network] = {}
         
-        # Use appropriate account name based on network
-        account_name = "emulator-account" if network == "emulator" else "default"
+        # Use appropriate account name based on network and existing accounts
+        account_name = None
+        if network == "emulator" and "emulator-account" in config.get("accounts", {}):
+            account_name = "emulator-account"
+        elif network == "testnet" and "testnet-account" in config.get("accounts", {}):
+            account_name = "testnet-account"
+        elif "default" in config.get("accounts", {}):
+            account_name = "default"
+        elif config.get("accounts"):
+            # Use the first available account
+            account_name = list(config["accounts"].keys())[0]
+        else:
+            # No accounts configured, use default names
+            if network == "emulator":
+                account_name = "emulator-account"
+            elif network == "testnet":
+                account_name = "testnet-account"
+            else:
+                account_name = "default"
         
         if account_name not in config["deployments"][network]:
             config["deployments"][network][account_name] = []
@@ -426,7 +675,8 @@ class FlowProjectManager:
         
         # Write updated config
         flow_config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
-        logger.info("Updated flow.json for contract %s on network %s", contract_name, network)
+        logger.info("Updated flow.json for contract %s on network %s using account %s", 
+                   contract_name, network, account_name)
     
     async def _create_project_readme(self, project_dir: Path, contract_name: str, project_id: str):
         """Create a README file for the project."""
@@ -586,9 +836,26 @@ flow project deploy --network=testnet
         metadata_file.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
         logger.debug("Updated metadata for project in %s", project_dir)
     
+    async def _is_emulator_running(self) -> bool:
+        """Check if Flow emulator is already running by testing connection to default port."""
+        try:
+            import socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex(('127.0.0.1', 3569))
+            sock.close()
+            return result == 0
+        except Exception:
+            return False
+
     async def _start_emulator(self, project_dir: Path) -> Optional[asyncio.subprocess.Process]:
         """Start Flow emulator for local deployment."""
         try:
+            # Check if emulator is already running
+            if await self._is_emulator_running():
+                logger.info("Flow emulator is already running, skipping start")
+                return None
+                
             logger.info("Starting Flow emulator for project in %s", project_dir)
             process = await asyncio.create_subprocess_exec(
                 "flow", "emulator",

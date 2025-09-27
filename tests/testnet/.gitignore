@@ -1,0 +1,19 @@
+# Testnet credentials and sensitive files
+.env.testnet
+*.pkey
+*.key
+
+# Flow project directories created during testing
+flow_projects_testnet/
+testnet_projects/
+
+# Test artifacts
+*.log
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+.DS_Store
+*.tmp
+*.temp

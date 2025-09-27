@@ -1,29 +1,28 @@
-```cadence
-// Organization.cdc
+// Organization.cdc - Cadence 1.0 Compatible Version
 
-pub contract Organization {
+access(all) contract Organization {
 
     // Events
-    pub event OrganizationCreated(id: UInt64, name: String)
-    pub event OrganizationUpdated(id: UInt64, name: String)
-    pub event OrganizationDeleted(id: UInt64)
+    access(all) event OrganizationCreated(id: UInt64, name: String)
+    access(all) event OrganizationUpdated(id: UInt64, name: String)
+    access(all) event OrganizationDeleted(id: UInt64)
 
     // Resource Interface
-    pub resource interface OrganizationInterface {
-        pub let id: UInt64
-        pub var name: String
-        pub var description: String
-        pub var website: String?
+    access(all) resource interface OrganizationInterface {
+        access(all) let id: UInt64
+        access(all) var name: String
+        access(all) var description: String
+        access(all) var website: String?
 
-        pub fun update(name: String, description: String, website: String?)
+        access(all) fun update(name: String, description: String, website: String?)
     }
 
     // Resource
-    pub resource OrganizationResource: OrganizationInterface {
-        pub let id: UInt64
-        pub var name: String
-        pub var description: String
-        pub var website: String?
+    access(all) resource OrganizationResource: OrganizationInterface {
+        access(all) let id: UInt64
+        access(all) var name: String
+        access(all) var description: String
+        access(all) var website: String?
 
         init(id: UInt64, name: String, description: String, website: String?) {
             self.id = id
@@ -32,7 +31,7 @@ pub contract Organization {
             self.website = website
         }
 
-        pub fun update(name: String, description: String, website: String?) {
+        access(all) fun update(name: String, description: String, website: String?) {
             self.name = name
             self.description = description
             self.website = website
@@ -40,11 +39,11 @@ pub contract Organization {
     }
 
     // Storage Path
-    pub let OrganizationStoragePath: StoragePath
-    pub let OrganizationPublicPath: PublicPath
+    access(all) let OrganizationStoragePath: StoragePath
+    access(all) let OrganizationPublicPath: PublicPath
 
     // Mapping of organization ID to organization resource
-    pub var organizations: @{UInt64: OrganizationResource}
+    access(self) var organizations: @{UInt64: OrganizationResource}
 
     init() {
         self.OrganizationStoragePath = /storage/Organization
@@ -56,7 +55,7 @@ pub contract Organization {
     }
 
     // Function to create a new organization
-    pub fun createOrganization(id: UInt64, name: String, description: String, website: String?): @OrganizationResource {
+    access(all) fun createOrganization(id: UInt64, name: String, description: String, website: String?): @OrganizationResource {
         pre {
             !self.organizations.containsKey(id): "Organization with this ID already exists"
         }
@@ -67,17 +66,17 @@ pub contract Organization {
     }
 
     // Function to update an existing organization
-    pub fun updateOrganization(id: UInt64, name: String, description: String, website: String?) {
+    access(all) fun updateOrganization(id: UInt64, name: String, description: String, website: String?) {
         pre {
             self.organizations.containsKey(id): "Organization with this ID does not exist"
         }
-        let organization = self.organizations[id]!
-        organization.update(name: name, description: description, website: website)
+        let organization = &self.organizations[id] as &OrganizationResource?
+        organization?.update(name: name, description: description, website: website)
         emit OrganizationUpdated(id: id, name: name)
     }
 
     // Function to delete an organization
-    pub fun deleteOrganization(id: UInt64) {
+    access(all) fun deleteOrganization(id: UInt64) {
         pre {
             self.organizations.containsKey(id): "Organization with this ID does not exist"
         }
@@ -87,16 +86,21 @@ pub contract Organization {
     }
 
     // Function to save the organization collection to storage
-    pub fun saveOrganizationCollection() {
+    access(all) fun saveOrganizationCollection() {
         let collection <- create OrganizationCollection()
-        collection.organizations <- self.organizations <- {}
-        self.account.save(<- collection, to: self.OrganizationStoragePath)
-        self.account.link<&{OrganizationCollectionPublic}>(self.OrganizationPublicPath, target: self.OrganizationStoragePath)
+        // Move organizations to the collection
+        collection.setOrganizations(<- self.organizations)
+        self.organizations <- {}
+        self.account.storage.save(<- collection, to: self.OrganizationStoragePath)
+        
+        // Create capability
+        let capability = self.account.capabilities.storage.issue<&{OrganizationCollectionPublic}>(self.OrganizationStoragePath)
+        self.account.capabilities.publish(capability, at: self.OrganizationPublicPath)
     }
 
     // Public interface for Organization Collection
-    pub struct interface OrganizationCollectionPublic {
-        pub fun getOrganization(id: UInt64): &OrganizationResource? {
+    access(all) struct interface OrganizationCollectionPublic {
+        access(all) fun getOrganization(id: UInt64): &OrganizationResource? {
             post {
                 result == nil || result?.id == id: "Returned organization ID does not match the requested ID"
             }
@@ -104,36 +108,45 @@ pub contract Organization {
     }
 
     // Organization Collection Resource
-    pub resource OrganizationCollection: OrganizationCollectionPublic {
-        pub var organizations: @{UInt64: OrganizationResource}
+    access(all) resource OrganizationCollection: OrganizationCollectionPublic {
+        access(self) var organizations: @{UInt64: OrganizationResource}
 
         init() {
             self.organizations <- {}
         }
 
+        // Function to set organizations (used during initialization)
+        access(contract) fun setOrganizations(_ organizations: @{UInt64: OrganizationResource}) {
+            // Clean up any existing organizations first
+            self.cleanupOrganizations()
+            self.organizations <- organizations
+        }
+
+        // Function to clean up organizations (replaces custom destructor)
+        access(all) fun cleanupOrganizations() {
+            destroy self.organizations
+            self.organizations <- {}
+        }
+
         // Function to get an organization by ID
-        pub fun getOrganization(id: UInt64): &OrganizationResource? {
+        access(all) fun getOrganization(id: UInt64): &OrganizationResource? {
             return &self.organizations[id] as &OrganizationResource?
         }
 
         // Function to borrow an organization by ID
-        pub fun borrowOrganization(id: UInt64): &OrganizationResource? {
+        access(all) fun borrowOrganization(id: UInt64): &OrganizationResource? {
             return &self.organizations[id] as &OrganizationResource?
         }
 
         // Function to add an organization to the collection
-        pub fun addOrganization(_ organization: @OrganizationResource) {
+        access(all) fun addOrganization(_ organization: @OrganizationResource) {
             let id = organization.id
             self.organizations[id] <-! organization
         }
 
         // Function to remove an organization from the collection
-        pub fun removeOrganization(id: UInt64): @OrganizationResource? {
+        access(all) fun removeOrganization(id: UInt64): @OrganizationResource? {
             return <- self.organizations.remove(key: id)
-        }
-
-        destroy() {
-            destroy self.organizations
         }
     }
 }
@@ -142,13 +155,12 @@ pub contract Organization {
 transaction(id: UInt64, name: String, description: String, website: String?) {
     prepare(acct: &Account) {
         let organization <- Organization.createOrganization(id: id, name: name, description: description, website: website)
-        acct.save(<- organization, to: /storage/Organization)
+        acct.storage.save(<- organization, to: /storage/Organization)
     }
 }
 
 // Example script to get an organization by ID
-pub fun main(id: UInt64): &Organization.OrganizationResource? {
-    let collection = getAccount(0x01).getCapability(Organization.OrganizationPublicPath).borrow<&{Organization.OrganizationCollectionPublic}>()
+access(all) fun main(id: UInt64): &Organization.OrganizationResource? {
+    let collection = getAccount(0x01).capabilities.get<&{Organization.OrganizationCollectionPublic}>(Organization.OrganizationPublicPath).borrow()
     return collection?.getOrganization(id: id)
 }
-```

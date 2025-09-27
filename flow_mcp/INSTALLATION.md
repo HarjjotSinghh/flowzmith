@@ -37,7 +37,7 @@ flow version
 If you're working with the existing project:
 
 ```bash
-cd /path/to/smart-contract-llm
+cd /path/to/flowzmith
 ```
 
 ### 2. Install Python Dependencies
@@ -98,7 +98,7 @@ Add this to your Claude Desktop configuration:
   "mcpServers": {
     "flow-blockchain": {
       "command": "python",
-      "args": ["/path/to/smart-contract-llm/mcp/flow_mcp_server.py"],
+      "args": ["/path/to/flowzmith/mcp/flow_mcp_server.py"],
       "env": {}
     }
   }
@@ -146,7 +146,7 @@ Enable detailed logging:
 
 ```bash
 export FLOW_LOG_LEVEL=debug
-export PYTHONPATH=$PYTHONPATH:/path/to/smart-contract-llm
+export PYTHONPATH=$PYTHONPATH:/path/to/flowzmith
 python mcp/flow_mcp_server.py
 ```
 
@@ -186,7 +186,7 @@ FLOW_NETWORK=emulator
 
 # Debugging
 FLOW_LOG_LEVEL=info
-PYTHONPATH=/path/to/smart-contract-llm
+PYTHONPATH=/path/to/flowzmith
 ```
 
 ## Testing the Installation

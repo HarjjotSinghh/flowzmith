@@ -498,9 +498,7 @@ def analyze_contract_prompt(contract_code: str, analysis_type: str = "security")
     return f"""
 Please analyze this Flow smart contract code focusing on {analysis_focus}:
 
-```cadence
 {contract_code}
-```
 
 Please provide:
 1. Summary of the contract's purpose

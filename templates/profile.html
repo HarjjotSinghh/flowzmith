@@ -229,7 +229,7 @@ function exportData() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'smart-contract-llm-data-export.json';
+        a.download = 'flowzmith-data-export.json';
         a.click();
         window.URL.revokeObjectURL(url);
 

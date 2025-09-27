@@ -1,5 +1,5 @@
 """
-API Integration for MCP Server with existing smart-contract-llm API
+API Integration for MCP Server with existing flowzmith API
 """
 
 import json

@@ -304,9 +304,7 @@ def get_contract_analysis_prompt(contract_content: str) -> str:
     return f"""
 Analyze the following Cadence smart contract and extract information needed for MCP server generation:
 
-```cadence
 {contract_content}
-```
 
 Please provide a structured analysis including:
 

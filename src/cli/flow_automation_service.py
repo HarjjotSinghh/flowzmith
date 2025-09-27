@@ -12,15 +12,21 @@ import asyncio
 import json
 import uuid
 import subprocess
+import re
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
 import logging
 import os
+from sqlalchemy.orm import Session
 
 from .flow_manager import FlowProjectManager
 from ..mcp_generator.mcp_server_generator import MCPServerGenerator
 from ..mcp_generator.contract_analyzer import CadenceContractAnalyzer
+from ..models.database import get_db
+from ..models.deployment import DeploymentLog, DeploymentStatus
+from ..models.contract import ContractSubmission
+from ..models.generated_contract import GeneratedContract
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -30,15 +36,17 @@ logger = logging.getLogger(__name__)
 class FlowAutomationService:
     """Service for complete Flow CLI automation workflow."""
     
-    def __init__(self, base_projects_dir: Path = None):
+    def __init__(self, base_projects_dir: Path = None, db_session: Session = None):
         """Initialize the automation service.
         
         Args:
             base_projects_dir: Base directory for Flow projects
+            db_session: Database session for storing deployment information
         """
         self.flow_manager = FlowProjectManager(base_projects_dir)
         self.mcp_generator = MCPServerGenerator()
         self.contract_analyzer = CadenceContractAnalyzer()
+        self.db_session = db_session
         
         logger.info("FlowAutomationService initialized")
     
@@ -184,10 +192,21 @@ class FlowAutomationService:
                         account_name=account_result.get("account_name", "default")
                     )
                     
+                    # Store deployment information in database
+                    if self.db_session and deploy_result.get("status") == "success":
+                        await self._store_deployment_info(
+                            project_id=project_id,
+                            deploy_result=deploy_result,
+                            network=network,
+                            contract_name=contract_name
+                        )
+                    
                     workflow_result["steps"]["deployment"] = {
                         "status": "success" if deploy_result.get("status") == "success" else "failed",
-                        "transaction_id": deploy_result.get("transaction_id"),
+                        "transaction_hash": deploy_result.get("transaction_hash"),
                         "contract_address": deploy_result.get("contract_address"),
+                        "account_address": deploy_result.get("account_address"),
+                        "execution_time_ms": deploy_result.get("execution_time_ms"),
                         "completed_at": datetime.now().isoformat(),
                         "error": deploy_result.get("error") if deploy_result.get("status") != "success" else None
                     }
@@ -438,10 +457,24 @@ class FlowAutomationService:
         if "accounts" not in flow_config:
             flow_config["accounts"] = {}
         
-        flow_config["accounts"][account_name] = {
-            "address": address,
-            "key": private_key
-        }
+        # Use detailed key format for testnet/mainnet, simple format for emulator
+        if network in ["testnet", "mainnet"]:
+            flow_config["accounts"][account_name] = {
+                "address": address,
+                "key": {
+                    "type": "hex",
+                    "index": 0,
+                    "signatureAlgorithm": "ECDSA_secp256k1",
+                    "hashAlgorithm": "SHA2_256",
+                    "privateKey": private_key
+                }
+            }
+        else:
+            # For emulator, use simple format
+            flow_config["accounts"][account_name] = {
+                "address": address,
+                "key": private_key
+            }
         
         # Update deployments section
         if "deployments" not in flow_config:
@@ -677,6 +710,49 @@ class FlowAutomationService:
                 return match.group(1)
         
         return None
+    
+    async def _store_deployment_info(
+        self,
+        project_id: str,
+        deploy_result: Dict[str, Any],
+        network: str,
+        contract_name: str
+    ) -> None:
+        """Store deployment information in the database.
+        
+        Args:
+            project_id: Project identifier
+            deploy_result: Deployment result from FlowProjectManager
+            network: Target network
+            contract_name: Name of the deployed contract
+        """
+        try:
+            if not self.db_session:
+                logger.warning("No database session available for storing deployment info")
+                return
+            
+            # Create a deployment log entry
+            deployment_log = DeploymentLog(
+                submission_id=uuid.uuid4(),  # We'll need to link this properly later
+                config_id=uuid.uuid4(),      # We'll need to link this properly later
+                deployment_id=project_id,
+                network=network,
+                status=DeploymentStatus.SUCCESS if deploy_result.get("status") == "success" else DeploymentStatus.FAILED,
+                error_message=deploy_result.get("error"),
+                transaction_hash=deploy_result.get("transaction_hash"),
+                execution_time_ms=deploy_result.get("execution_time_ms", 0),
+                log_content=deploy_result.get("deployment_output", "")
+            )
+            
+            self.db_session.add(deployment_log)
+            self.db_session.commit()
+            
+            logger.info("Stored deployment info in database: project_id=%s, tx_hash=%s", 
+                       project_id, deploy_result.get("transaction_hash"))
+            
+        except Exception as e:
+            logger.error("Failed to store deployment info in database: %s", str(e))
+            # Don't raise the exception to avoid breaking the deployment flow
     
     def _extract_transaction_id(self, output: str) -> Optional[str]:
         """Extract transaction ID from deployment output.

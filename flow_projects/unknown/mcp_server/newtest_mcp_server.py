@@ -990,9 +990,7 @@ Contract Address: {CONTRACT_ADDRESS}
 Network: {DEFAULT_NETWORK}
 
 Source Code:
-```cadence
 {code}
-```
 
 Please provide a detailed {analysis_type} analysis including:
 1. Potential vulnerabilities or issues

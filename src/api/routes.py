@@ -516,7 +516,7 @@ async def generate_flow_project(
         }
         
         # Check for contract file
-        contracts_dir = project_dir / "cadence" / "contracts"
+        contracts_dir = project_dir / "contracts"
         if contracts_dir.exists():
             for file in contracts_dir.glob("*.cdc"):
                 generated_files["contract"] = str(file.relative_to(project_dir))
@@ -528,7 +528,7 @@ async def generate_flow_project(
             generated_files["flow_json"] = "flow.json"
         
         # Check for transactions
-        transactions_dir = project_dir / "cadence" / "transactions"
+        transactions_dir = project_dir / "transactions"
         if transactions_dir.exists():
             generated_files["transactions"] = [
                 str(file.relative_to(project_dir)) 
@@ -536,7 +536,7 @@ async def generate_flow_project(
             ]
         
         # Check for scripts
-        scripts_dir = project_dir / "cadence" / "scripts"
+        scripts_dir = project_dir / "scripts"
         if scripts_dir.exists():
             generated_files["scripts"] = [
                 str(file.relative_to(project_dir)) 
@@ -544,7 +544,7 @@ async def generate_flow_project(
             ]
         
         # Check for tests
-        tests_dir = project_dir / "cadence" / "tests"
+        tests_dir = project_dir / "tests"
         if tests_dir.exists():
             generated_files["tests"] = [
                 str(file.relative_to(project_dir)) 
@@ -738,11 +738,11 @@ async def generate_contract_with_context(
             saved_locally = True
             generated_files = {
                 'project_path': str(project_path),
-                'contract_file': f"{project_path}/cadence/contracts/SmartContract.cdc",
+                'contract_file': f"{project_path}/contracts/SmartContract.cdc",
                 'flow_json': f"{project_path}/flow.json",
-                'transactions_dir': f"{project_path}/cadence/transactions",
-                'scripts_dir': f"{project_path}/cadence/scripts",
-                'tests_dir': f"{project_path}/cadence/tests"
+                'transactions_dir': f"{project_path}/transactions",
+                'scripts_dir': f"{project_path}/scripts",
+                'tests_dir': f"{project_path}/tests"
             }
         except Exception as e:
             # Fallback manual save if ContractCreator fails
@@ -751,18 +751,18 @@ async def generate_contract_with_context(
                 import os, json
                 from pathlib import Path as _Path
                 proj = _Path(settings.flow_projects_path) / str(submission.id)
-                (proj / "cadence" / "contracts").mkdir(parents=True, exist_ok=True)
-                (proj / "cadence" / "transactions").mkdir(parents=True, exist_ok=True)
-                (proj / "cadence" / "scripts").mkdir(parents=True, exist_ok=True)
+                (proj / "contracts").mkdir(parents=True, exist_ok=True)
+                (proj / "transactions").mkdir(exist_ok=True)
+                (proj / "scripts").mkdir(exist_ok=True)
                 contract_name = generated_config.config_content.get("contracts", {}).get("default") or "SmartContract"
-                with open(proj / "cadence" / "contracts" / f"{contract_name}.cdc", "w") as f:
+                with open(proj / "contracts" / f"{contract_name}.cdc", "w") as f:
                     f.write(strip_markdown_code_blocks(generated_config.generated_contract_code))
                 with open(proj / "flow.json", "w") as f:
                     json.dump(generated_config.config_content, f, indent=2)
                 saved_locally = True
                 generated_files = {
                     'project_path': str(proj),
-                    'contract_file': f"{proj}/cadence/contracts/{contract_name}.cdc",
+                    'contract_file': f"{proj}/contracts/{contract_name}.cdc",
                     'flow_json': f"{proj}/flow.json"
                 }
             except Exception:
@@ -1445,11 +1445,11 @@ async def generate_contract_with_context_streaming(
                     try:
                         settings = _get_settings()
                         proj = _Path(settings.flow_projects_path) / str(submission_stream.id)
-                        (proj / "cadence" / "contracts").mkdir(parents=True, exist_ok=True)
-                        (proj / "cadence" / "transactions").mkdir(parents=True, exist_ok=True)
-                        (proj / "cadence" / "scripts").mkdir(parents=True, exist_ok=True)
+                        (proj / "contracts").mkdir(parents=True, exist_ok=True)
+                        (proj / "transactions").mkdir(exist_ok=True)
+                        (proj / "scripts").mkdir(exist_ok=True)
                         contract_name = "SmartContract"  # Default name
-                        with open(proj / "cadence" / "contracts" / f"{contract_name}.cdc", "w") as f:
+                        with open(proj / "contracts" / f"{contract_name}.cdc", "w") as f:
                             f.write(strip_markdown_code_blocks(contract_content))
                         with open(proj / "flow.json", "w") as f:
                             json.dump(json.loads(config_content) if config_content else {}, f, indent=2)
