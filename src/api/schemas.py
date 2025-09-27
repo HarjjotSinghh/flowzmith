@@ -1,5 +1,5 @@
 """
-API schemas for Smart Contract LLM Builder.
+API schemas for Flowzmith.
 """
 
 from pydantic import BaseModel, Field, validator
@@ -342,3 +342,86 @@ class StatusUpdate(BaseModel):
     status: str
     details: Optional[Dict[str, Any]] = None
     timestamp: str
+
+
+# Flow CLI Schemas
+class FlowProjectCreateRequest(BaseModel):
+    """Schema for creating a new Flow project."""
+    name: Optional[str] = None
+    directory: Optional[str] = None
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+
+
+class FlowProjectResponse(BaseModel):
+    """Schema for Flow project response."""
+    project_id: str
+    name: str
+    path: str
+    network: str
+    status: str
+    contracts: List[str] = []
+    created_at: datetime
+    last_modified: Optional[datetime] = None
+
+
+class FlowDeploymentRequest(BaseModel):
+    """Schema for Flow contract deployment."""
+    project_path: str
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+    contract_name: Optional[str] = None
+    auto_approve: bool = False
+
+
+class FlowDeploymentResponse(BaseModel):
+    """Schema for Flow deployment response."""
+    deployment_id: str
+    project_path: str
+    contract_name: Optional[str]
+    network: str
+    status: str
+    transaction_id: Optional[str] = None
+    error_message: Optional[str] = None
+    output: Optional[str] = None
+    started_at: datetime
+    completed_at: Optional[datetime] = None
+
+
+class FlowProjectStatusResponse(BaseModel):
+    """Schema for Flow project status."""
+    project_path: str
+    name: str
+    network: str
+    flow_json_exists: bool
+    contracts_count: int
+    contracts: List[str] = []
+    emulator_running: bool = False
+    last_deployment: Optional[datetime] = None
+
+
+class FlowGenerateDeployRequest(BaseModel):
+    """Schema for generating and deploying a contract with Flow CLI."""
+    requirements: str = Field(..., min_length=1)
+    context_dir: Optional[str] = "context"
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+    project_name: Optional[str] = None
+    auto_deploy: bool = True
+
+
+class FlowDeploymentHistoryResponse(BaseModel):
+    """Schema for Flow deployment history."""
+    deployments: List[FlowDeploymentResponse]
+    total_count: int
+    success_count: int
+    failure_count: int
+    success_rate: float
+
+
+class FlowDeploymentStatsResponse(BaseModel):
+    """Schema for Flow deployment statistics."""
+    total_projects: int
+    total_deployments: int
+    successful_deployments: int
+    failed_deployments: int
+    success_rate: float
+    networks: Dict[str, int]
+    recent_deployments: List[FlowDeploymentResponse]

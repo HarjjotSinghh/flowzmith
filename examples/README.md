@@ -1,6 +1,6 @@
 # Examples
 
-This directory contains comprehensive examples demonstrating how to use the Smart Contract LLM Builder platform.
+This directory contains comprehensive examples demonstrating how to use the Flowzmith platform.
 
 ## Available Examples
 
@@ -108,7 +108,7 @@ console.log(`Contract deployed at: ${deployment.data.contract_address}`);
 
 3. **Start the Application**
    ```bash
-   # Start the Smart Contract LLM Builder
+   # Start the Flowzmith
    python src/main.py
    ```
 

@@ -1,5 +1,5 @@
 """
-Learning and feedback service for Smart Contract LLM Builder.
+Learning and feedback service for Flowzmith.
 """
 
 import logging

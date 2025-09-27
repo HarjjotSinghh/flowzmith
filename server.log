@@ -3,7 +3,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [2622] using WatchFiles
 INFO:     Started server process [2696]
 INFO:     Waiting for application startup.
-2025-09-26 01:36:05,099 - src.main - INFO - Starting Smart Contract LLM Builder application...
+2025-09-26 01:36:05,099 - src.main - INFO - Starting Flowzmith application...
 2025-09-26 01:36:08,279 INFO sqlalchemy.engine.Engine select pg_catalog.version()
 2025-09-26 01:36:08,279 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
 2025-09-26 01:36:08,279 INFO sqlalchemy.engine.Engine [raw sql] {}
@@ -223,12 +223,12 @@ INFO:     connection closed
 WARNING:  WatchFiles detected changes in 'src/models/user.py'. Reloading...
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
-2025-09-26 01:36:38,800 - src.main - INFO - Shutting down Smart Contract LLM Builder application...
+2025-09-26 01:36:38,800 - src.main - INFO - Shutting down Flowzmith application...
 INFO:     Application shutdown complete.
 INFO:     Finished server process [2696]
 INFO:     Started server process [5094]
 INFO:     Waiting for application startup.
-2025-09-26 01:36:39,759 - src.main - INFO - Starting Smart Contract LLM Builder application...
+2025-09-26 01:36:39,759 - src.main - INFO - Starting Flowzmith application...
 WARNING:  WatchFiles detected changes in 'src/models/deployment.py'. Reloading...
 2025-09-26 01:36:42,891 INFO sqlalchemy.engine.Engine select pg_catalog.version()
 2025-09-26 01:36:42,891 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
@@ -405,7 +405,7 @@ WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visib
 INFO:     Application startup complete.
 INFO:     Started server process [6114]
 INFO:     Waiting for application startup.
-2025-09-26 01:36:54,297 - src.main - INFO - Starting Smart Contract LLM Builder application...
+2025-09-26 01:36:54,297 - src.main - INFO - Starting Flowzmith application...
 2025-09-26 01:36:57,480 INFO sqlalchemy.engine.Engine select pg_catalog.version()
 2025-09-26 01:36:57,480 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
 2025-09-26 01:36:57,481 INFO sqlalchemy.engine.Engine [raw sql] {}
@@ -1030,7 +1030,7 @@ INFO:     connection rejected (403 Forbidden)
 INFO:     connection closed
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
-2025-09-26 01:42:04,028 - src.main - INFO - Shutting down Smart Contract LLM Builder application...
+2025-09-26 01:42:04,028 - src.main - INFO - Shutting down Flowzmith application...
 INFO:     Application shutdown complete.
 INFO:     Finished server process [6114]
 INFO:     Stopping reloader process [2622]

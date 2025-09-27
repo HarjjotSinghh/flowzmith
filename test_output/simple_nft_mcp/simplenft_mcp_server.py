@@ -6,7 +6,7 @@ Generated automatically from contract analysis.
 
 Contract Address: 0x1234567890abcdef
 Network: testnet
-Generated: 2025-09-27T04:51:25.000110
+Generated: 2025-09-27T10:36:23.028913
 """
 
 import asyncio
@@ -69,7 +69,7 @@ class MintnftParams(BaseModel):
 class WithdrawEvent(BaseModel):
     """Event data for Withdraw."""
     id: int
-    from: Optional[str]
+    from_: Optional[str] = Field(alias="from")
 
 
 class DepositEvent(BaseModel):
@@ -145,135 +145,184 @@ async def view_contract_info(
                 "contract_address": CONTRACT_ADDRESS,
                 "network": network,
                 "account_info": result["stdout"],
-                "functions": 
-# getViews function
-async def getViews():
-    """
-    / Function that returns all the Metadata Views implemented by a Non Fungible Token
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# resolveView function
-async def resolveView(view):
-    """
-    / Function that resolves a metadata view for this token
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# getIDs function
-async def getIDs():
-    """
-    Call getIDs function on the contract.
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# withdraw function
-async def withdraw(withdrawID):
-    """
-    / Removes an NFT from the collection and moves it to the caller
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# deposit function
-async def deposit(token):
-    """
-    / Adds an NFT to the collections dictionary and adds the ID to the id array
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# borrowNFT function
-async def borrowNFT(id):
-    """
-    / Gets a reference to an NFT in the collection so that
-/ the caller can read its metadata and call its methods
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# borrowSimpleNFT function
-async def borrowSimpleNFT(id):
-    """
-    / Gets a reference to an NFT in the collection as a SimpleNFT,
-/ This is safe as there are no functions that can be called on the SimpleNFT
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# borrowViewResolver function
-async def borrowViewResolver(id):
-    """
-    / Gets a reference to the NFT only conforming to the `{MetadataViews.Resolver}`
-/ interface so that the caller can retrieve the views that the NFT
-/ is implementing and resolve them
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# createEmptyCollection function
-async def createEmptyCollection():
-    """
-    / Allows anyone to create a new empty collection
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# mintNFT function
-async def mintNFT(recipient, metadata):
-    """
-    / Mints a new NFT with a new ID and deposit it in the
-/ recipients collection using their collection reference
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# getTotalSupply function
-async def getTotalSupply():
-    """
-    / Get the total supply of NFTs
-    """
-    # Implementation will be generated in tools
-    pass
-
-
-# getContractInfo function
-async def getContractInfo():
-    """
-    / Get contract information
-    """
-    # Implementation will be generated in tools
-    pass
-,
-                "events": 
-# ContractInitialized event
-EVENT_CONTRACTINITIALIZED = "ContractInitialized"
-
-
-# Withdraw event
-EVENT_WITHDRAW = "Withdraw"
-
-
-# Deposit event
-EVENT_DEPOSIT = "Deposit"
-
-
-# Minted event
-EVENT_MINTED = "Minted"
-
+                "functions": [
+  {
+    "name": "getViews",
+    "parameters": [],
+    "return_type": "[Type]",
+    "documentation": "/ Function that returns all the Metadata Views implemented by a Non Fungible Token",
+    "is_view": true
+  },
+  {
+    "name": "resolveView",
+    "parameters": [
+      {
+        "name": "view",
+        "type": "Type"
+      }
+    ],
+    "return_type": "AnyStruct?",
+    "documentation": "/ Function that resolves a metadata view for this token",
+    "is_view": false
+  },
+  {
+    "name": "getIDs",
+    "parameters": [],
+    "return_type": "[UInt64]",
+    "documentation": "Call getIDs function on the contract.",
+    "is_view": true
+  },
+  {
+    "name": "withdraw",
+    "parameters": [
+      {
+        "name": "withdrawID",
+        "type": "UInt64"
+      }
+    ],
+    "return_type": "@NonFungibleToken.NFT",
+    "documentation": "/ Removes an NFT from the collection and moves it to the caller",
+    "is_view": false
+  },
+  {
+    "name": "deposit",
+    "parameters": [
+      {
+        "name": "token",
+        "type": "@NonFungibleToken.NFT"
+      }
+    ],
+    "return_type": null,
+    "documentation": "/ Adds an NFT to the collections dictionary and adds the ID to the id array",
+    "is_view": false
+  },
+  {
+    "name": "borrowNFT",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      }
+    ],
+    "return_type": "&NonFungibleToken.NFT",
+    "documentation": "/ Gets a reference to an NFT in the collection so that\n/ the caller can read its metadata and call its methods",
+    "is_view": false
+  },
+  {
+    "name": "borrowSimpleNFT",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      }
+    ],
+    "return_type": "&SimpleNFT.NFT?",
+    "documentation": "/ Gets a reference to an NFT in the collection as a SimpleNFT,\n/ This is safe as there are no functions that can be called on the SimpleNFT",
+    "is_view": false
+  },
+  {
+    "name": "borrowViewResolver",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      }
+    ],
+    "return_type": "&AnyResource",
+    "documentation": "/ Gets a reference to the NFT only conforming to the `{MetadataViews.Resolver}`\n/ interface so that the caller can retrieve the views that the NFT\n/ is implementing and resolve them",
+    "is_view": true
+  },
+  {
+    "name": "createEmptyCollection",
+    "parameters": [],
+    "return_type": "@NonFungibleToken.Collection",
+    "documentation": "/ Allows anyone to create a new empty collection",
+    "is_view": false
+  },
+  {
+    "name": "mintNFT",
+    "parameters": [
+      {
+        "name": "recipient",
+        "type": "&{NonFungibleToken.CollectionPublic}"
+      },
+      {
+        "name": "metadata",
+        "type": "{String: String}"
+      }
+    ],
+    "return_type": "UInt64",
+    "documentation": "/ Mints a new NFT with a new ID and deposit it in the\n/ recipients collection using their collection reference",
+    "is_view": true
+  },
+  {
+    "name": "getTotalSupply",
+    "parameters": [],
+    "return_type": "UInt64",
+    "documentation": "/ Get the total supply of NFTs",
+    "is_view": false
+  },
+  {
+    "name": "getContractInfo",
+    "parameters": [],
+    "return_type": "",
+    "documentation": "/ Get contract information",
+    "is_view": true
+  }
+],
+                "events": [
+  {
+    "name": "ContractInitialized",
+    "parameters": [],
+    "documentation": "/ Event emitted when the contract is initialized"
+  },
+  {
+    "name": "Withdraw",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      },
+      {
+        "name": "from",
+        "type": "Address?"
+      }
+    ],
+    "documentation": "/ Event emitted when an NFT is withdrawn from a collection"
+  },
+  {
+    "name": "Deposit",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      },
+      {
+        "name": "to",
+        "type": "Address?"
+      }
+    ],
+    "documentation": "/ Event emitted when an NFT is deposited to a collection"
+  },
+  {
+    "name": "Minted",
+    "parameters": [
+      {
+        "name": "id",
+        "type": "UInt64"
+      },
+      {
+        "name": "recipient",
+        "type": "Address"
+      },
+      {
+        "name": "metadata",
+        "type": "{String: String}"
+      }
+    ],
+    "documentation": "/ Event emitted when an NFT is minted"
+  }
+]
             }
         else:
             return {
@@ -329,12 +378,12 @@ async def call_getViews(arguments: dict) -> str:
         # No parameters
         
         # Build Flow CLI command
-        if true:
+        if True:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 access(all) fun main(): [Type] {
@@ -349,17 +398,11 @@ async def call_getViews(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                transaction() {
-                    prepare(signer: AuthAccount) {
-                        // Transaction logic here
-                    }
-                    
-                    execute {
-                        SimpleNFT.getViews()
-                    }
+                access(all) fun main(): [Type] {
+                    return SimpleNFT.getViews()
                 }
                 """,
                 
@@ -393,19 +436,25 @@ async def call_resolveView(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                view = arguments.get("view")
+        view = arguments.get("view")
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(view: Type): AnyStruct? {
-                    return SimpleNFT.resolveView(view)
+                transaction(view: Type) {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.resolveView(view)
+                    }
                 }
                 """,
                 "--arg", "String:view"
@@ -416,7 +465,7 @@ async def call_resolveView(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction(view: Type) {
@@ -456,8 +505,6 @@ async def call_getIDs(arguments: dict) -> str:
     
     Access Level: all
     Return Type: [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowSimpleNFT(id: UInt64): &SimpleNFT.NFT?
     View Function: Yes
     """
     try:
@@ -465,17 +512,15 @@ async def call_getIDs(arguments: dict) -> str:
         # No parameters
         
         # Build Flow CLI command
-        if true:
+        if True:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(): [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowSimpleNFT(id: UInt64): &SimpleNFT.NFT? {
+                access(all) fun main(): [UInt64] {
                     return SimpleNFT.getIDs()
                 }
                 """,
@@ -487,17 +532,11 @@ async def call_getIDs(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                transaction() {
-                    prepare(signer: AuthAccount) {
-                        // Transaction logic here
-                    }
-                    
-                    execute {
-                        SimpleNFT.getIDs()
-                    }
+                access(all) fun main(): [UInt64] {
+                    return SimpleNFT.getIDs()
                 }
                 """,
                 
@@ -531,19 +570,25 @@ async def call_withdraw(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                withdrawID = arguments.get("withdrawID")
+        withdrawID = arguments.get("withdrawID")
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(withdrawID: UInt64): @NonFungibleToken.NFT {
-                    return SimpleNFT.withdraw(withdrawID)
+                transaction(withdrawID: UInt64) {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.withdraw(withdrawID)
+                    }
                 }
                 """,
                 "--arg", "String:withdrawID"
@@ -554,7 +599,7 @@ async def call_withdraw(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction(withdrawID: UInt64) {
@@ -598,19 +643,25 @@ async def call_deposit(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                token = arguments.get("token")
+        token = arguments.get("token")
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(token: @NonFungibleToken.NFT): Void {
-                    return SimpleNFT.deposit(token)
+                transaction(token: @NonFungibleToken.NFT) {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.deposit(token)
+                    }
                 }
                 """,
                 "--arg", "String:token"
@@ -621,7 +672,7 @@ async def call_deposit(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction(token: @NonFungibleToken.NFT) {
@@ -666,19 +717,25 @@ async def call_borrowNFT(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                id = arguments.get("id")
+        id = arguments.get("id")
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(id: UInt64): &NonFungibleToken.NFT {
-                    return SimpleNFT.borrowNFT(id)
+                transaction(id: UInt64) {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.borrowNFT(id)
+                    }
                 }
                 """,
                 "--arg", "String:id"
@@ -689,7 +746,7 @@ async def call_borrowNFT(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction(id: UInt64) {
@@ -734,19 +791,25 @@ async def call_borrowSimpleNFT(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                id = arguments.get("id")
+        id = arguments.get("id")
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(id: UInt64): &SimpleNFT.NFT? {
-                    return SimpleNFT.borrowSimpleNFT(id)
+                transaction(id: UInt64) {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.borrowSimpleNFT(id)
+                    }
                 }
                 """,
                 "--arg", "String:id"
@@ -757,7 +820,7 @@ async def call_borrowSimpleNFT(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction(id: UInt64) {
@@ -803,15 +866,15 @@ async def call_borrowViewResolver(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                id = arguments.get("id")
+        id = arguments.get("id")
         
         # Build Flow CLI command
-        if true:
+        if True:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 access(all) fun main(id: UInt64): &AnyResource {
@@ -826,17 +889,11 @@ async def call_borrowViewResolver(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                transaction(id: UInt64) {
-                    prepare(signer: AuthAccount) {
-                        // Transaction logic here
-                    }
-                    
-                    execute {
-                        SimpleNFT.borrowViewResolver(id)
-                    }
+                access(all) fun main(id: UInt64): &AnyResource {
+                    return SimpleNFT.borrowViewResolver(id)
                 }
                 """,
                 "--arg", "String:id"
@@ -873,16 +930,22 @@ async def call_createEmptyCollection(arguments: dict) -> str:
         # No parameters
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(): @NonFungibleToken.Collection {
-                    return SimpleNFT.createEmptyCollection()
+                transaction() {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.createEmptyCollection()
+                    }
                 }
                 """,
                 
@@ -893,7 +956,7 @@ async def call_createEmptyCollection(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction() {
@@ -938,16 +1001,16 @@ async def call_mintNFT(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-                recipient = arguments.get("recipient")
+        recipient = arguments.get("recipient")
         metadata = arguments.get("metadata")
         
         # Build Flow CLI command
-        if true:
+        if True:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 access(all) fun main(recipient: &{NonFungibleToken.CollectionPublic}, metadata: {String: String}): UInt64 {
@@ -962,17 +1025,11 @@ async def call_mintNFT(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                transaction(recipient: &{NonFungibleToken.CollectionPublic}, metadata: {String: String}) {
-                    prepare(signer: AuthAccount) {
-                        // Transaction logic here
-                    }
-                    
-                    execute {
-                        SimpleNFT.mintNFT(recipient, metadata)
-                    }
+                access(all) fun main(recipient: &{NonFungibleToken.CollectionPublic}, metadata: {String: String}): UInt64 {
+                    return SimpleNFT.mintNFT(recipient, metadata)
                 }
                 """,
                 "--arg", "String:recipient", "--arg", "String:metadata"
@@ -1009,16 +1066,22 @@ async def call_getTotalSupply(arguments: dict) -> str:
         # No parameters
         
         # Build Flow CLI command
-        if false:
+        if False:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                access(all) fun main(): UInt64 {
-                    return SimpleNFT.getTotalSupply()
+                transaction() {
+                    prepare(signer: AuthAccount) {
+                        // Transaction logic here
+                    }
+                    
+                    execute {
+                        SimpleNFT.getTotalSupply()
+                    }
                 }
                 """,
                 
@@ -1029,7 +1092,7 @@ async def call_getTotalSupply(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 transaction() {
@@ -1076,12 +1139,12 @@ async def call_getContractInfo(arguments: dict) -> str:
         # No parameters
         
         # Build Flow CLI command
-        if true:
+        if True:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "testnet",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
                 access(all) fun main(): Void {
@@ -1096,17 +1159,11 @@ async def call_getContractInfo(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "testnet",
                 "--signer", "default",
-                "--code", f"""
+                "--code", """
                 import SimpleNFT from 0x1234567890abcdef
                 
-                transaction() {
-                    prepare(signer: AuthAccount) {
-                        // Transaction logic here
-                    }
-                    
-                    execute {
-                        SimpleNFT.getContractInfo()
-                    }
+                access(all) fun main(): Void {
+                    return SimpleNFT.getContractInfo()
                 }
                 """,
                 

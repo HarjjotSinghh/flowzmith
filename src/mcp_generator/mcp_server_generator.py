@@ -342,6 +342,25 @@ pip install mcp
         
         return content
     
+    def _sanitize_field_name(self, field_name: str) -> tuple[str, str]:
+        """
+        Sanitize field name to avoid Python keywords and return (field_name, field_definition).
+        Returns a tuple of (sanitized_name, field_definition_with_alias_if_needed).
+        """
+        python_keywords = {
+            'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else',
+            'except', 'exec', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is',
+            'lambda', 'not', 'or', 'pass', 'print', 'raise', 'return', 'try', 'while', 'with',
+            'yield', 'True', 'False', 'None'
+        }
+        
+        if field_name in python_keywords:
+            sanitized_name = f"{field_name}_"
+            field_def = f'{sanitized_name}: {{type}} = Field(alias="{field_name}")'
+            return sanitized_name, field_def
+        else:
+            return field_name, f"{field_name}: {{type}}"
+
     def _generate_pydantic_models(self, analysis: ContractAnalysis) -> str:
         """Generate Pydantic models for contract parameters."""
         models = []
@@ -355,7 +374,8 @@ pip install mcp
                 for param in func.parameters:
                     # Convert Cadence types to Python types
                     python_type = self._cadence_to_python_type(param.type)
-                    field_def = f"    {param.name}: {python_type}"
+                    sanitized_name, field_template = self._sanitize_field_name(param.name)
+                    field_def = f"    {field_template.format(type=python_type)}"
                     
                     if param.label:
                         field_def += f"  # Label: {param.label}"
@@ -377,7 +397,9 @@ class {model_name}(BaseModel):
                 
                 for param in event.parameters:
                     python_type = self._cadence_to_python_type(param.type)
-                    model_fields.append(f"    {param.name}: {python_type}")
+                    sanitized_name, field_template = self._sanitize_field_name(param.name)
+                    field_def = f"    {field_template.format(type=python_type)}"
+                    model_fields.append(field_def)
                 
                 model = f"""
 class {model_name}(BaseModel):
@@ -389,36 +411,35 @@ class {model_name}(BaseModel):
         return "\n".join(models)
     
     def _generate_contract_functions_code(self, analysis: ContractAnalysis) -> str:
-        """Generate code for contract function definitions."""
-        functions_code = []
+        """Generate JSON data for contract function definitions."""
+        functions_data = []
         
         for func in analysis.functions:
             if func.access_level == AccessLevel.ALL and not func.is_init:
-                func_code = f"""
-# {func.name} function
-async def {func.name}({', '.join([p.name for p in func.parameters])}):
-    \"\"\"
-    {func.documentation or f'Call {func.name} function on the contract.'}
-    \"\"\"
-    # Implementation will be generated in tools
-    pass
-"""
-                functions_code.append(func_code)
+                func_data = {
+                    "name": func.name,
+                    "parameters": [{"name": p.name, "type": p.type} for p in func.parameters],
+                    "return_type": func.return_type,
+                    "documentation": func.documentation or f'Call {func.name} function on the contract.',
+                    "is_view": func.is_view
+                }
+                functions_data.append(func_data)
         
-        return "\n".join(functions_code)
+        return json.dumps(functions_data, indent=2)
     
     def _generate_contract_events_code(self, analysis: ContractAnalysis) -> str:
-        """Generate code for contract event definitions."""
-        events_code = []
+        """Generate JSON data for contract event definitions."""
+        events_data = []
         
         for event in analysis.events:
-            event_code = f"""
-# {event.name} event
-EVENT_{event.name.upper()} = "{event.name}"
-"""
-            events_code.append(event_code)
+            event_data = {
+                "name": event.name,
+                "parameters": [{"name": p.name, "type": p.type} for p in event.parameters],
+                "documentation": event.documentation or f'{event.name} event from the contract.'
+            }
+            events_data.append(event_data)
         
-        return "\n".join(events_code)
+        return json.dumps(events_data, indent=2)
     
     def _generate_tools_code(self, analysis: ContractAnalysis, contract_address: str, network: str) -> str:
         """Generate MCP tools code for contract functions."""
@@ -468,6 +489,34 @@ EVENT_{event.name.upper()} = "{event.name}"
         else:
             call_params = ""
         
+        # Generate Cadence code separately to avoid f-string nesting issues
+        param_list = ', '.join([f'{p.name}: {p.type}' for p in func.parameters])
+        param_names = ', '.join([p.name for p in func.parameters])
+        arg_list = ', '.join([f'"--arg", "String:{p.name}"' for p in func.parameters])
+        
+        if func.is_view:
+            cadence_code = f'''
+                import {contract_name} from {contract_address}
+                
+                access(all) fun main({param_list}): {func.return_type or 'Void'} {{
+                    return {contract_name}.{func.name}({param_names})
+                }}
+                '''
+        else:
+            cadence_code = f'''
+                import {contract_name} from {contract_address}
+                
+                transaction({param_list}) {{
+                    prepare(signer: AuthAccount) {{
+                        // Transaction logic here
+                    }}
+                    
+                    execute {{
+                        {contract_name}.{func.name}({param_names})
+                    }}
+                }}
+                '''
+        
         tool_code = f'''
 @mcp.tool()
 async def {tool_name}(arguments: dict) -> str:
@@ -480,22 +529,16 @@ async def {tool_name}(arguments: dict) -> str:
     """
     try:
         # Extract parameters
-        {self._generate_parameter_extraction(func.parameters)}
+{self._generate_parameter_extraction(func.parameters)}
         
         # Build Flow CLI command
-        if {str(func.is_view).lower()}:
+        if {str(func.is_view)}:
             # View function - use scripts
             cmd = [
                 "flow", "scripts", "execute",
                 "--network", "{network}",
-                "--code", f"""
-                import {contract_name} from {contract_address}
-                
-                access(all) fun main({', '.join([f'{p.name}: {p.type}' for p in func.parameters])}): {func.return_type or 'Void'} {{
-                    return {contract_name}.{func.name}({', '.join([p.name for p in func.parameters])})
-                }}
-                """,
-                {', '.join([f'"--arg", "String:{p.name}"' for p in func.parameters])}
+                "--code", """{cadence_code}""",
+                {arg_list}
             ]
         else:
             # Transaction function
@@ -503,20 +546,8 @@ async def {tool_name}(arguments: dict) -> str:
                 "flow", "transactions", "send",
                 "--network", "{network}",
                 "--signer", "default",
-                "--code", f"""
-                import {contract_name} from {contract_address}
-                
-                transaction({', '.join([f'{p.name}: {p.type}' for p in func.parameters])}) {{
-                    prepare(signer: AuthAccount) {{
-                        // Transaction logic here
-                    }}
-                    
-                    execute {{
-                        {contract_name}.{func.name}({', '.join([p.name for p in func.parameters])})
-                    }}
-                }}
-                """,
-                {', '.join([f'"--arg", "String:{p.name}"' for p in func.parameters])}
+                "--code", """{cadence_code}""",
+                {arg_list}
             ]
         
         result = await run_flow_command(cmd)
@@ -541,7 +572,7 @@ async def {tool_name}(arguments: dict) -> str:
     def _generate_parameter_extraction(self, parameters: List) -> str:
         """Generate parameter extraction code."""
         if not parameters:
-            return "# No parameters"
+            return "        # No parameters"
         
         extractions = []
         for param in parameters:

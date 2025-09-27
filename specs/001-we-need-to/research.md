@@ -1,6 +1,6 @@
 # Phase 0: Research & Technical Analysis
 
-**Feature**: Smart Contract LLM Builder for Flow/Cadence
+**Feature**: Flowzmith for Flow/Cadence
 **Date**: 2025-09-25
 
 ## Technical Decisions & Rationale

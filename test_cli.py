@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for Smart Contract LLM Builder CLI
+Test script for Flowzmith CLI
 
 This script runs basic functionality tests for the CLI tool.
 """
@@ -40,7 +40,7 @@ def run_command(cmd, description):
 
 def test_cli_commands():
     """Test basic CLI commands."""
-    print("🚀 Testing Smart Contract LLM Builder CLI")
+    print("🚀 Testing Flowzmith CLI")
     print("=" * 50)
 
     tests = [
@@ -130,7 +130,7 @@ def test_dependencies():
 
 def main():
     """Run all tests."""
-    print("🧪 Smart Contract LLM Builder CLI Test Suite")
+    print("🧪 Flowzmith CLI Test Suite")
     print("=" * 60)
 
     # Test dependencies

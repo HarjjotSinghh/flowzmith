@@ -1,5 +1,5 @@
 """
-Configuration management for Smart Contract LLM Builder.
+Configuration management for Flowzmith.
 """
 
 import os
@@ -13,7 +13,7 @@ load_dotenv()
 class Settings(BaseSettings):
     """Application settings with environment variable support."""
     # Application Configuration
-    app_name: str = "Smart Contract LLM Builder"
+    app_name: str = "Flowzmith"
     app_version: str = "1.0.0"
     debug: bool = Field(default_factory=lambda: os.getenv("DEBUG", "false").lower() in ("true", "1", "yes"), env="DEBUG")
     api_port: int = Field(default_factory=lambda: int(os.getenv("API_PORT", "8000")), env="API_PORT")

@@ -1,5 +1,5 @@
 """
-Data control and privacy service for Smart Contract LLM Builder.
+Data control and privacy service for Flowzmith.
 """
 
 import logging

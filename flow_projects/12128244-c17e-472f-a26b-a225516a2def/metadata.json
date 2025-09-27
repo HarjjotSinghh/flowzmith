@@ -1,0 +1,56 @@
+{
+  "contract_id": "12128244-c17e-472f-a26b-a225516a2def",
+  "contract_name": "Property",
+  "contract_type": "token",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "Property",
+    "type": "token",
+    "description": "A smart contract for managing properties buying and selling",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T10:44:49.191032",
+      "cli_generated": true,
+      "token_details": {
+        "initial_supply": "100",
+        "token_name": "KKRealEstate",
+        "token_symbol": "KRE",
+        "decimals": "8",
+        "vault_type": "standard"
+      }
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T10:44:52.145867",
+  "result": {
+    "contract_id": "12128244-c17e-472f-a26b-a225516a2def",
+    "submission_id": "34e8c5e2-a0b5-4d5c-8d8c-566d63139b8c",
+    "status": "success",
+    "contract_code": "```cadence\n// Property.cdc\n\nimport FungibleToken from 0x9a0766d93b6608b7\nimport NonFungibleToken from 0x631e88ae7f3c7c27\n\npub contract Property: NonFungibleToken.INFT {\n    // Events\n    pub event ContractInitialized()\n    pub event Withdraw(id: UInt64, from: Address?)\n    pub event Deposit(id: UInt64, to: Address?)\n\n    // NFT Resource Interface\n    pub resource interface INFT {\n        pub let id: UInt64\n        pub let owner: Address?\n        pub let metadata: {String: String}\n\n        pub fun transfer(to: Capability<&{NonFungibleToken.Receiver}>)\n    }\n\n    // Property NFT Resource\n    pub resource PropertyNFT: INFT {\n        pub let id: UInt64\n        pub let owner: Address?\n        pub let metadata: {String: String}\n\n        init(id: UInt64, metadata: {String: String}) {\n            self.id = id\n            self.owner = nil\n            self.metadata = metadata\n        }\n\n        pub fun transfer(to: Capability<&{NonFungibleToken.Receiver}>) {\n            // Check if the recipient is valid\n            let receiver = to.borrow()!\n            receiver.deposit(token: <-self)\n        }\n    }\n\n    // Collection Resource\n    pub resource Collection: NonFungibleToken.Receiver, NonFungibleToken.Provider {\n        pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}\n\n        init() {\n            self.ownedNFTs <- {}\n        }\n\n        // Receiver Implementation\n        pub fun deposit(token: <-NonFungibleToken.NFT) {\n            let token <- token as! PropertyNFT\n            let id = token.id\n            let oldToken <- self.ownedNFTs[id] <- token\n            destroy oldToken\n            emit Deposit(id: id, to: self.owner?.address)\n        }\n\n        // Provider Implementation\n        pub fun withdraw(withdrawID: UInt64): <-NonFungibleToken.NFT {\n            let token <- self.ownedNFTs.remove(key: withdrawID)!\n            emit Withdraw(id: withdrawID, from: self.owner?.address)\n            return <-token\n        }\n\n        // Get IDs\n        pub fun getIDs(): [UInt64] {\n            return self.ownedNFTs.keys\n        }\n\n        // Borrow NFT\n        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {\n            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!\n        }\n\n        // Borrow PropertyNFT\n        pub fun borrowPropertyNFT(id: UInt64): &PropertyNFT {\n            return (&self.ownedNFTs[id] as! &PropertyNFT?)!\n        }\n\n        destroy() {\n            destroy self.ownedNFTs\n        }\n    }\n\n    // Public Functions\n    pub fun createEmptyCollection(): <-NonFungibleToken.Collection {\n        return <-create Collection()\n    }\n\n    // Initialize the contract\n    init() {\n        // Initialize the NFT ID counter\n        self.account.save(<-create PropertyNFT(id: 0, metadata: {}), to: /storage/PropertyNFT0)\n\n        // Save an empty collection to storage\n        self.account.save(<-create Collection(), to: /storage/PropertyCollection)\n\n        // Link the collection capability\n        self.account.link<&{NonFungibleToken.Receiver, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(\n            /public/PropertyCollection,\n            target: /storage/PropertyCollection\n        )\n\n        emit ContractInitialized()\n    }\n}\n\n// Example Transaction: Create a new Property NFT\ntransaction(metadata: {String: String}) {\n    prepare(acct: &Account) {\n        let collection = acct.getCapability(/public/PropertyCollection)\n            .borrow<&{NonFungibleToken.Receiver}>()\n            ?? panic(\"Could not borrow collection reference\")\n\n        let nft <- Property.createPropertyNFT(metadata: metadata)\n        collection.deposit(token: <-nft)\n    }\n}\n\n// Example Script: Get Property NFT IDs\npub fun main(address: Address): [UInt64] {\n    let collection = getAccount(address)\n        .getCapability(/public/PropertyCollection)\n        .borrow<&{NonFungibleToken.CollectionPublic}>()\n        ?? panic(\"Could not borrow collection reference\")\n\n    return collection.getIDs()\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/Property.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "mint_tokens",
+      "transfer_tokens",
+      "setup_account"
+    ],
+    "scripts": [
+      "get_balance",
+      "get_supply",
+      "check_account_setup"
+    ],
+    "tests": [
+      "test_token_deployment"
+    ]
+  }
+}

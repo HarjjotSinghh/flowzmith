@@ -1,7 +1,7 @@
 """
-Smart Contract LLM Builder CLI Package
+Flowzmith CLI Package
 
-This package provides command-line interface functionality for the Smart Contract LLM Builder application.
+This package provides command-line interface functionality for the Flowzmith application.
 """
 
 from .api_client import APIClient

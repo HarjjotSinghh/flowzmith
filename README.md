@@ -1,4 +1,4 @@
-# Smart Contract LLM Builder
+# Flowzmith
 
 AI-powered smart contract generation and deployment platform for Flow blockchain using Cadence programming language.
 
@@ -195,7 +195,7 @@ Create a `.env` file in the project root:
 
 ```env
 # Application
-APP_NAME=Smart Contract LLM Builder
+APP_NAME=Flowzmith
 DEBUG=false
 HOST=0.0.0.0
 PORT=8000

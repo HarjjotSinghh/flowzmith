@@ -40,7 +40,7 @@ def run_command(cmd, description):
 
 def test_enhanced_cli():
     """Test enhanced CLI functionality."""
-    print("🚀 Testing Enhanced Smart Contract LLM Builder CLI")
+    print("🚀 Testing Enhanced Flowzmith CLI")
     print("=" * 60)
 
     # Test basic CLI commands

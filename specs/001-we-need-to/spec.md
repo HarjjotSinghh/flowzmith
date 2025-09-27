@@ -1,4 +1,4 @@
-# Feature Specification: Smart Contract LLM Builder for Flow/Cadence
+# Feature Specification: Flowzmith for Flow/Cadence
 
 **Feature Branch**: `001-we-need-to`
 **Created**: 2025-09-25

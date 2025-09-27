@@ -1,5 +1,5 @@
 """
-Custom exceptions and error handling for Smart Contract LLM Builder.
+Custom exceptions and error handling for Flowzmith.
 """
 
 import logging
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class SmartContractError(Exception):
-    """Base exception for Smart Contract LLM Builder."""
+    """Base exception for Flowzmith."""
 
     def __init__(
         self,

@@ -1,5 +1,5 @@
 """
-API tests for Smart Contract LLM Builder.
+API tests for Flowzmith.
 """
 
 import pytest
@@ -62,7 +62,7 @@ class TestHealthCheck:
         """Test root endpoint."""
         response = client.get("/")
         assert response.status_code == 200
-        assert "Smart Contract LLM Builder API" in response.json()["message"]
+        assert "Flowzmith API" in response.json()["message"]
 
     def test_health_check(self):
         """Test health check endpoint."""
@@ -74,7 +74,7 @@ class TestHealthCheck:
         """Test API info endpoint."""
         response = client.get("/api/v1/info")
         assert response.status_code == 200
-        assert "Smart Contract LLM Builder" in response.json()["name"]
+        assert "Flowzmith" in response.json()["name"]
 
 class TestUserManagement:
     """Test user management endpoints."""
@@ -320,7 +320,7 @@ class TestConfiguration:
     def test_environment_variables(self):
         """Test environment variable loading."""
         settings = get_settings()
-        assert settings.app_name == "Smart Contract LLM Builder"
+        assert settings.app_name == "Flowzmith"
         assert settings.debug is False
 
     def test_database_url_configuration(self):

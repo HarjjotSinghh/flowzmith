@@ -1,4 +1,4 @@
-# Dockerfile for Smart Contract LLM Builder
+# Dockerfile for Flowzmith
 
 FROM python:3.11-slim
 

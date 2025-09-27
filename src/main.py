@@ -1,5 +1,5 @@
 """
-Main application entry point for Smart Contract LLM Builder.
+Main application entry point for Flowzmith.
 """
 
 import logging
@@ -60,7 +60,7 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management."""
-    logger.info("Starting Smart Contract LLM Builder application...")
+    logger.info("Starting Flowzmith application...")
 
     # Initialize database
     try:
@@ -82,12 +82,12 @@ async def lifespan(app: FastAPI):
     logger.info("Application started successfully")
     yield
 
-    logger.info("Shutting down Smart Contract LLM Builder application...")
+    logger.info("Shutting down Flowzmith application...")
 
 
 # Create FastAPI application
 app = FastAPI(
-    title="Smart Contract LLM Builder",
+    title="Flowzmith",
     description="AI-powered smart contract generation and deployment platform for Flow blockchain",
     version="1.0.0",
     lifespan=lifespan,
@@ -340,7 +340,7 @@ async def dashboard_stats(db: Session = Depends(get_db)):
 async def api_info():
     """API information endpoint."""
     return {
-        "name": "Smart Contract LLM Builder",
+        "name": "Flowzmith",
         "version": "1.0.0",
         "description": "AI-powered smart contract generation and deployment platform",
         "features": [

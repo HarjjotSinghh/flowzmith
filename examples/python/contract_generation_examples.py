@@ -3,7 +3,7 @@
 Contract Generation Examples
 
 This file demonstrates various contract generation patterns and best practices
-for the Smart Contract LLM Builder platform.
+for the Flowzmith platform.
 """
 
 import os
@@ -44,7 +44,7 @@ def print_contract_result(result, title: str = None):
 def main():
     """Main function demonstrating contract generation patterns."""
 
-    print_section("Smart Contract LLM Builder - Contract Generation Examples")
+    print_section("Flowzmith - Contract Generation Examples")
 
     # Initialize client
     client = SmartContractClient(

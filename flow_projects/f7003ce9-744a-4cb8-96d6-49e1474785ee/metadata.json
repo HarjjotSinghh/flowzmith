@@ -1,0 +1,52 @@
+{
+  "contract_id": "f7003ce9-744a-4cb8-96d6-49e1474785ee",
+  "contract_name": "Property",
+  "contract_type": "Token",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "Property",
+    "contract_type": "Token",
+    "description": "A smart contract for managing properties buying and selling",
+    "network": "testnet",
+    "account_setup": "single",
+    "token_details": {
+      "initial_supply": "100",
+      "token_name": "KKRealEstate",
+      "token_symbol": "KRE",
+      "decimals": "8",
+      "vault_type": "standard"
+    },
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T10:44:59.594868",
+  "result": {
+    "submission_id": "34e8c5e2-a0b5-4d5c-8d8c-566d63139b8c",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/12128244-c17e-472f-a26b-a225516a2def",
+    "generation_time": 0.017809152603149414
+  },
+  "files_generated": {
+    "contract": "contracts/Property.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "mint_tokens",
+      "transfer_tokens",
+      "setup_account"
+    ],
+    "scripts": [
+      "get_balance",
+      "get_supply",
+      "check_account_setup"
+    ],
+    "tests": [
+      "test_token_deployment"
+    ]
+  }
+}

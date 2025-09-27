@@ -1,5 +1,5 @@
 """
-LLM Provider abstraction layer for Smart Contract LLM Builder.
+LLM Provider abstraction layer for Flowzmith.
 """
 
 from abc import ABC, abstractmethod

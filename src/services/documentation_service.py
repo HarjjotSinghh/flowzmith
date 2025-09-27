@@ -1,5 +1,5 @@
 """
-Documentation indexing and search service for Smart Contract LLM Builder.
+Documentation indexing and search service for Flowzmith.
 """
 
 import os

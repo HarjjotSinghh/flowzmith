@@ -1,5 +1,5 @@
 """
-Model tests for Smart Contract LLM Builder.
+Model tests for Flowzmith.
 """
 
 import pytest

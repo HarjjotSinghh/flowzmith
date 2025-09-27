@@ -1,6 +1,6 @@
 # API Contracts
 
-**Feature**: Smart Contract LLM Builder for Flow/Cadence
+**Feature**: Flowzmith for Flow/Cadence
 **Date**: 2025-09-25
 
 ## REST API Endpoints

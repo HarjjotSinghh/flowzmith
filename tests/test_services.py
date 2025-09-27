@@ -1,5 +1,5 @@
 """
-Service layer tests for Smart Contract LLM Builder.
+Service layer tests for Flowzmith.
 """
 
 import pytest

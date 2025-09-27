@@ -178,6 +178,10 @@ class CadenceContractAnalyzer:
             func_name = match.group(2)
             params_str = match.group(3).strip()
             return_type = match.group(4).strip() if match.group(4) else None
+            # Normalize return type to the first line and strip inline comments
+            if return_type:
+                return_type = return_type.splitlines()[0].strip()
+                return_type = re.split(r"//|/\*", return_type)[0].strip()
             
             # Parse access level
             try:
@@ -216,6 +220,10 @@ class CadenceContractAnalyzer:
             func_name = match.group(1)
             params_str = match.group(2).strip()
             return_type = match.group(3).strip() if match.group(3) else None
+            # Normalize return type to the first line and strip inline comments
+            if return_type:
+                return_type = return_type.splitlines()[0].strip()
+                return_type = re.split(r"//|/\*", return_type)[0].strip()
             
             # Check if this function was already found with access() syntax
             if any(f.name == func_name for f in functions):

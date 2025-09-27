@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Smart Contract LLM Builder API provides RESTful endpoints for smart contract generation, deployment, and management on the Flow blockchain. The API uses JWT authentication and provides real-time updates via WebSocket connections.
+The Flowzmith API provides RESTful endpoints for smart contract generation, deployment, and management on the Flow blockchain. The API uses JWT authentication and provides real-time updates via WebSocket connections.
 
 ## Base URL
 

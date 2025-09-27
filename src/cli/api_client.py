@@ -1,5 +1,5 @@
 """
-API client for Smart Contract LLM Builder CLI.
+API client for Flowzmith CLI.
 
 Handles all HTTP and WebSocket communications with the backend server.
 """
@@ -419,3 +419,114 @@ class APIClient:
 
                 # Regular content chunk
                 yield {"type": "content", "chunk": chunk}
+
+    # Flow CLI and Deployment Methods
+    async def create_flow_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new Flow project with automatic initialization."""
+        project_data = dict(project_data)
+        project_data.setdefault("system_address", self._get_system_address())
+        logger.info("Creating Flow project: contract_name=%s, network=%s", 
+                   project_data.get("contract_name"), project_data.get("network"))
+        return await self.post("/api/v1/flow/projects", json=project_data)
+
+    async def deploy_flow_contract(self, deployment_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Deploy a Flow contract using Flow CLI."""
+        deployment_data = dict(deployment_data)
+        deployment_data.setdefault("system_address", self._get_system_address())
+        logger.info("Deploying Flow contract: project_id=%s, network=%s", 
+                   deployment_data.get("project_id"), deployment_data.get("network"))
+        return await self.post("/api/v1/flow/deploy", json=deployment_data)
+
+    async def get_flow_projects(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Get list of Flow projects."""
+        logger.info("Fetching Flow projects: limit=%s", limit)
+        result = await self.get("/api/v1/flow/projects", params={"limit": limit})
+        return result.get("projects", [])
+
+    async def get_flow_project(self, project_id: str) -> Dict[str, Any]:
+        """Get specific Flow project details."""
+        logger.info("Fetching Flow project: project_id=%s", project_id)
+        return await self.get(f"/api/v1/flow/projects/{project_id}")
+
+    async def get_flow_project_status(self, project_id: str) -> Dict[str, Any]:
+        """Get Flow project status and metadata."""
+        logger.info("Fetching Flow project status: project_id=%s", project_id)
+        return await self.get(f"/api/v1/flow/projects/{project_id}/status")
+
+    async def get_flow_deployments(self, project_id: str = None, limit: int = 50) -> List[Dict[str, Any]]:
+        """Get Flow deployment history."""
+        params = {"limit": limit}
+        if project_id:
+            params["project_id"] = project_id
+        logger.info("Fetching Flow deployments: project_id=%s, limit=%s", project_id, limit)
+        result = await self.get("/api/v1/flow/deployments", params=params)
+        return result.get("deployments", [])
+
+    async def get_flow_deployment_status(self, deployment_id: str) -> Dict[str, Any]:
+        """Get Flow deployment status."""
+        logger.info("Fetching Flow deployment status: deployment_id=%s", deployment_id)
+        return await self.get(f"/api/v1/flow/deployments/{deployment_id}")
+
+    async def redeploy_flow_contract(self, project_id: str, network: str = None) -> Dict[str, Any]:
+        """Redeploy an existing Flow contract."""
+        data = {"project_id": project_id, "system_address": self._get_system_address()}
+        if network:
+            data["network"] = network
+        logger.info("Redeploying Flow contract: project_id=%s, network=%s", project_id, network)
+        return await self.post(f"/api/v1/flow/projects/{project_id}/redeploy", json=data)
+
+    async def get_flow_deployment_statistics(self) -> Dict[str, Any]:
+        """Get Flow deployment statistics."""
+        logger.info("Fetching Flow deployment statistics")
+        return await self.get("/api/v1/flow/deployments/statistics")
+
+    async def check_flow_cli_status(self) -> Dict[str, Any]:
+        """Check Flow CLI installation and status."""
+        logger.info("Checking Flow CLI status")
+        return await self.get("/api/v1/flow/cli/status")
+
+    async def queue_flow_deployment(self, deployment_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Queue a Flow contract for deployment."""
+        deployment_data = dict(deployment_data)
+        deployment_data.setdefault("system_address", self._get_system_address())
+        logger.info("Queueing Flow deployment: contract_name=%s, network=%s", 
+                   deployment_data.get("contract_name"), deployment_data.get("network"))
+        return await self.post("/api/v1/flow/deployments/queue", json=deployment_data)
+
+    async def generate_and_deploy_contract(self, generation_request: Dict[str, Any], 
+                                         auto_deploy: bool = True, network: str = "emulator") -> Dict[str, Any]:
+        """Generate a contract and automatically deploy it using Flow CLI."""
+        request_data = dict(generation_request)
+        request_data.update({
+            "auto_deploy": auto_deploy,
+            "network": network,
+            "system_address": self._get_system_address()
+        })
+        
+        preview = str(generation_request.get("requirements", ""))
+        if len(preview) > 80:
+            preview = preview[:77] + "..."
+        logger.info("Generating and deploying contract: requirements_preview=%s, auto_deploy=%s, network=%s", 
+                   preview, auto_deploy, network)
+        
+        return await self.post("/api/v1/flow/generate-and-deploy", json=request_data)
+
+    async def stream_flow_deployment(self, deployment_id: str, callback: Callable[[Dict[str, Any]], None]) -> None:
+        """Stream real-time progress for a Flow deployment."""
+        logger.info("Subscribing to Flow deployment progress: deployment_id=%s", deployment_id)
+        
+        # Connect WebSocket if not already connected
+        if not self.websocket:
+            await self.connect_websocket()
+        
+        await self.send_message({
+            "type": "subscribe_flow_deployment",
+            "deployment_id": deployment_id
+        })
+
+        async def message_handler(data: Dict[str, Any]):
+            if data.get("deployment_id") == deployment_id or data.get("type") == "flow_deployment_update":
+                logger.debug("Flow deployment update for %s: %s", deployment_id, data)
+                callback(data)
+
+        await self.listen_messages(message_handler)

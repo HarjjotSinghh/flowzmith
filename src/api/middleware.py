@@ -1,5 +1,5 @@
 """
-Middleware for Smart Contract LLM Builder API.
+Middleware for Flowzmith API.
 """
 
 import logging

@@ -1,4 +1,4 @@
-// Main JavaScript for Smart Contract LLM Builder
+// Main JavaScript for Flowzmith
 
 // Global variables
 let socket = null;

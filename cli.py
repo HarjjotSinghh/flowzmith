@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Smart Contract LLM Builder CLI Tool
+Flowzmith CLI Tool
 
-A comprehensive command-line interface for testing and interacting with the Smart Contract LLM Builder application.
+A comprehensive command-line interface for testing and interacting with the Flowzmith application.
 Provides step-by-step guided workflows for contract submission, deployment, and management.
 """
 
@@ -10,6 +10,7 @@ import os
 import sys
 import asyncio
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
@@ -28,10 +29,58 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from src.config import get_settings
 from src.models.database import get_db, create_tables, check_database_connection
 from src.cli import APIClient, ContractCreator, DeploymentManager, DocumentationSearch
+from src.cli.flow_manager import FlowProjectManager
+from src.cli.deployment_service import ContractDeploymentService
+from rich.text import Text
+
+banner = """
+ ███████╗ ██╗       ██████╗  ██╗    ██╗ ███████╗ ███╗   ███╗ ██╗ ████████╗ ██╗  ██╗
+ ██╔════╝ ██║      ██╔═══██╗ ██║    ██║ ╚══███╔╝ ████╗ ████║ ██║ ╚══██╔══╝ ██║  ██║
+ █████╗   ██║      ██║   ██║ ██║ █╗ ██║   ███╔╝  ██╔████╔██║ ██║    ██║    ███████║
+ ██╔══╝   ██║      ██║   ██║ ██║███╗██║  ███╔╝   ██║╚██╔╝██║ ██║    ██║    ██╔══██║
+ ██║      ███████╗ ╚██████╔╝ ╚███╔███╔╝ ███████╗ ██║ ╚═╝ ██║ ██║    ██║    ██║  ██║
+ ╚═╝      ╚══════╝  ╚═════╝   ╚══╝╚══╝  ╚══════╝ ╚═╝     ╚═╝ ╚═╝    ╚═╝    ╚═╝  ╚═╝
+"""
+
+
+async def handle_flow_automation(
+    client, contract_content, config_content, contract_name, network, auto_deploy, flow_init
+):
+    """Handle Flow CLI automation for contract deployment."""
+    try:
+        flow_manager = FlowProjectManager()
+        deployment_service = ContractDeploymentService(client)
+        
+        if flow_init:
+            console.print("\n🔧 Initializing Flow project...", style="blue")
+            project_path = await flow_manager.init_project(contract_name)
+            console.print(f"✅ Flow project initialized at: {project_path}", style="green")
+            
+            # Write contract and config files
+            await flow_manager.write_contract_files(
+                project_path, contract_name, contract_content, config_content
+            )
+            console.print("✅ Contract files written", style="green")
+            
+        if auto_deploy:
+            console.print("\n🚀 Starting automatic deployment...", style="blue")
+            deployment_result = await deployment_service.deploy_with_flow_cli(
+                contract_content, config_content, contract_name, network
+            )
+            
+            if deployment_result.get("success"):
+                console.print("✅ Contract deployed successfully!", style="green")
+                console.print(f"Transaction ID: {deployment_result.get('transaction_id')}", style="cyan")
+            else:
+                console.print(f"❌ Deployment failed: {deployment_result.get('error')}", style="red")
+                
+    except Exception as e:
+        console.print(f"❌ Flow automation failed: {e}", style="red")
+        logger.exception("Flow automation error")
 
 app = typer.Typer(
     name="smart-contract-cli",
-    help="Smart Contract LLM Builder CLI - Test and manage your smart contracts",
+    help="Flowzmith CLI - Test and manage your smart contracts",
     add_completion=False
 )
 
@@ -40,10 +89,27 @@ console = Console()
 
 def show_welcome():
     """Display welcome message and application overview."""
-    welcome_text = """
-# 🚀 Smart Contract LLM Builder CLI
+    # Build gradient banner: teal → cyan → light cyan
+    gradient_lines = []
+    # Use direct RGB values instead of Color object attributes
+    base_r, base_g, base_b = 0, 128, 128  # teal
+    target_r, target_g, target_b = 160, 216, 232  # light cyan
+    
+    banner_lines = banner.strip("\n").splitlines()
+    for i, line in enumerate(banner_lines):
+        factor = i / max(1, len(banner_lines) - 1)  # 0 → 1 across all lines
+        r = int(base_r + (target_r - base_r) * factor)
+        g = int(base_g + (target_g - base_g) * factor)
+        b = int(base_b + (target_b - base_b) * factor)
+        gradient_lines.append(f"[rgb({r},{g},{b})]{line}[/]")
+    console.print("\n")
+    console.print("\n".join(gradient_lines))
+    console.print("\n")
 
-Welcome to the Smart Contract LLM Builder command-line interface!
+    welcome_text = f"""
+# 🚀 Flowzmith CLI
+
+Welcome to the Flowzmith command-line interface!
 
 This tool provides step-by-step guided workflows for:
 • Smart contract submission and generation
@@ -107,7 +173,7 @@ async def check_database():
 def setup():
     """Setup and verify the development environment."""
     logger.info("Running setup command")
-    console.print("🔧 Setting up Smart Contract LLM Builder CLI...", style="blue")
+    console.print("🔧 Setting up Flowzmith CLI...", style="blue")
 
     # Check Python version
     if sys.version_info < (3, 8):
@@ -415,7 +481,7 @@ def wizard():
 def version():
     """Show CLI version information."""
     logger.info("Running version command")
-    console.print("Smart Contract LLM Builder CLI", style="blue")
+    console.print("Flowzmith CLI", style="blue")
     console.print("Version: 1.0.0", style="white")
     console.print("Built with Typer and Rich", style="dim")
     console.print("GitHub: https://github.com/HarjjotSinghh/smart-contract-llm", style="dim")
@@ -426,7 +492,9 @@ def generate_from_context(
     requirements: str = typer.Option(None, help="High-level contract requirements in natural language"),
     context_dir: Path = typer.Option(Path("context"), help="Directory containing .md files to use as context"),
     network: str = typer.Option("emulator", help="Target network for configuration (emulator|testnet|mainnet)"),
-    stream: bool = typer.Option(True, help="Use streaming mode for real-time progress updates")
+    stream: bool = typer.Option(True, help="Use streaming mode for real-time progress updates"),
+    auto_deploy: bool = typer.Option(False, help="Automatically create Flow project and deploy contract"),
+    flow_init: bool = typer.Option(False, help="Initialize Flow project with flow init command")
 ):
     """Generate a Cadence contract using local markdown context and print results."""
 
@@ -454,6 +522,9 @@ def generate_from_context(
             "network": network,
         }
 
+        if auto_deploy or flow_init:
+            console.print(f"🔧 Flow CLI automation enabled: {'Auto-deploy' if auto_deploy else 'Flow init only'}", style="yellow")
+
         # Call API and print results
         from src.cli.api_client import APIClient
         async with APIClient() as client:
@@ -464,6 +535,8 @@ def generate_from_context(
                     
                     streamed_text = ""
                     config_content = None
+                    contract_content = None
+                    contract_name = None
                     
                     async for chunk in client.stream_generate_contract_with_context(payload):
                         if chunk.get("type") == "content":
@@ -478,6 +551,11 @@ def generate_from_context(
                                 end = streamed_text.find("<!-- CONFIG_END -->")
                                 if start > 0 and end > start:
                                     config_content = streamed_text[start:end].strip()
+                            # Capture contract content
+                            if contract_content is None:
+                                contract_content = content
+                            else:
+                                contract_content += content
                         elif chunk.get("type") == "error":
                             error_msg = chunk.get("error", "Unknown error")
                             typer.secho(f"\n❌ Generation failed: {error_msg}", fg=typer.colors.RED)
@@ -492,6 +570,8 @@ def generate_from_context(
                             msg = progress_data.get("message")
                             if msg:
                                 console.print(f"⚡ {msg}", style="cyan")
+                        elif chunk.get("type") == "contract_name":
+                            contract_name = chunk.get("name")
                         elif chunk.get("type") == "complete":
                             # Completed - break loop
                             pass
@@ -512,6 +592,13 @@ def generate_from_context(
                     
                     typer.secho("\n✅ Contract generation completed successfully!", fg=typer.colors.GREEN)
                     
+                    # Handle Flow CLI automation
+                    if (flow_init or auto_deploy) and contract_content and config_content:
+                        await handle_flow_automation(
+                            client, contract_content, config_content, 
+                            contract_name or "Contract", network, auto_deploy, flow_init
+                        )
+                    
                 else:
                     # Use non-streaming mode
                     result = await client.generate_contract_with_context(payload)
@@ -529,6 +616,13 @@ def generate_from_context(
 
                     typer.secho("\nSaved to project ID:", fg=typer.colors.CYAN)
                     typer.echo(str(result.get("submission_id")))
+                    
+                    # Handle Flow CLI automation
+                    if (flow_init or auto_deploy) and result.get("generated_contract_code") and result.get("config_content"):
+                        await handle_flow_automation(
+                            client, result.get("generated_contract_code"), result.get("config_content"),
+                            result.get("contract_name", "Contract"), network, auto_deploy, flow_init
+                        )
                     
             except Exception as e:
                 typer.secho(f"Generation failed: {e}", fg=typer.colors.RED)
@@ -601,6 +695,210 @@ def mcp_explorer():
         console.print(f"❌ MCP client not available: {e}", style="red")
         console.print("Please install MCP dependencies: pip install -r flow_mcp/requirements.txt", style="yellow")
         raise typer.Exit(1)
+
+
+@app.command("flow-init")
+def flow_init_project(
+    name: str = typer.Option(None, help="Project name (auto-generated if not provided)"),
+    directory: Path = typer.Option(None, help="Custom directory for the project")
+):
+    """Initialize a new Flow project with flow init command."""
+    async def run():
+        try:
+            from datetime import datetime
+            flow_manager = FlowProjectManager()
+            
+            project_name = name if name else f"FlowProject_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            console.print(f"[bold blue]Initializing Flow project:[/bold blue] {project_name}")
+            
+            # Create a basic Flow project
+            result = await flow_manager.create_flow_project(
+                project_id=project_name,
+                contract_name="HelloWorld",
+                contract_content="""
+// HelloWorld.cdc
+// A simple Hello World contract for Flow blockchain
+
+access(all) contract HelloWorld {
+    access(all) var greeting: String
+
+    init() {
+        self.greeting = "Hello, World!"
+    }
+
+    access(all) fun hello(): String {
+        return self.greeting
+    }
+
+    access(all) fun changeGreeting(newGreeting: String) {
+        self.greeting = newGreeting
+    }
+}
+""".strip(),
+                network="emulator"
+            )
+            
+            if result.get("status") == "success":
+                console.print(f"[bold green]✅ Flow project initialized successfully![/bold green]")
+                console.print(f"[bold cyan]Project path:[/bold cyan] {result.get('project_dir')}")
+                
+                # Show project status
+                status = await flow_manager.get_project_status(project_name)
+                console.print(f"[bold cyan]Project status:[/bold cyan]")
+                for key, value in status.items():
+                    console.print(f"  {key}: {value}")
+            else:
+                console.print(f"[bold red]❌ Failed to initialize project:[/bold red] {result.get('error')}")
+                
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    asyncio.run(run())
+
+
+@app.command("flow-deploy")
+def flow_deploy_contract(
+    project_path: Path = typer.Argument(..., help="Path to Flow project directory"),
+    network: str = typer.Option("emulator", help="Target network (emulator|testnet|mainnet)"),
+    contract_name: str = typer.Option(None, help="Specific contract to deploy")
+):
+    """Deploy contracts in a Flow project using flow project deploy."""
+    async def run():
+        try:
+            flow_manager = FlowProjectManager()
+            
+            console.print(f"[bold blue]Deploying contracts from:[/bold blue] {project_path}")
+            console.print(f"[bold blue]Target network:[/bold blue] {network}")
+            
+            # Extract project name from path
+            project_name = Path(project_path).name
+            result = await flow_manager.deploy_contract(project_name, network)
+            
+            if result.get("success"):
+                console.print(f"[bold green]✅ Deployment successful![/bold green]")
+                if result.get("transaction_id"):
+                    console.print(f"[bold cyan]Transaction ID:[/bold cyan] {result['transaction_id']}")
+                if result.get("output"):
+                    console.print(f"[bold cyan]Output:[/bold cyan]")
+                    console.print(result["output"])
+            else:
+                console.print(f"[bold red]❌ Deployment failed:[/bold red] {result.get('error')}")
+                
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    asyncio.run(run())
+
+
+@app.command("flow-status")
+def flow_project_status(
+    project_path: Path = typer.Argument(..., help="Path to Flow project directory")
+):
+    """Get status information for a Flow project."""
+    async def run():
+        try:
+            flow_manager = FlowProjectManager()
+            
+            console.print(f"[bold blue]Getting status for:[/bold blue] {project_path}")
+            
+            status = await flow_manager.get_project_status(str(project_path))
+            
+            console.print(f"[bold green]Project Status:[/bold green]")
+            for key, value in status.items():
+                console.print(f"  [bold cyan]{key}:[/bold cyan] {value}")
+                
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    asyncio.run(run())
+
+
+@app.command("flow-list")
+def flow_list_projects():
+    """List all Flow projects in the flow_projects directory."""
+    async def run():
+        try:
+            flow_manager = FlowProjectManager()
+            
+            projects = await flow_manager.list_projects()
+            
+            if projects:
+                console.print(f"[bold green]Found {len(projects)} Flow projects:[/bold green]")
+                for project in projects:
+                    console.print(f"  [bold cyan]•[/bold cyan] {project['name']} ({project['path']})")
+                    if project.get('contracts'):
+                        console.print(f"    Contracts: {', '.join(project['contracts'])}")
+            else:
+                console.print("[bold yellow]No Flow projects found.[/bold yellow]")
+                
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    asyncio.run(run())
+
+
+@app.command("flow-generate-deploy")
+def flow_generate_and_deploy(
+    requirements: str = typer.Option(None, help="Contract requirements"),
+    context_dir: Path = typer.Option(Path("context"), help="Context directory"),
+    network: str = typer.Option("emulator", help="Target network"),
+    project_name: str = typer.Option(None, help="Custom project name")
+):
+    """Generate a contract and automatically deploy it using Flow CLI."""
+    async def run():
+        try:
+            from datetime import datetime
+            client = APIClient()
+            deployment_service = ContractDeploymentService(client)
+            
+            # Use local variables to avoid scope issues
+            req_text = requirements
+            proj_name = project_name
+            
+            if not req_text:
+                req_text = typer.prompt("Enter contract requirements")
+            
+            if not proj_name:
+                proj_name = f"Contract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            console.print(f"[bold blue]Generating and deploying contract:[/bold blue] {proj_name}")
+            console.print(f"[bold blue]Requirements:[/bold blue] {req_text}")
+            
+            # Generate contract
+            generation_request = {
+                "requirements": req_text,
+                "context_dir": str(context_dir),
+                "network": network
+            }
+            result = await client.generate_contract_with_context(generation_request)
+            
+            if not result.get("success"):
+                console.print(f"[bold red]Contract generation failed:[/bold red] {result.get('error')}")
+                return
+            
+            console.print("[bold green]✅ Contract generated successfully![/bold green]")
+            
+            # Deploy with Flow CLI
+            deployment_result = await deployment_service.deploy_with_flow_cli(
+                result.get("contract"), 
+                result.get("flow_json"), 
+                proj_name, 
+                network
+            )
+            
+            if deployment_result.get("success"):
+                console.print("[bold green]✅ Contract deployed successfully![/bold green]")
+                console.print(f"[bold cyan]Project path:[/bold cyan] {deployment_result.get('project_path')}")
+                if deployment_result.get("transaction_id"):
+                    console.print(f"[bold cyan]Transaction ID:[/bold cyan] {deployment_result['transaction_id']}")
+            else:
+                console.print(f"[bold red]❌ Deployment failed:[/bold red] {deployment_result.get('error')}")
+                
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    asyncio.run(run())
 
 
 if __name__ == "__main__":

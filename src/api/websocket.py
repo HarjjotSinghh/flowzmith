@@ -1,5 +1,5 @@
 """
-WebSocket implementation for real-time updates in Smart Contract LLM Builder.
+WebSocket implementation for real-time updates in Flowzmith.
 """
 
 import json

@@ -7,7 +7,7 @@ Generated MCP server for the SimpleNFT smart contract.
 - **Contract Name**: SimpleNFT
 - **Contract Address**: 0x1234567890abcdef
 - **Network**: testnet
-- **Generated**: 2025-09-27 04:51:25
+- **Generated**: 2025-09-27 10:36:23
 
 ## Description
 
@@ -38,8 +38,6 @@ SimpleNFT.cdc - A basic NFT contract for testing MCP generation
 #### `call_getIDs`
 - **Access Level**: all
 - **Return Type**: [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowSimpleNFT(id: UInt64): &SimpleNFT.NFT?
 - **View Function**: Yes
 
 

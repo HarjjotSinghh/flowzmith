@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Basic usage example for Smart Contract LLM Builder
+Basic usage example for Flowzmith
 
 This example demonstrates the most common use cases:
 1. User authentication
@@ -37,7 +37,7 @@ def print_result(result: dict, title: str = None):
 def main():
     """Main function demonstrating basic usage."""
 
-    print_section("Smart Contract LLM Builder - Basic Usage Example")
+    print_section("Flowzmith - Basic Usage Example")
 
     # Initialize client
     print("Initializing Smart Contract Client...")

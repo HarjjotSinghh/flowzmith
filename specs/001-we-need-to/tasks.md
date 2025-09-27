@@ -1,4 +1,4 @@
-# Implementation Tasks: Smart Contract LLM Builder for Flow/Cadence
+# Implementation Tasks: Flowzmith for Flow/Cadence
 
 **Branch**: `001-we-need-to` | **Date**: 2025-09-25 | **Spec**: `/specs/001-we-need-to/spec.md`
 **Template**: `.specify/templates/tasks-template.md`

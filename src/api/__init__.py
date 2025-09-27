@@ -1,5 +1,5 @@
 """
-API layer for Smart Contract LLM Builder.
+API layer for Flowzmith.
 """
 
 from .routes import router

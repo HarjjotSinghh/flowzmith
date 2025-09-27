@@ -1,5 +1,5 @@
 """
-Service layer for Smart Contract LLM Builder.
+Service layer for Flowzmith.
 """
 
 from .llm_service import LLMService

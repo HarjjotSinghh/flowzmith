@@ -1,5 +1,5 @@
 """
-API routes for Smart Contract LLM Builder.
+API routes for Flowzmith.
 """
 
 import asyncio
@@ -48,7 +48,15 @@ from ..schemas import (
     TransactionApprovalRequest,
     StatisticsResponse,
     ErrorResponse,
-    ContextGenerationRequest
+    ContextGenerationRequest,
+    FlowProjectCreateRequest,
+    FlowProjectResponse,
+    FlowDeploymentRequest,
+    FlowDeploymentResponse,
+    FlowProjectStatusResponse,
+    FlowGenerateDeployRequest,
+    FlowDeploymentHistoryResponse,
+    FlowDeploymentStatsResponse
 )
 from .schemas import HealthResponse
 
@@ -92,6 +100,346 @@ async def health_check(db: Session = Depends(get_db)):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Flow CLI Endpoints
+@router.post("/flow/projects", response_model=FlowProjectResponse)
+async def create_flow_project(
+    request: FlowProjectCreateRequest,
+    user_id: str = None,
+    db: Session = Depends(get_db)
+):
+    """Create a new Flow project using flow init command."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        
+        flow_manager = FlowProjectManager()
+        
+        project_name = request.name or f"FlowProject_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        contract_name = request.contract_type or "HelloWorld"
+        
+        # Create a basic contract content based on contract type
+        contract_content = f"""
+// {contract_name}.cdc
+// A simple {contract_name} contract for Flow blockchain
+
+access(all) contract {contract_name} {{
+    access(all) var greeting: String
+
+    init() {{
+        self.greeting = "Hello, World!"
+    }}
+
+    access(all) fun hello(): String {{
+        return self.greeting
+    }}
+
+    access(all) fun changeGreeting(newGreeting: String) {{
+        self.greeting = newGreeting
+    }}
+}}
+""".strip()
+        
+        result = await flow_manager.create_flow_project(
+            project_id=project_name,
+            contract_name=contract_name,
+            contract_content=contract_content,
+            network=request.network or "emulator"
+        )
+        
+        if result.get("status") != "success":
+            raise Exception(f"Project creation failed: {result.get('error', 'Unknown error')}")
+        
+        # Get project status
+        status = await flow_manager.get_project_status(project_name)
+        
+        return FlowProjectResponse(
+            project_id=str(uuid.uuid4()),
+            name=project_name,
+            path=result.get("project_dir", ""),
+            network=request.network or "emulator",
+            status="initialized",
+            contracts=status.get("contracts", []),
+            created_at=datetime.now()
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create Flow project: {str(e)}")
+
+
+@router.post("/flow/deploy", response_model=FlowDeploymentResponse)
+async def deploy_flow_contract(
+    request: FlowDeploymentRequest,
+    user_id: str = None,
+    db: Session = Depends(get_db)
+):
+    """Deploy contracts in a Flow project using flow project deploy."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        
+        flow_manager = FlowProjectManager()
+        
+        deployment_id = str(uuid.uuid4())
+        started_at = datetime.now()
+        
+        result = await flow_manager.deploy_contracts(
+            request.project_name, 
+            request.network, 
+            request.contract_name
+        )
+        
+        return FlowDeploymentResponse(
+            project_name=request.project_name,
+            network=request.network,
+            status="success" if result.get("success") else "failed",
+            transaction_hash=result.get("transaction_hash"),
+            deployed_at=datetime.now() if result.get("success") else None,
+            error_message=result.get("error")
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to deploy contract: {str(e)}")
+
+
+@router.get("/flow/projects/{project_path:path}/status", response_model=FlowProjectStatusResponse)
+async def get_flow_project_status(
+    project_path: str,
+    db: Session = Depends(get_db)
+):
+    """Get status information for a Flow project."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        
+        flow_manager = FlowProjectManager()
+        status = await flow_manager.get_project_status(project_path)
+        
+        return FlowProjectStatusResponse(
+            project_path=project_path,
+            name=status.get("name", "Unknown"),
+            network=status.get("network", "emulator"),
+            flow_json_exists=status.get("flow_json_exists", False),
+            contracts_count=len(status.get("contracts", [])),
+            contracts=status.get("contracts", []),
+            emulator_running=status.get("emulator_running", False),
+            last_deployment=status.get("last_deployment")
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get project status: {str(e)}")
+
+
+@router.get("/flow/projects", response_model=List[FlowProjectResponse])
+async def list_flow_projects(
+    db: Session = Depends(get_db)
+):
+    """List all Flow projects in the flow_projects directory."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        
+        flow_manager = FlowProjectManager()
+        projects = await flow_manager.list_projects()
+        
+        return [
+            FlowProjectResponse(
+                project_id=str(uuid.uuid4()),
+                name=project["name"],
+                path=project["path"],
+                network=project.get("network", "emulator"),
+                status="active",
+                contracts=project.get("contracts", []),
+                created_at=datetime.now(),  # Would be better to get from filesystem
+                last_modified=project.get("last_modified")
+            )
+            for project in projects
+        ]
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list projects: {str(e)}")
+
+
+@router.post("/flow/generate-deploy", response_model=FlowDeploymentResponse)
+async def generate_and_deploy_flow_contract(
+    request: FlowGenerateDeployRequest,
+    user_id: str = None,
+    db: Session = Depends(get_db)
+):
+    """Generate a contract and automatically deploy it using Flow CLI."""
+    try:
+        from ..cli.deployment_service import ContractDeploymentService
+        
+        client = APIClient()
+        deployment_service = ContractDeploymentService(client)
+        
+        project_name = request.project_name or f"Contract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        deployment_id = str(uuid.uuid4())
+        started_at = datetime.now()
+        
+        # Generate contract
+        generation_result = await client.generate_contract_from_context(
+            requirements=request.requirements,
+            context_dir=request.context_dir,
+            network=request.network
+        )
+        
+        if not generation_result.get("success"):
+            return FlowDeploymentResponse(
+                deployment_id=deployment_id,
+                project_path="",
+                contract_name=project_name,
+                network=request.network,
+                status="failed",
+                error_message=f"Contract generation failed: {generation_result.get('error')}",
+                started_at=started_at,
+                completed_at=datetime.now()
+            )
+        
+        # Deploy with Flow CLI if auto_deploy is enabled
+        if request.auto_deploy:
+            deployment_result = await deployment_service.deploy_with_flow_cli(
+                generation_result.get("contract"),
+                generation_result.get("flow_json"),
+                project_name,
+                request.network
+            )
+            
+            return FlowDeploymentResponse(
+                deployment_id=deployment_id,
+                project_path=deployment_result.get("project_path", ""),
+                contract_name=project_name,
+                network=request.network,
+                status="success" if deployment_result.get("success") else "failed",
+                transaction_id=deployment_result.get("transaction_id"),
+                error_message=deployment_result.get("error"),
+                output=deployment_result.get("output"),
+                started_at=started_at,
+                completed_at=datetime.now()
+            )
+        else:
+            # Just return generation success
+            return FlowDeploymentResponse(
+                deployment_id=deployment_id,
+                project_path="",
+                contract_name=project_name,
+                network=request.network,
+                status="generated",
+                output="Contract generated successfully",
+                started_at=started_at,
+                completed_at=datetime.now()
+            )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate and deploy contract: {str(e)}")
+
+
+@router.get("/flow/deployments/history", response_model=FlowDeploymentHistoryResponse)
+async def get_flow_deployment_history(
+    limit: int = 50,
+    network: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Get Flow deployment history."""
+    try:
+        from ..cli.deployment_service import ContractDeploymentService
+        
+        client = APIClient()
+        deployment_service = ContractDeploymentService(client)
+        
+        history = await deployment_service.get_deployment_history(limit, network)
+        
+        deployments = [
+            FlowDeploymentResponse(
+                deployment_id=dep["id"],
+                project_path=dep.get("project_path", ""),
+                contract_name=dep.get("contract_name"),
+                network=dep["network"],
+                status=dep["status"],
+                transaction_id=dep.get("transaction_id"),
+                error_message=dep.get("error_message"),
+                output=dep.get("output"),
+                started_at=dep["started_at"],
+                completed_at=dep.get("completed_at")
+            )
+            for dep in history.get("deployments", [])
+        ]
+        
+        return FlowDeploymentHistoryResponse(
+            deployments=deployments,
+            total_count=history.get("total_count", 0),
+            success_count=history.get("success_count", 0),
+            failure_count=history.get("failure_count", 0),
+            success_rate=history.get("success_rate", 0.0)
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get deployment history: {str(e)}")
+
+
+@router.get("/flow/deployments/stats", response_model=FlowDeploymentStatsResponse)
+async def get_flow_deployment_stats(
+    db: Session = Depends(get_db)
+):
+    """Get Flow deployment statistics."""
+    try:
+        from ..cli.deployment_service import ContractDeploymentService
+        from ..cli.flow_manager import FlowProjectManager
+        
+        client = APIClient()
+        deployment_service = ContractDeploymentService(client)
+        flow_manager = FlowProjectManager()
+        
+        stats = await deployment_service.get_deployment_stats()
+        projects = await flow_manager.list_projects()
+        
+        recent_deployments = [
+            FlowDeploymentResponse(
+                deployment_id=dep["id"],
+                project_path=dep.get("project_path", ""),
+                contract_name=dep.get("contract_name"),
+                network=dep["network"],
+                status=dep["status"],
+                transaction_id=dep.get("transaction_id"),
+                error_message=dep.get("error_message"),
+                output=dep.get("output"),
+                started_at=dep["started_at"],
+                completed_at=dep.get("completed_at")
+            )
+            for dep in stats.get("recent_deployments", [])
+        ]
+        
+        return FlowDeploymentStatsResponse(
+            total_projects=len(projects),
+            total_deployments=stats.get("total_deployments", 0),
+            successful_deployments=stats.get("successful_deployments", 0),
+            failed_deployments=stats.get("failed_deployments", 0),
+            success_rate=stats.get("success_rate", 0.0),
+            networks=stats.get("networks", {}),
+            recent_deployments=recent_deployments
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get deployment stats: {str(e)}")
+
+
+@router.get("/flow/cli/status")
+async def get_flow_cli_status(
+    db: Session = Depends(get_db)
+):
+    """Check Flow CLI installation and status."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        
+        flow_manager = FlowProjectManager()
+        status = await flow_manager.check_flow_cli()
+        
+        return {
+            "flow_cli_installed": status.get("installed", False),
+            "version": status.get("version"),
+            "path": status.get("path"),
+            "emulator_available": status.get("emulator_available", False)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check Flow CLI status: {str(e)}")
 
 @router.post("/contracts/generate-flow-project")
 async def generate_flow_project(

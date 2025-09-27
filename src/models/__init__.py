@@ -1,5 +1,5 @@
 """
-Data models for the Smart Contract LLM Builder.
+Data models for the Flowzmith.
 """
 
 from .database import Base, get_db, create_tables, drop_tables, check_database_connection

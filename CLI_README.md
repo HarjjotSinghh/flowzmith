@@ -1,6 +1,6 @@
-# Smart Contract LLM Builder CLI
+# Flowzmith CLI
 
-A comprehensive command-line interface for the Smart Contract LLM Builder application. Provides step-by-step guided workflows for smart contract creation, deployment, and management.
+A comprehensive command-line interface for the Flowzmith application. Provides step-by-step guided workflows for smart contract creation, deployment, and management.
 
 ## Features
 
@@ -175,7 +175,7 @@ python cli.py search-docs
 ## Requirements
 
 - Python 3.8 or higher
-- Running Smart Contract LLM Builder backend server
+- Running Flowzmith backend server
 - PostgreSQL database connection
 - Environment variables configured (`DATABASE_URL`)
 
@@ -235,7 +235,7 @@ The CLI provides comprehensive error handling:
 
 ## License
 
-This project is part of the Smart Contract LLM Builder ecosystem.
+This project is part of the Flowzmith ecosystem.
 
 ## Support
 

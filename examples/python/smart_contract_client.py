@@ -1,7 +1,7 @@
 """
-Smart Contract LLM Builder Python SDK
+Flowzmith Python SDK
 
-A comprehensive Python client for interacting with the Smart Contract LLM Builder API.
+A comprehensive Python client for interacting with the Flowzmith API.
 """
 
 import os
@@ -116,7 +116,7 @@ class UserInfo:
 
 
 class SmartContractClient:
-    """Main client class for Smart Contract LLM Builder API."""
+    """Main client class for Flowzmith API."""
 
     def __init__(
         self,

@@ -16,9 +16,9 @@
 
 ## Getting Started
 
-### What is Smart Contract LLM Builder?
+### What is Flowzmith?
 
-Smart Contract LLM Builder is an AI-powered platform that helps you create, test, and deploy smart contracts on the Flow blockchain. You can generate contracts using natural language descriptions or upload existing contract files for optimization and deployment.
+Flowzmith is an AI-powered platform that helps you create, test, and deploy smart contracts on the Flow blockchain. You can generate contracts using natural language descriptions or upload existing contract files for optimization and deployment.
 
 ### Key Features
 

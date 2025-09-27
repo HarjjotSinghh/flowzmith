@@ -1,5 +1,5 @@
 """
-Main LLM service for Smart Contract LLM Builder.
+Main LLM service for Flowzmith.
 """
 
 from typing import Dict, Any, Optional, List, AsyncGenerator

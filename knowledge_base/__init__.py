@@ -1,12 +1,12 @@
 """
-Smart Contract LLM Builder Knowledge Base
+Flowzmith Knowledge Base
 
 A comprehensive knowledge management system for smart contract development
 with auto-updating capabilities and semantic search.
 """
 
 __version__ = "1.0.0"
-__author__ = "Smart Contract LLM Builder Team"
+__author__ = "Flowzmith Team"
 
 from .ingestion.document_processor import DocumentProcessor
 from .storage.vector_store import VectorStoreManager

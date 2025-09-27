@@ -348,3 +348,67 @@ class APIInfoResponse(BaseModel):
     description: str
     features: List[str]
     endpoints: Dict[str, str]
+
+
+# Flow CLI Schemas
+class FlowProjectCreateRequest(BaseModel):
+    name: str
+    contract_type: str = "HelloWorld"
+    network: str = "emulator"
+    directory: Optional[str] = None
+    description: Optional[str] = None
+
+
+class FlowProjectResponse(BaseModel):
+    name: str
+    path: str
+    status: str
+    network: str
+    contracts: List[Dict[str, Any]]
+    created_at: datetime
+
+
+class FlowDeploymentRequest(BaseModel):
+    project_name: str
+    network: str = "emulator"
+    contract_name: Optional[str] = None
+
+
+class FlowDeploymentResponse(BaseModel):
+    project_name: str
+    network: str
+    status: str
+    transaction_hash: Optional[str] = None
+    deployed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+
+
+class FlowProjectStatusResponse(BaseModel):
+    project_name: str
+    path: str
+    status: str
+    network: str
+    contracts: List[Dict[str, Any]]
+    flow_config: Dict[str, Any]
+
+
+class FlowGenerateDeployRequest(BaseModel):
+    requirements: str
+    context_dir: Optional[str] = None
+    network: str = "emulator"
+    project_name: Optional[str] = None
+
+
+class FlowDeploymentHistoryResponse(BaseModel):
+    deployments: List[Dict[str, Any]]
+    total_count: int
+    page: int
+    limit: int
+
+
+class FlowDeploymentStatsResponse(BaseModel):
+    total_deployments: int
+    successful_deployments: int
+    failed_deployments: int
+    networks: Dict[str, int]
+    recent_activity: List[Dict[str, Any]]

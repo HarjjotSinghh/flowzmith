@@ -1,5 +1,5 @@
 """
-Validation utilities and middleware for Smart Contract LLM Builder.
+Validation utilities and middleware for Flowzmith.
 """
 
 import logging

@@ -1,4 +1,4 @@
-# Smart Contract LLM Builder Python Examples Requirements
+# Flowzmith Python Examples Requirements
 requests>=2.31.0
 python-dotenv>=1.0.0
 websockets>=11.0.0

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Startup script for Smart Contract LLM Builder
+# Startup script for Flowzmith
 
 set -e
 
-echo "🚀 Starting Smart Contract LLM Builder..."
+echo "🚀 Starting Flowzmith..."
 
 # Check if .env file exists
 if [ ! -f ".env" ]; then

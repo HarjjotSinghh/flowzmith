@@ -1,5 +1,5 @@
 """
-User management service for Smart Contract LLM Builder.
+User management service for Flowzmith.
 """
 
 import logging
