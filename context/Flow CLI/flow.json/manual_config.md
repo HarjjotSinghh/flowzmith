@@ -48,8 +48,8 @@ flow config add account \
 ```json
 "accounts": {
   "my-testnet-account": {
-    "address": "f8d6e0586b0a20c7",
-    "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+    "address": "your-public-address",
+    "key": "your-private-key"
   }
 }
 ```
@@ -213,7 +213,7 @@ For better security, consider using separate configuration files for sensitive d
 {
   "accounts": {
     "my-testnet-account": {
-      "address": "3ae53cb6e3f42a79",
+      "address": "your-public-adress",
       "key": {
         "type": "file",
         "location": "./my-testnet-account.key"
@@ -225,7 +225,7 @@ For better security, consider using separate configuration files for sensitive d
 
 **Private key file (`my-testnet-account.key`):**
 ```
-334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111
+your-private-key
 ```
 
 **Private configuration file (`private.json`):**
@@ -233,8 +233,8 @@ For better security, consider using separate configuration files for sensitive d
 {
   "accounts": {
     "my-testnet-account": {
-      "address": "3ae53cb6e3f42a79",
-      "key": "334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111"
+      "address": "your-public-adress",
+      "key": "your-private-key"
     }
   }
 }
@@ -274,7 +274,7 @@ flow config add contract --name MyNFT --filename ./cadence/contracts/MyNFT.cdc
 
 # Create accounts for different networks
 flow config add account --name emulator-account --address f8d6e0586b0a20c7 --private-key ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee
-flow config add account --name testnet-account --address 3ae53cb6e3f42a79 --private-key 12332967fd2bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111
+flow config add account --name testnet-account --address your-public-adress --private-key 12332967fd2bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111
 
 # Configure deployments
 flow config add deployment --network emulator --account emulator-account --contract MyToken --contract MyNFT

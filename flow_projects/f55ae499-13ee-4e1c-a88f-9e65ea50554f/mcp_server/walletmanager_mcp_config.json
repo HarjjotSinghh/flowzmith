@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "walletmanager_mcp": {
+      "command": "python",
+      "args": [
+        "walletmanager_mcp_server.py"
+      ],
+      "env": {
+        "CONTRACT_ADDRESS": "0x01",
+        "NETWORK": "emulator"
+      }
+    }
+  }
+}

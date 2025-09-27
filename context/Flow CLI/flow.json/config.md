@@ -19,8 +19,8 @@ When you run `flow init`, a basic `flow.json` file is created for you:
   },
   "accounts": {
     "emulator-account": {
-      "address": "f8d6e0586b0a20c7",
-      "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+      "address": "public-address",
+      "key": "private-key"
     }
   },
   "deployments": {},
@@ -70,8 +70,8 @@ The `accounts` section defines the accounts you can use for transactions and dep
 ```json
 "accounts": {
   "my-account": {
-    "address": "f8d6e0586b0a20c7",
-    "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+    "address": "public-address",
+    "key": "private-key"
   }
 }
 ```
@@ -83,13 +83,12 @@ For more control over key management:
 ```json
 "accounts": {
   "my-account": {
-    "address": "f8d6e0586b0a20c7",
+    "address": "public-key",
     "key": {
       "type": "hex",
       "index": 0,
       "signatureAlgorithm": "ECDSA_P256",
-      "hashAlgorithm": "SHA3_256",
-      "privateKey": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+      "hashAlgorithm": "SHA3_256address      "privateKey": "private-key"
     }
   }
 }
@@ -107,7 +106,7 @@ For better security, you can store private keys in separate files:
 ```json
 "accounts": {
   "admin-account": {
-    "address": "f8d6e0586b0a20c7",
+    "address": "public-key",
     "key": {
       "type": "file",
       "location": "./keys/admin.key"
@@ -115,8 +114,7 @@ For better security, you can store private keys in separate files:
   }
 }
 ```
-
-The key file should contain only the hex-encoded private key (e.g., `ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee`).
+address key file should contain only the hex-encoded private key (e.g., `private-key`).
 
 **Special Address Values:**
 - `"service"`: Use the default service account (emulator only)
@@ -204,12 +202,12 @@ Here's a complete `flow.json` for a project with multiple contracts and networks
   
   "accounts": {
     "emulator-account": {
-      "address": "f8d6e0586b0a20c7",
-      "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+      "address": "public-address",
+      "key": "private-key"
     },
     "testnet-account": {
-      "address": "3ae53cb6e3f42a79",
-      "key": "12332967fd2bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111"
+      "address": "your-public-adress",
+      "key": "your-private-key"
     }
   },
   

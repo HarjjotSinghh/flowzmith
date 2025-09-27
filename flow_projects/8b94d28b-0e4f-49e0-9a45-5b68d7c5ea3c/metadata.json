@@ -1,0 +1,43 @@
+{
+  "contract_id": "8b94d28b-0e4f-49e0-9a45-5b68d7c5ea3c",
+  "contract_name": "TestNew",
+  "contract_type": "Custom",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "TestNew",
+    "contract_type": "Custom",
+    "description": "A smart contract for managing software tests",
+    "network": "testnet",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T12:37:26.400633",
+  "result": {
+    "submission_id": "fce08af1-ad62-448b-8199-2467f4a8f503",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/e79f1512-6a27-4d45-b964-837cb61ba491",
+    "generation_time": 0.006844043731689453
+  },
+  "files_generated": {
+    "contract": "contracts/TestNew.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

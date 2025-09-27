@@ -114,6 +114,18 @@ class CadenceContractAnalyzer:
         content = file_path.read_text(encoding='utf-8')
         return self.analyze_contract_content(content, str(file_path))
     
+    def analyze_contract(self, contract_content: str, file_path: Optional[str] = None) -> ContractAnalysis:
+        """Analyze a Cadence contract (alias for analyze_contract_content).
+        
+        Args:
+            contract_content: The contract source code
+            file_path: Optional path to the contract file
+            
+        Returns:
+            ContractAnalysis object with extracted information
+        """
+        return self.analyze_contract_content(contract_content, file_path)
+    
     def analyze_contract_content(self, content: str, file_path: Optional[str] = None) -> ContractAnalysis:
         """Analyze Cadence contract content."""
         self.lines = content.split('\n')

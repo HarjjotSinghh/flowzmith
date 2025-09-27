@@ -1,0 +1,47 @@
+{
+  "contract_id": "706222a9-4525-4a43-b895-bdda127e6075",
+  "contract_name": "NewTest",
+  "contract_type": "custom",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "NewTest",
+    "type": "custom",
+    "description": "A smart contract for software tests",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T12:28:36.630259",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T12:28:39.274662",
+  "result": {
+    "contract_id": "706222a9-4525-4a43-b895-bdda127e6075",
+    "submission_id": "03fc928b-81e2-4fa1-9dbe-5cf61acb3af4",
+    "status": "success",
+    "contract_code": "// NewTest - Generated Smart Contract\n// Contract Type: Custom\n// Network: testnet\n\npub contract NewTest {\n\n    // Events\n    pub event ContractInitialized()\n\n    // Contract state\n    pub let contractOwner: Address\n\n    // Resources and functions will be added based on your specific requirements\n    // This is a template that needs to be customized\n\n    init() {\n        self.contractOwner = self.account.address\n        emit ContractInitialized()\n    }\n}\n",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/NewTest.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

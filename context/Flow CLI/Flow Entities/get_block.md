@@ -26,7 +26,7 @@ Store private keys in separate files that are excluded from source control.
 1. **Create a key file** (e.g., `my-account.key`):
 ```bash
 # Only the hex-encoded private key
-334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111
+your-private-key
 ```
 
 2. **Add to `.gitignore`**:
@@ -43,7 +43,7 @@ private.json
 {
   "accounts": {
     "my-testnet-account": {
-      "address": "3ae53cb6e3f42a79",
+      "address": "your-public-adress",
       "key": {
         "type": "file",
         "location": "./my-account.key"
@@ -67,8 +67,8 @@ Use environment variables for sensitive data like private keys and addresses.
 
 1. **Set environment variables**:
 ```bash
-export FLOW_PRIVATE_KEY="334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111"
-export FLOW_ACCOUNT_ADDRESS="3ae53cb6e3f42a79"
+export FLOW_PRIVATE_KEY="your-private-key"
+export FLOW_ACCOUNT_ADDRESS="your-public-adress"
 ```
 
 2. **Reference in `flow.json`**:
@@ -117,8 +117,8 @@ Create separate configuration files for sensitive data and merge them when neede
 {
   "accounts": {
     "my-testnet-account": {
-      "address": "3ae53cb6e3f42a79",
-      "key": "334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111"
+      "address": "your-adress",
+      "key": "your-private-key"
     }
   }
 }
@@ -151,8 +151,8 @@ Use `.env` files for local development with automatic loading by the CLI.
 1. **Create `.env` file**:
 ```bash
 # .env
-FLOW_PRIVATE_KEY=334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111
-FLOW_ACCOUNT_ADDRESS=3ae53cb6e3f42a79
+FLOW_PRIVATE_KEY=your-private-key
+FLOW_ACCOUNT_ADDRESS=your-public-adress
 FLOW_NETWORK=testnet
 ```
 
@@ -257,8 +257,8 @@ secrets.json
 {
   "accounts": {
     "my-account": {
-      "address": "3ae53cb6e3f42a79",
-      "key": "334232967f52bd75234ae9037dd4694c1f00baad63a10c35172bf65fbb8ad1111"
+      "address": "your-public-adress",
+      "key": "your-private-key"
     }
   }
 }
@@ -271,7 +271,7 @@ secrets.json
 {
   "accounts": {
     "my-account": {
-      "address": "3ae53cb6e3f42a79",
+      "address": "your-public-adress",
       "key": {
         "type": "file",
         "location": "./my-account.key"

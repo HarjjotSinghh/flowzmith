@@ -1,0 +1,40 @@
+{
+  "contract_id": "7690b2ff-3463-4ade-9a86-fde062b35899",
+  "contract_name": "AutoToken",
+  "contract_type": "Token",
+  "network": "emulator",
+  "input_method": "natural_language",
+  "requirements": {
+    "contract_name": "AutoToken",
+    "contract_type": "Token",
+    "description": "Automated token contract for Flow emulator",
+    "network": "emulator"
+  },
+  "generated_at": "2025-09-27T13:33:22.450000",
+  "result": {
+    "submission_id": "cbc9b336-e35d-413c-a4b8-759327fe0b2f",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/7690b2ff-3463-4ade-9a86-fde062b35899",
+    "generation_time": 0.01099395751953125,
+    "project_id": "7690b2ff-3463-4ade-9a86-fde062b35899"
+  },
+  "files_generated": {
+    "contract": "contracts/AutoToken.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "mint_tokens",
+      "transfer_tokens",
+      "setup_account"
+    ],
+    "scripts": [
+      "get_balance",
+      "get_supply",
+      "check_account_setup"
+    ],
+    "tests": [
+      "test_token_deployment"
+    ]
+  }
+}

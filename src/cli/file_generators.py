@@ -6,6 +6,10 @@ Generates transactions, scripts, tests, and flow.json files for contracts.
 import json
 from typing import Dict, Any, List
 from pathlib import Path
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class FlowFileGenerator:
@@ -22,44 +26,30 @@ class FlowFileGenerator:
             "custom": "Custom"
         }
     
-    def generate_flow_json(self, contract_name: str, contract_type: str, network: str = "testnet") -> Dict[str, Any]:
+    def generate_flow_json(self, contract_name: str, contract_type: str, network: str = "emulator") -> Dict[str, Any]:
         """Generate flow.json configuration file."""
-        return {
-            "version": "1.0",
-            "contracts": {
-                contract_name: {
-                    "source": f"./contracts/{contract_name}.cdc",
-                    "aliases": {
-                        "testnet": "0x01",
-                        "mainnet": "0x01"
-                    }
-                },
-                "FungibleToken": {
-                    "source": "",
-                    "aliases": {
-                        "testnet": "0x9a0766d93b6608b7",
-                        "mainnet": "0xf233dcee88fe0abe"
-                    }
-                },
-                "NonFungibleToken": {
-                    "source": "",
-                    "aliases": {
-                        "testnet": "0x631e88ae7f1d7c20",
-                        "mainnet": "0x1d7e57aa55817448"
-                    }
+        
+        # Configure accounts based on network
+        if network == "emulator":
+            accounts = {
+                "emulator-account": {
+                    "address": os.getenv("FLOW_ACCOUNT_ADDRESS", "f8d6e0586b0a20c7"),
+                    "key": os.getenv("FLOW_PRIVATE_KEY", "2619878f0e2ff438d17551c297ddce204f27c861e99a6965d493b0a8b8e1b1a5")
                 }
-            },
-            "networks": {
-                "testnet": "access.devnet.nodes.onflow.org:9000",
-                "mainnet": "access.mainnet.nodes.onflow.org:9000"
-            },
-            "accounts": {
+            }
+            deployments = {
+                "emulator": {
+                    "emulator-account": [contract_name]
+                }
+            }
+        else:
+            accounts = {
                 "default": {
-                    "address": "0x01",
-                    "key": "your-private-key-here"
+                    "address": "$FLOW_ACCOUNT_ADDRESS",
+                    "key": "$FLOW_PRIVATE_KEY"
                 }
-            },
-            "deployments": {
+            }
+            deployments = {
                 "testnet": {
                     "default": [contract_name]
                 },
@@ -67,6 +57,42 @@ class FlowFileGenerator:
                     "default": [contract_name]
                 }
             }
+        
+        return {
+            "version": "1.0",
+            "contracts": {
+                contract_name: {
+                    "source": f"./cadence/contracts/{contract_name}.cdc",
+                    "aliases": {
+                        "emulator": "0xf8d6e0586b0a20c7",
+                        "testnet": "0x01",
+                        "mainnet": "0x01"
+                    }
+                },
+                "FungibleToken": {
+                    "source": "",
+                    "aliases": {
+                        "emulator": "0xee82856bf20e2aa6",
+                        "testnet": "0x9a0766d93b6608b7",
+                        "mainnet": "0xf233dcee88fe0abe"
+                    }
+                },
+                "NonFungibleToken": {
+                    "source": "",
+                    "aliases": {
+                        "emulator": "0xf8d6e0586b0a20c7",
+                        "testnet": "0x631e88ae7f1d7c20",
+                        "mainnet": "0x1d7e57aa55817448"
+                    }
+                }
+            },
+            "networks": {
+                "emulator": "127.0.0.1:3569",
+                "testnet": "access.devnet.nodes.onflow.org:9000",
+                "mainnet": "access.mainnet.nodes.onflow.org:9000"
+            },
+            "accounts": accounts,
+            "deployments": deployments
         }
     
     def generate_transactions(self, contract_name: str, contract_type: str) -> Dict[str, str]:

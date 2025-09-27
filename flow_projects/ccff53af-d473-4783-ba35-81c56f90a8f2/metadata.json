@@ -1,0 +1,44 @@
+{
+  "contract_id": "ccff53af-d473-4783-ba35-81c56f90a8f2",
+  "contract_name": "SoftwareTest",
+  "contract_type": "Custom",
+  "network": "testnet",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "SoftwareTest",
+    "contract_type": "Custom",
+    "description": "A smart contract for managing software tests",
+    "network": "testnet",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:03:52.300520",
+  "result": {
+    "submission_id": "3ecb51a0-ec7e-4e8b-99e9-741b660d5b04",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/ccff53af-d473-4783-ba35-81c56f90a8f2",
+    "generation_time": 0.007546186447143555,
+    "project_id": "ccff53af-d473-4783-ba35-81c56f90a8f2"
+  },
+  "files_generated": {
+    "contract": "contracts/SoftwareTest.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

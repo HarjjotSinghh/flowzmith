@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "testnew_mcp": {
+      "command": "python",
+      "args": [
+        "testnew_mcp_server.py"
+      ],
+      "env": {
+        "CONTRACT_ADDRESS": "0x01",
+        "NETWORK": "testnet"
+      }
+    }
+  }
+}

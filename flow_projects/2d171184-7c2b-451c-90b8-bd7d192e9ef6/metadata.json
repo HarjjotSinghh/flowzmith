@@ -1,0 +1,49 @@
+{
+  "contract_id": "2d171184-7c2b-451c-90b8-bd7d192e9ef6",
+  "contract_name": "WalletManager2",
+  "contract_type": "custom",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "WalletManager2",
+    "type": "custom",
+    "description": "a smart contract for managing wallets / connectors",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T13:12:26.771367",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:12:29.535892",
+  "result": {
+    "contract_id": "2d171184-7c2b-451c-90b8-bd7d192e9ef6",
+    "submission_id": "01d30959-e89b-4162-a84b-04990acb782f",
+    "status": "success",
+    "contract_code": "```cadence\n// WalletManager2.cdc\n\npub contract WalletManager2 {\n    // Events\n    pub event WalletConnected(address: Address)\n    pub event WalletDisconnected(address: Address)\n    pub event ConnectorAdded(connectorId: String)\n    pub event ConnectorRemoved(connectorId: String)\n\n    // Resource interface for Wallet\n    pub resource interface IWallet {\n        pub fun getAddress(): Address\n        pub fun isConnected(): Bool\n    }\n\n    // Wallet resource\n    pub resource Wallet: IWallet {\n        pub let address: Address\n        priv var isConnected: Bool\n\n        init(address: Address) {\n            self.address = address\n            self.isConnected = false\n        }\n\n        pub fun getAddress(): Address {\n            return self.address\n        }\n\n        pub fun isConnected(): Bool {\n            return self.isConnected\n        }\n\n        pub fun connect() {\n            self.isConnected = true\n            emit WalletConnected(address: self.address)\n        }\n\n        pub fun disconnect() {\n            self.isConnected = false\n            emit WalletDisconnected(address: self.address)\n        }\n    }\n\n    // Connector struct\n    pub struct Connector {\n        pub let id: String\n        pub let name: String\n\n        init(id: String, name: String) {\n            self.id = id\n            self.name = name\n        }\n    }\n\n    // Mapping of connector ID to Connector struct\n    access(self) var connectors: {String: Connector}\n\n    // Mapping of user address to Wallet resource\n    access(self) var wallets: @{Address: Wallet}\n\n    init() {\n        self.connectors = {}\n        self.wallets = {}\n    }\n\n    // Function to add a new connector\n    pub fun addConnector(id: String, name: String) {\n        pre {\n            !self.connectors.containsKey(id): \"Connector with ID \\(id) already exists\"\n        }\n        self.connectors[id] = Connector(id: id, name: name)\n        emit ConnectorAdded(connectorId: id)\n    }\n\n    // Function to remove a connector\n    pub fun removeConnector(id: String) {\n        pre {\n            self.connectors.containsKey(id): \"Connector with ID \\(id) does not exist\"\n        }\n        self.connectors.remove(key: id)\n        emit ConnectorRemoved(connectorId: id)\n    }\n\n    // Function to create a new wallet\n    pub fun createWallet(address: Address): Capability<&Wallet> {\n        pre {\n            !self.wallets.containsKey(address): \"Wallet for address \\(address) already exists\"\n        }\n        let wallet <- create Wallet(address: address)\n        self.wallets[address] <-! wallet\n        return getWalletCapability(address: address)\n    }\n\n    // Function to get a wallet capability\n    pub fun getWalletCapability(address: Address): Capability<&Wallet> {\n        pre {\n            self.wallets.containsKey(address): \"Wallet for address \\(address) does not exist\"\n        }\n        return self.wallets[address].borrow()!\n    }\n\n    // Function to connect a wallet\n    pub fun connectWallet(address: Address) {\n        pre {\n            self.wallets.containsKey(address): \"Wallet for address \\(address) does not exist\"\n        }\n        let wallet = self.wallets[address].borrow()!\n        wallet.connect()\n    }\n\n    // Function to disconnect a wallet\n    pub fun disconnectWallet(address: Address) {\n        pre {\n            self.wallets.containsKey(address): \"Wallet for address \\(address) does not exist\"\n        }\n        let wallet = self.wallets[address].borrow()!\n        wallet.disconnect()\n    }\n}\n\n// Example transaction to create a new wallet\ntransaction(address: Address) {\n    prepare(signer: AuthAccount) {\n        let walletCapability = WalletManager2.createWallet(address: address)\n        // Store the capability or use it as needed\n    }\n}\n\n// Example script to get a wallet capability\npub fun main(address: Address): Capability<&WalletManager2.Wallet> {\n    return WalletManager2.getWalletCapability(address: address)\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully",
+    "project_path": "flow_projects/2d171184-7c2b-451c-90b8-bd7d192e9ef6",
+    "project_id": "2d171184-7c2b-451c-90b8-bd7d192e9ef6"
+  },
+  "files_generated": {
+    "contract": "contracts/WalletManager2.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

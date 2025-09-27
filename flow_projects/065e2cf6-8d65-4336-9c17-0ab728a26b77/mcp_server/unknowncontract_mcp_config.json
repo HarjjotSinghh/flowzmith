@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "unknowncontract_mcp": {
+      "command": "python",
+      "args": [
+        "unknowncontract_mcp_server.py"
+      ],
+      "env": {
+        "CONTRACT_ADDRESS": "0x01",
+        "NETWORK": "emulator"
+      }
+    }
+  }
+}

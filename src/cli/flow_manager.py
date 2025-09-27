@@ -15,6 +15,9 @@ from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
 import uuid
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -338,62 +341,92 @@ class FlowProjectManager:
         if flow_config_file.exists():
             config = json.loads(flow_config_file.read_text(encoding="utf-8"))
         else:
-            # Create basic config if it doesn't exist
-            config = {
-                "version": "1.0",
-                "contracts": {},
-                "networks": {
-                    "emulator": "127.0.0.1:3569",
-                    "testnet": "access.devnet.nodes.onflow.org:9000",
-                    "mainnet": "access.mainnet.nodes.onflow.org:9000"
-                },
-                "accounts": {
-                    "emulator-account": {
-                        "address": "f8d6e0586b0a20c7",
-                        "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+            # Create basic config if it doesn't exist - this should not happen as flow.json should already be generated
+            logger.warning("flow.json not found, creating basic config for network: %s", network)
+            if network == "emulator":
+                config = {
+                    "version": "1.0",
+                    "contracts": {},
+                    "networks": {
+                        "emulator": "127.0.0.1:3569"
+                    },
+                    "accounts": {
+                        "emulator-account": {
+                            "address": os.getenv("FLOW_ACCOUNT_ADDRESS", "f8d6e0586b0a20c7"),
+                            "key": os.getenv("FLOW_PRIVATE_KEY", "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee")
+                        }
+                    },
+                    "deployments": {
+                        "emulator": {
+                            "emulator-account": []
+                        }
                     }
-                },
-                "deployments": {}
+                }
+            else:
+                config = {
+                    "version": "1.0",
+                    "contracts": {},
+                    "networks": {
+                        "testnet": "access.devnet.nodes.onflow.org:9000",
+                        "mainnet": "access.mainnet.nodes.onflow.org:9000"
+                    },
+                    "accounts": {},
+                    "deployments": {}
+                }
+        
+        # Add contract to contracts section
+        if "contracts" not in config:
+            config["contracts"] = {}
+            
+        # Set contract source path and aliases based on network
+        if network == "emulator":
+            config["contracts"][contract_name] = {
+                "source": f"./cadence/contracts/{contract_name}.cdc",
+                "aliases": {
+                    "emulator": "f8d6e0586b0a20c7"
+                }
+            }
+        else:
+            config["contracts"][contract_name] = {
+                "source": f"./cadence/contracts/{contract_name}.cdc",
+                "aliases": {
+                    "testnet": "0x01",
+                    "mainnet": "0x01"
+                }
             }
         
-        # Add contract
-        config["contracts"][contract_name] = {
-            "source": f"./cadence/contracts/{contract_name}.cdc",
-            "aliases": {
-                "testnet": "0x01",
-                "mainnet": "0x01"
-            }
-        }
-        
-        # Ensure accounts section exists and has emulator-account for emulator network
+        # Ensure accounts section exists
         if "accounts" not in config:
             config["accounts"] = {}
         
+        # Add emulator account if network is emulator and it doesn't exist
         if network == "emulator" and "emulator-account" not in config["accounts"]:
             config["accounts"]["emulator-account"] = {
-                "address": "f8d6e0586b0a20c7",
-                "key": "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee"
+                "address": os.getenv("FLOW_ACCOUNT_ADDRESS", "f8d6e0586b0a20c7"),
+                "key": os.getenv("FLOW_PRIVATE_KEY", "ae1b44c0f5e8f6992ef2348898a35e50a8b0b9684000da8b1dade1b3bcd6ebee")
             }
         
-        # Add deployment configuration
+        # Ensure deployments section exists
         if "deployments" not in config:
             config["deployments"] = {}
         
+        # Add deployment configuration for the specific network
         if network not in config["deployments"]:
             config["deployments"][network] = {}
         
-        # Use emulator-account for emulator, default for others
+        # Use appropriate account name based on network
         account_name = "emulator-account" if network == "emulator" else "default"
         
         if account_name not in config["deployments"][network]:
             config["deployments"][network][account_name] = []
         
+        # Add contract to deployment if not already present
         if contract_name not in config["deployments"][network][account_name]:
             config["deployments"][network][account_name].append(contract_name)
         
         # Write updated config
         flow_config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
-        logger.info("Updated flow.json for contract %s", contract_name)
+        logger.info("Updated flow.json for contract %s on network %s", contract_name, network)
     
     async def _create_project_readme(self, project_dir: Path, contract_name: str, project_id: str):
         """Create a README file for the project."""

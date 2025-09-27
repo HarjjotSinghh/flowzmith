@@ -1,0 +1,44 @@
+{
+  "contract_id": "15154077-b658-4688-ba1f-04b6f11fc86e",
+  "contract_name": "electronics",
+  "contract_type": "Custom",
+  "network": "emulator",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "electronics",
+    "contract_type": "Custom",
+    "description": "a smart contract for managting, electronic devices on chain (listing)",
+    "network": "emulator",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:50:38.584446",
+  "result": {
+    "submission_id": "db38ef54-8a19-4626-b5ca-d5a73473ca5a",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/15154077-b658-4688-ba1f-04b6f11fc86e",
+    "generation_time": 0.011976242065429688,
+    "project_id": "15154077-b658-4688-ba1f-04b6f11fc86e"
+  },
+  "files_generated": {
+    "contract": "contracts/electronics.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

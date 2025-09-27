@@ -1,0 +1,49 @@
+{
+  "contract_id": "96320ded-f611-4d0c-92b2-c306117886f0",
+  "contract_name": "electronics",
+  "contract_type": "custom",
+  "network": "emulator",
+  "input_method": "api",
+  "requirements": {
+    "name": "electronics",
+    "type": "custom",
+    "description": "a smart contract for managting, electronic devices on chain (listing)",
+    "network": "emulator",
+    "metadata": {
+      "created_at": "2025-09-27T13:50:28.594648",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:50:31.377787",
+  "result": {
+    "contract_id": "96320ded-f611-4d0c-92b2-c306117886f0",
+    "submission_id": "db38ef54-8a19-4626-b5ca-d5a73473ca5a",
+    "status": "success",
+    "contract_code": "```cadence\n// electronics.cdc\n\n// Import required contracts\nimport \"FungibleToken\"\nimport \"MetadataViews\"\n\n// Define the Electronics contract\npub contract Electronics {\n    // Define the ElectronicsMetadata struct\n    pub struct ElectronicsMetadata {\n        pub let name: String\n        pub let description: String\n        pub let image: String\n\n        init(name: String, description: String, image: String) {\n            self.name = name\n            self.description = description\n            self.image = image\n        }\n    }\n\n    // Define the ElectronicDevice resource\n    pub resource ElectronicDevice {\n        pub let id: UInt64\n        pub let metadata: ElectronicsMetadata\n\n        init(id: UInt64, metadata: ElectronicsMetadata) {\n            self.id = id\n            self.metadata = metadata\n        }\n    }\n\n    // Define the ElectronicDeviceCollection resource\n    pub resource ElectronicDeviceCollection {\n        pub var devices: @{UInt64: ElectronicDevice}\n\n        init() {\n            self.devices <- {}\n        }\n\n        // Destroy the collection and its devices\n        destroy() {\n            destroy self.devices\n        }\n\n        // Add a device to the collection\n        pub fun addDevice(device: ElectronicDevice) {\n            self.devices[device.id] <-! device\n        }\n\n        // Remove a device from the collection\n        pub fun removeDevice(id: UInt64): ElectronicDevice? {\n            return <-self.devices.remove(key: id)\n        }\n\n        // Get a device from the collection\n        pub fun getDevice(id: UInt64): ElectronicDevice? {\n            return self.devices[id]\n        }\n    }\n\n    // Define the ElectronicDeviceCollectionPublic interface\n    pub resource interface ElectronicDeviceCollectionPublic {\n        pub fun getDevice(id: UInt64): ElectronicDevice?\n    }\n\n    // Create a new ElectronicDevice\n    pub fun createElectronicDevice(id: UInt64, metadata: ElectronicsMetadata): @ElectronicDevice {\n        return <-create ElectronicDevice(id: id, metadata: metadata)\n    }\n\n    // Event emitted when a device is added to a collection\n    pub event DeviceAdded(deviceId: UInt64, owner: Address)\n\n    // Event emitted when a device is removed from a collection\n    pub event DeviceRemoved(deviceId: UInt64, owner: Address)\n\n    // Initialize the contract\n    init() {\n        // Create a new ElectronicDeviceCollection for the contract\n        let collection <- create ElectronicDeviceCollection()\n        self.account.save(<-collection, to: /storage/ElectronicDeviceCollection)\n\n        // Create a public capability for the collection\n        self.account.link<&{ElectronicDeviceCollectionPublic}>(/public/ElectronicDeviceCollection, target: /storage/ElectronicDeviceCollection)\n    }\n}\n\n// Example transaction to add a device to a collection\ntransaction(deviceId: UInt64, metadata: Electronics.ElectronicsMetadata) {\n    let collectionRef: &{Electronics.ElectronicDeviceCollectionPublic}\n\n    prepare(acct: AuthAccount) {\n        self.collectionRef = acct.borrow<&{Electronics.ElectronicDeviceCollectionPublic}>(from: /public/ElectronicDeviceCollection)\n            ?? panic(\"Could not borrow a reference to the collection\")\n    }\n\n    execute {\n        let device <- Electronics.createElectronicDevice(id: deviceId, metadata: metadata)\n        self.collectionRef.addDevice(device: <-device)\n        emit Electronics.DeviceAdded(deviceId: deviceId, owner: acct.address)\n    }\n}\n\n// Example script to get a device from a collection\npub fun getDevice(owner: Address, deviceId: UInt64): Electronics.ElectronicDevice? {\n    let collectionRef = getAccount(owner).getCapability(/public/ElectronicDeviceCollection).borrow<&{Electronics.ElectronicDeviceCollectionPublic}>()\n        ?? panic(\"Could not borrow a reference to the collection\")\n    return collectionRef.getDevice(id: deviceId)\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully",
+    "project_path": "flow_projects/96320ded-f611-4d0c-92b2-c306117886f0",
+    "project_id": "96320ded-f611-4d0c-92b2-c306117886f0"
+  },
+  "files_generated": {
+    "contract": "contracts/electronics.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

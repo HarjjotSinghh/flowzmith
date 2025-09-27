@@ -133,12 +133,12 @@ Let's look at an example of `deploy` commands with multiple configuration files 
 {
     "accounts": {
         "admin-account": {
-            "address": "f8d6e0586b0a20c7",
-            "key": "21c5dfdeb0ff03a7a73ef39788563b62c89adea67bbb21ab95e5f710bd1d40b7"
+            "address": "your-public-address",
+            "key": "your-private-key"
         }, 
         "test-account": {
-            "address": "f8d6e0586b0a20c8",
-            "key": "52d5dfdeb0ff03a7a73ef39788563b62c89adea67bbb21ab95e5f710bd1d51c9"
+            "address": "your-public-address",
+            "key": "your-private-key"
         }
     }
 }

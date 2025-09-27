@@ -111,10 +111,10 @@ def show_welcome():
 
 Welcome to the Flowzmith command-line interface!
 
-This tool provides step-by-step guided workflows for:
-• Smart contract submission and generation
-• Contract deployment to Flow blockchain
-• Documentation search and management
+This tool provides step-by-step guided workflows for:\n
+• Smart contract submission and generation\n
+• Contract deployment to Flow blockchain\n
+• Documentation search and management\n
 • Real-time progress monitoring
 
 Let's get started building your next smart contract!
@@ -174,7 +174,11 @@ def setup():
     """Setup and verify the development environment."""
     logger.info("Running setup command")
     console.print("🔧 Setting up Flowzmith CLI...", style="blue")
-
+    # load env vars and check status
+    load_dotenv()
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    groq_api_key = os.getenv("GROQ_API_KEY")
+ 
     # Check Python version
     if sys.version_info < (3, 8):
         logger.error("Python version check failed: %s", sys.version_info)
@@ -209,6 +213,46 @@ def setup():
     else:
         logger.error("Setup failed")
         console.print("❌ Setup failed. Please check the errors above.", style="red")
+        raise typer.Exit(1)
+
+
+@app.command()
+def flow_auto():
+    """Automated Flow workflow: Generate contract, create MCP server, and deploy to Flow."""
+    logger.info("Running flow_auto command")
+    show_welcome()
+    console.print("🚀 Automated Flow Workflow", style="bold blue")
+    console.print("This will generate a contract, create an MCP server, and deploy to Flow blockchain.", style="cyan")
+
+    # Check environment
+    async def async_checks():
+        logger.info("Running async checks for flow_auto")
+        server_ok = await check_server_health()
+        db_ok = await check_database()
+        logger.info("Async checks finished: server_ok=%s db_ok=%s", server_ok, db_ok)
+        return server_ok and db_ok
+
+    if not asyncio.run(async_checks()):
+        logger.error("Environment checks failed for flow_auto")
+        console.print("❌ Cannot proceed without server and database connection", style="red")
+        raise typer.Exit(1)
+
+    # Run interactive automated workflow
+    async def run_automated_workflow():
+        async with APIClient() as client:
+            creator = ContractCreator(client)
+            logger.info("Starting interactive automated Flow workflow")
+            result = await creator.create_contract_interactive()
+            logger.info("Automated Flow workflow result: %s", result)
+            return result
+
+    result = asyncio.run(run_automated_workflow())
+
+    if result.get("status") == "success":
+        console.print("🎉 Automated Flow workflow completed successfully!", style="green")
+    elif result.get("status") == "failed":
+        logger.error("Automated Flow workflow failed: %s", result)
+        console.print(f"❌ Automated Flow workflow failed: {result.get('error', 'Unknown error')}", style="red")
         raise typer.Exit(1)
 
 

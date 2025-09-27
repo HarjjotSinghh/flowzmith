@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "electronics_mcp": {
+      "command": "python",
+      "args": [
+        "electronics_mcp_server.py"
+      ],
+      "env": {
+        "CONTRACT_ADDRESS": "0x01",
+        "NETWORK": "emulator"
+      }
+    }
+  }
+}

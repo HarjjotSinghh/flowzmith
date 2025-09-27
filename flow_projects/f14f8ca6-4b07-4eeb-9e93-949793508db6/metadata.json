@@ -1,0 +1,49 @@
+{
+  "contract_id": "f14f8ca6-4b07-4eeb-9e93-949793508db6",
+  "contract_name": "WalletManager",
+  "contract_type": "custom",
+  "network": "emulator",
+  "input_method": "api",
+  "requirements": {
+    "name": "WalletManager",
+    "type": "custom",
+    "description": "a smart contract for managing wallets",
+    "network": "emulator",
+    "metadata": {
+      "created_at": "2025-09-27T13:07:53.144470",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:07:55.867663",
+  "result": {
+    "contract_id": "f14f8ca6-4b07-4eeb-9e93-949793508db6",
+    "submission_id": "a5488360-e0a3-4775-924b-66bcbac1ab9c",
+    "status": "success",
+    "contract_code": "```cadence\n// WalletManager.cdc\n\npub contract WalletManager {\n\n    // Events\n    pub event WalletCreated(address: Address, walletID: UInt64)\n    pub event WalletUpdated(address: Address, walletID: UInt64, newBalance: UFix64)\n    pub event WalletDeleted(address: Address, walletID: UInt64)\n\n    // Resource Interface\n    pub resource interface IWallet {\n        pub fun deposit(withdraw: @Token)\n        pub fun withdraw(amount: UFix64): @Token\n        pub fun getBalance(): UFix64\n        pub fun getID(): UInt64\n    }\n\n    // Resource\n    pub resource Wallet: IWallet {\n        pub let id: UInt64\n        pub var balance: UFix64\n        pub let owner: Address\n\n        init(id: UInt64, owner: Address) {\n            pre {\n                id > 0: \"ID must be greater than 0\"\n            }\n            self.id = id\n            self.balance = 0.0\n            self.owner = owner\n        }\n\n        pub fun deposit(withdraw: @Token) {\n            pre {\n                withdraw.balance > 0.0: \"Withdrawal balance must be positive\"\n            }\n            self.balance = self.balance + withdraw.balance\n            destroy withdraw\n        }\n\n        pub fun withdraw(amount: UFix64): @Token {\n            pre {\n                amount > 0.0: \"Withdrawal amount must be positive\"\n                amount <= self.balance: \"Insufficient balance\"\n            }\n            self.balance = self.balance - amount\n            return <-create Token(balance: amount)\n        }\n\n        pub fun getBalance(): UFix64 {\n            return self.balance\n        }\n\n        pub fun getID(): UInt64 {\n            return self.id\n        }\n    }\n\n    // Mapping of wallet IDs to their respective resources\n    pub var wallets: @{UInt64: Wallet}\n\n    init() {\n        self.wallets <- {}\n    }\n\n    // Function to create a new wallet\n    pub fun createWallet(): UInt64 {\n        let newID = UInt64(self.wallets.length + 1)\n        let newWallet <- create Wallet(id: newID, owner: self.account.address)\n        self.wallets[newID] <-! newWallet\n        emit WalletCreated(address: self.account.address, walletID: newID)\n        return newID\n    }\n\n    // Function to get a wallet capability\n    pub fun getWalletCapability(walletID: UInt64): Capability<&Wallet> {\n        pre {\n            self.wallets[walletID] != nil: \"Wallet does not exist\"\n        }\n        return self.account.capabilities.storage.issue<&Wallet>(self.wallets[walletID]!)\n    }\n\n    // Function to update a wallet balance\n    pub fun updateWalletBalance(walletID: UInt64, newBalance: UFix64) {\n        pre {\n            self.wallets[walletID] != nil: \"Wallet does not exist\"\n        }\n        let wallet = self.wallets[walletID]!\n        wallet.balance = newBalance\n        emit WalletUpdated(address: self.account.address, walletID: walletID, newBalance: newBalance)\n    }\n\n    // Function to delete a wallet\n    pub fun deleteWallet(walletID: UInt64) {\n        pre {\n            self.wallets[walletID] != nil: \"Wallet does not exist\"\n        }\n        let wallet <- self.wallets.remove(key: walletID)!\n        destroy wallet\n        emit WalletDeleted(address: self.account.address, walletID: walletID)\n    }\n\n    // Token Resource (example, might need to be adjusted based on actual token contract)\n    pub resource Token {\n        pub var balance: UFix64\n\n        init(balance: UFix64) {\n            self.balance = balance\n        }\n    }\n}\n\n// Example transaction to create a new wallet\ntransaction {\n    prepare(acct: &Account) {\n        let walletManager = acct.contracts.get(\"WalletManager\")?.borrow<&WalletManager>()!\n        let newWalletID = walletManager.createWallet()\n        log(\"New wallet ID: \".concat(newWalletID.toString()))\n    }\n}\n\n// Example script to get a wallet balance\npub fun main(account: Address, walletID: UInt64): UFix64 {\n    let walletManager = getAccount(account).contracts.get(\"WalletManager\")?.borrow<&WalletManager>()!\n    let walletCap = walletManager.getWalletCapability(walletID: walletID)\n    let wallet = walletCap.borrow()!\n    return wallet.getBalance()\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully",
+    "project_path": "flow_projects/f14f8ca6-4b07-4eeb-9e93-949793508db6",
+    "project_id": "f14f8ca6-4b07-4eeb-9e93-949793508db6"
+  },
+  "files_generated": {
+    "contract": "contracts/WalletManager.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

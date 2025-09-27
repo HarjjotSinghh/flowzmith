@@ -1,0 +1,51 @@
+{
+  "contract_id": "01a24939-0e54-4c6e-9cb1-0d368393c6b2",
+  "contract_name": "AutoToken",
+  "contract_type": "token",
+  "network": "emulator",
+  "input_method": "api",
+  "requirements": {
+    "name": "AutoToken",
+    "type": "token",
+    "description": "Automated token contract for Flow emulator",
+    "network": "emulator",
+    "metadata": {
+      "created_at": "2025-09-27T13:33:12.246823",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:33:15.113568",
+  "result": {
+    "contract_id": "01a24939-0e54-4c6e-9cb1-0d368393c6b2",
+    "submission_id": "cbc9b336-e35d-413c-a4b8-759327fe0b2f",
+    "status": "success",
+    "contract_code": "Create a simple fungible token contract with basic minting and transfer functionality",
+    "flow_project": {},
+    "message": "Contract generated successfully",
+    "project_path": "flow_projects/01a24939-0e54-4c6e-9cb1-0d368393c6b2",
+    "project_id": "01a24939-0e54-4c6e-9cb1-0d368393c6b2"
+  },
+  "files_generated": {
+    "contract": "contracts/AutoToken.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "mint_tokens",
+      "transfer_tokens",
+      "setup_account"
+    ],
+    "scripts": [
+      "get_balance",
+      "get_supply",
+      "check_account_setup"
+    ],
+    "tests": [
+      "test_token_deployment"
+    ]
+  }
+}

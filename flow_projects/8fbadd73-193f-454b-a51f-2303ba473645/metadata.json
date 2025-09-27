@@ -1,0 +1,47 @@
+{
+  "contract_id": "8fbadd73-193f-454b-a51f-2303ba473645",
+  "contract_name": "NewTest",
+  "contract_type": "custom",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "NewTest",
+    "type": "custom",
+    "description": "A smart contract for managing software tests",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T12:53:53.888223",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T12:53:56.658361",
+  "result": {
+    "contract_id": "8fbadd73-193f-454b-a51f-2303ba473645",
+    "submission_id": "1e0db0a9-8706-4004-a903-44e7dc63a814",
+    "status": "success",
+    "contract_code": "```cadence\n// NewTest.cdc\n\n// Import required contracts if needed\n// import \"FlowContract\" from 0x...\n\npub contract NewTest {\n    // Events\n    pub event TestCreated(testId: UInt64)\n    pub event TestUpdated(testId: UInt64, newStatus: String)\n    pub event TestDeleted(testId: UInt64)\n\n    // Resource interface for Test\n    pub resource interface ITest {\n        pub let id: UInt64\n        pub var status: String\n        pub var description: String\n\n        pub fun updateStatus(newStatus: String)\n        pub fun updateDescription(newDescription: String)\n    }\n\n    // Test resource\n    pub resource Test: ITest {\n        pub let id: UInt64\n        pub var status: String\n        pub var description: String\n\n        init(id: UInt64, description: String) {\n            self.id = id\n            self.status = \"Not Started\"\n            self.description = description\n        }\n\n        pub fun updateStatus(newStatus: String) {\n            pre {\n                newStatus != \"\": \"New status cannot be empty\"\n            }\n            self.status = newStatus\n            emit TestUpdated(testId: self.id, newStatus: newStatus)\n        }\n\n        pub fun updateDescription(newDescription: String) {\n            pre {\n                newDescription != \"\": \"New description cannot be empty\"\n            }\n            self.description = newDescription\n        }\n    }\n\n    // Collection resource interface\n    pub resource interface ITestCollection {\n        pub fun createTest(description: String)\n        pub fun getTest(id: UInt64): Test?\n        pub fun updateTestStatus(id: UInt64, newStatus: String)\n        pub fun deleteTest(id: UInt64)\n    }\n\n    // TestCollection resource\n    pub resource TestCollection: ITestCollection {\n        pub var tests: @{UInt64: Test}\n\n        init() {\n            self.tests <- {}\n        }\n\n        pub fun createTest(description: String) {\n            let newId = UInt64(self.tests.length)\n            let newTest <- create Test(id: newId, description: description)\n            self.tests[newId] <-! newTest\n            emit TestCreated(testId: newId)\n        }\n\n        pub fun getTest(id: UInt64): Test? {\n            return self.tests[id]\n        }\n\n        pub fun updateTestStatus(id: UInt64, newStatus: String) {\n            if let test = self.tests[id] {\n                test.updateStatus(newStatus: newStatus)\n            } else {\n                panic(\"Test not found\")\n            }\n        }\n\n        pub fun deleteTest(id: UInt64) {\n            if let test <- self.tests.remove(key: id) {\n                destroy test\n                emit TestDeleted(testId: id)\n            } else {\n                panic(\"Test not found\")\n            }\n        }\n\n        destroy() {\n            destroy self.tests\n        }\n    }\n\n    // Public functions\n    pub fun createTestCollection(): @TestCollection {\n        return <- create TestCollection()\n    }\n\n    // Example transaction to create a new TestCollection\n    //\n    // transaction {\n    //     prepare(signer: auth(Storage) &Account) {\n    //         let collection <- NewTest.createTestCollection()\n    //         signer.save(<-collection, to: /storage/TestCollection)\n    //     }\n    // }\n\n    // Example transaction to create a new Test\n    //\n    // transaction {\n    //     prepare(signer: auth(Storage) &Account) {\n    //         let collection = signer.borrow<&NewTest.TestCollection>(from: /storage/TestCollection)\n    //             ?? panic(\"Could not borrow reference to TestCollection\")\n    //         collection.createTest(description: \"New Test Description\")\n    //     }\n    // }\n\n    // Example script to read a Test\n    //\n    // pub fun main(account: Address): String? {\n    //     let collection = getAccount(account)\n    //         .getCapability(/public/TestCollection)\n    //         .borrow<&NewTest.TestCollection>()\n    //         ?? panic(\"Could not borrow reference to TestCollection\")\n    //     let test = collection.getTest(id: 0)\n    //     return test?.description\n    // }\n}\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/NewTest.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

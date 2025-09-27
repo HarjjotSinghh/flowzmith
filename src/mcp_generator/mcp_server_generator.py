@@ -96,7 +96,7 @@ class MCPServerGenerator:
 
     async def generate_mcp_server_with_ai(self, contract_file: str, output_dir: str,
                                         contract_name: str, contract_address: str, network: str,
-                                        ai_client=None) -> None:
+                                        ai_client=None) -> Dict[str, str]:
         """
         Generate MCP server using AI assistance for enhanced analysis and generation.
         
@@ -107,10 +107,16 @@ class MCPServerGenerator:
             contract_address: Contract address
             network: Network (testnet, mainnet, etc.)
             ai_client: Optional AI client for enhanced generation
+            
+        Returns:
+            Dict with file paths as keys and generated content as values
         """
         # Read contract content
         with open(contract_file, 'r') as f:
             contract_content = f.read()
+        
+        # Analyze the contract to get ContractAnalysis object
+        contract_analysis = self.analyzer.analyze_contract(contract_content, contract_name)
         
         # If AI client is provided, use it for enhanced analysis
         if ai_client:
@@ -125,8 +131,8 @@ class MCPServerGenerator:
             except Exception as e:
                 print(f"AI analysis failed, falling back to standard analysis: {e}")
         
-        # Fall back to standard generation
-        await self.generate_mcp_server(contract_file, output_dir, contract_name, contract_address, network)
+        # Generate MCP server with proper ContractAnalysis object
+        return self.generate_mcp_server(contract_analysis, contract_address, network, Path(output_dir))
     
     def _generate_server_content(
         self, 

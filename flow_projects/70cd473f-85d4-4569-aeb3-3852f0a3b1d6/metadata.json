@@ -1,0 +1,49 @@
+{
+  "contract_id": "70cd473f-85d4-4569-aeb3-3852f0a3b1d6",
+  "contract_name": "SoftwareTest",
+  "contract_type": "custom",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "SoftwareTest",
+    "type": "custom",
+    "description": "A smart contract for managing software tests",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T13:03:42.555936",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:03:45.126611",
+  "result": {
+    "contract_id": "70cd473f-85d4-4569-aeb3-3852f0a3b1d6",
+    "submission_id": "3ecb51a0-ec7e-4e8b-99e9-741b660d5b04",
+    "status": "success",
+    "contract_code": "```cadence\n// SoftwareTest.cdc\n\n// Import required contracts\nimport \"FlowToken\"\n\n// Define the SoftwareTest contract\npub contract SoftwareTest {\n\n    // Define events\n    pub event TestCreated(testID: UInt64, testName: String)\n    pub event TestUpdated(testID: UInt64, testName: String)\n    pub event TestDeleted(testID: UInt64)\n\n    // Define the Test resource interface\n    pub resource interface ITest {\n        pub let testID: UInt64\n        pub var testName: String\n        pub var testStatus: Bool\n\n        pub fun updateTestName(newName: String)\n        pub fun updateTestStatus(newStatus: Bool)\n    }\n\n    // Define the Test resource\n    pub resource Test: ITest {\n        pub let testID: UInt64\n        pub var testName: String\n        pub var testStatus: Bool\n\n        init(testID: UInt64, testName: String) {\n            self.testID = testID\n            self.testName = testName\n            self.testStatus = false\n        }\n\n        pub fun updateTestName(newName: String) {\n            self.testName = newName\n            emit TestUpdated(testID: self.testID, testName: newName)\n        }\n\n        pub fun updateTestStatus(newStatus: Bool) {\n            self.testStatus = newStatus\n        }\n    }\n\n    // Define a collection to store tests\n    pub resource TestCollection {\n        pub let owner: Address\n        pub var tests: @{UInt64: Test}\n\n        init(owner: Address) {\n            self.owner = owner\n            self.tests <- {}\n        }\n\n        // Function to add a new test\n        pub fun addTest(test: Test) {\n            let testID = test.testID\n            pre {\n                self.tests[testID] == nil: \"Test with this ID already exists\"\n            }\n            self.tests[testID] <-! test\n            emit TestCreated(testID: testID, testName: test.testName)\n        }\n\n        // Function to remove a test\n        pub fun removeTest(testID: UInt64): Test? {\n            pre {\n                self.tests[testID] != nil: \"Test with this ID does not exist\"\n            }\n            let test <- self.tests.remove(key: testID)!\n            emit TestDeleted(testID: testID)\n            return <-test\n        }\n\n        // Function to get a test\n        pub fun getTest(testID: UInt64): &Test? {\n            return &self.tests[testID] as &Test?\n        }\n\n        // Function to update a test name\n        pub fun updateTestName(testID: UInt64, newName: String) {\n            pre {\n                self.tests[testID] != nil: \"Test with this ID does not exist\"\n            }\n            self.tests[testID]?.updateTestName(newName: newName)\n        }\n\n        // Function to update a test status\n        pub fun updateTestStatus(testID: UInt64, newStatus: Bool) {\n            pre {\n                self.tests[testID] != nil: \"Test with this ID does not exist\"\n            }\n            self.tests[testID]?.updateTestStatus(newStatus: newStatus)\n        }\n\n        // Destructor to clean up resources\n        destroy() {\n            destroy self.tests\n        }\n    }\n\n    // Function to create a new test collection\n    pub fun createTestCollection(): @TestCollection {\n        return <-create TestCollection(owner: self.account.address)\n    }\n\n    // Initialize the contract\n    init() {\n        // No initialization needed for this contract\n    }\n}\n\n// Example transaction to create a new test collection\n// transaction {\n//     prepare(signer: AuthAccount) {\n//         let collection <- SoftwareTest.createTestCollection()\n//         signer.save(<-collection, to: /storage/TestCollection)\n//         let cap = signer.link<&SoftwareTest.TestCollection>(/public/TestCollection, target: /storage/TestCollection)\n//         log(cap)\n//     }\n// }\n\n// Example transaction to add a new test\n// transaction(testName: String) {\n//     prepare(signer: AuthAccount) {\n//         let collectionRef = signer.borrow<&SoftwareTest.TestCollection>(from: /storage/TestCollection)\n//             ?? panic(\"Could not borrow reference to TestCollection\")\n//         let test <- create SoftwareTest.Test(testID: 1, testName: testName)\n//         collectionRef.addTest(test: <-test)\n//     }\n// }\n\n// Example script to get a test\n// pub fun main(testID: UInt64, address: Address): String? {\n//     let publicAccount = getAccount(address)\n//     let capability = publicAccount.getCapability<&SoftwareTest.TestCollection>(/public/TestCollection)\n//     let collectionRef = capability.borrow()\n//         ?? panic(\"Could not borrow reference to TestCollection\")\n//     let testRef = collectionRef.getTest(testID: testID)\n//     return testRef?.testName\n// }\n```",
+    "flow_project": {},
+    "message": "Contract generated successfully",
+    "project_path": "flow_projects/70cd473f-85d4-4569-aeb3-3852f0a3b1d6",
+    "project_id": "70cd473f-85d4-4569-aeb3-3852f0a3b1d6"
+  },
+  "files_generated": {
+    "contract": "contracts/SoftwareTest.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

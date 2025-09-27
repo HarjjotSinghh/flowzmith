@@ -1,0 +1,44 @@
+{
+  "contract_id": "f55ae499-13ee-4e1c-a88f-9e65ea50554f",
+  "contract_name": "WalletManager",
+  "contract_type": "Custom",
+  "network": "emulator",
+  "input_method": "markdown_context",
+  "requirements": {
+    "contract_name": "WalletManager",
+    "contract_type": "Custom",
+    "description": "a smart contract for managing wallets",
+    "network": "emulator",
+    "account_setup": "single",
+    "features": [
+      "transaction_scripts",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T13:08:03.371280",
+  "result": {
+    "submission_id": "a5488360-e0a3-4775-924b-66bcbac1ab9c",
+    "user_id": "f5cffd77-5caa-4fbe-ade1-5cf4845528f8",
+    "status": "success",
+    "message": "Contract submitted and files generated successfully",
+    "project_path": "flow_projects/f55ae499-13ee-4e1c-a88f-9e65ea50554f",
+    "generation_time": 0.008469104766845703,
+    "project_id": "f55ae499-13ee-4e1c-a88f-9e65ea50554f"
+  },
+  "files_generated": {
+    "contract": "contracts/WalletManager.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}

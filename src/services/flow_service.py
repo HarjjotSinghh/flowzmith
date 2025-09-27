@@ -27,6 +27,24 @@ from ..config import get_settings
 logger = logging.getLogger(__name__)
 
 
+def strip_markdown_code_blocks(content: str) -> str:
+    """Strip markdown code block syntax from contract content."""
+    if not content:
+        return content
+    
+    lines = content.strip().split('\n')
+    
+    # Remove first line if it starts with ```
+    if lines and lines[0].strip().startswith('```'):
+        lines = lines[1:]
+    
+    # Remove last line if it's just ```
+    if lines and lines[-1].strip() == '```':
+        lines = lines[:-1]
+    
+    return '\n'.join(lines)
+
+
 class FlowNetwork(str, Enum):
     """Supported Flow networks."""
     TESTNET = "testnet"
@@ -61,10 +79,10 @@ class FlowService:
         project_path = Path(self.settings.flow_projects_path) / submission_id
         project_path.mkdir(parents=True, exist_ok=True)
 
-        # Create required directories
-        (project_path / "contracts").mkdir(exist_ok=True)
-        (project_path / "transactions").mkdir(exist_ok=True)
-        (project_path / "scripts").mkdir(exist_ok=True)
+        # Create required directories under cadence/
+        (project_path / "cadence" / "contracts").mkdir(parents=True, exist_ok=True)
+        (project_path / "cadence" / "transactions").mkdir(parents=True, exist_ok=True)
+        (project_path / "cadence" / "scripts").mkdir(parents=True, exist_ok=True)
 
         return project_path
 
@@ -77,10 +95,10 @@ class FlowService:
         """Save contract and configuration files."""
         # Save contract code
         contract_name = config.get("contracts", {}).get("default") or "SmartContract"
-        contract_file = project_path / "contracts" / f"{contract_name}.cdc"
+        contract_file = project_path / "cadence" / "contracts" / f"{contract_name}.cdc"
 
         with open(contract_file, 'w') as f:
-            f.write(contract_code)
+            f.write(strip_markdown_code_blocks(contract_code))
 
         # Save flow.json configuration
         config_file = project_path / "flow.json"

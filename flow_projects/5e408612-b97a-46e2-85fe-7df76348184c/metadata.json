@@ -1,0 +1,47 @@
+{
+  "contract_id": "5e408612-b97a-46e2-85fe-7df76348184c",
+  "contract_name": "DocumentRWA",
+  "contract_type": "custom",
+  "network": "testnet",
+  "input_method": "api",
+  "requirements": {
+    "name": "DocumentRWA",
+    "type": "custom",
+    "description": "A smart contract for managinon-chain (like contracts)",
+    "network": "testnet",
+    "metadata": {
+      "created_at": "2025-09-27T12:03:04.768452",
+      "cli_generated": true
+    },
+    "account_setup": "single",
+    "features": [
+      "transactions",
+      "deployment_scripts",
+      "test_cases"
+    ]
+  },
+  "generated_at": "2025-09-27T12:03:07.521546",
+  "result": {
+    "contract_id": "5e408612-b97a-46e2-85fe-7df76348184c",
+    "submission_id": "53cb9650-aa3c-4a78-b0f7-b81e187c5515",
+    "status": "success",
+    "contract_code": "// DocumentRWA - Generated Smart Contract\n// Contract Type: Custom\n// Network: testnet\n\npub contract DocumentRWA {\n\n    // Events\n    pub event ContractInitialized()\n\n    // Contract state\n    pub let contractOwner: Address\n\n    // Resources and functions will be added based on your specific requirements\n    // This is a template that needs to be customized\n\n    init() {\n        self.contractOwner = self.account.address\n        emit ContractInitialized()\n    }\n}\n",
+    "flow_project": {},
+    "message": "Contract generated successfully"
+  },
+  "files_generated": {
+    "contract": "contracts/DocumentRWA.cdc",
+    "flow_json": "flow.json",
+    "transactions": [
+      "deploy_contract",
+      "interact_contract"
+    ],
+    "scripts": [
+      "read_contract_data",
+      "check_contract_status"
+    ],
+    "tests": [
+      "test_deployment"
+    ]
+  }
+}
