@@ -1,4 +1,4 @@
-import { streamText, StreamingTextResponse } from 'ai';
+import { streamText } from 'ai';
 
 export const maxDuration = 30;
 
@@ -63,7 +63,12 @@ This contract demonstrates basic resource management in Cadence with proper init
       }
     });
 
-    return new StreamingTextResponse(stream);
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      },
+    });
   } catch (error) {
     console.error('LangChain API error:', error);
     return new Response(
