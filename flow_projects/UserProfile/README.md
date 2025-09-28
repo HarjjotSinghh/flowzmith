@@ -1,6 +1,6 @@
 # UserProfile
 
-A smart contract for managing user profiles on-chain
+A smart contract for managing user profiles
 
 ## Project Overview
 - **Contract Type**: Custom
@@ -12,7 +12,6 @@ A smart contract for managing user profiles on-chain
 UserProfile/
 ├── UserProfile.cdc      # Main smart contract
 ├── flow.json                              # Flow project configuration
-└── README.md                              # This file
 ```
 
 ## Setup Instructions
@@ -24,7 +23,7 @@ UserProfile/
 
 2. **Navigate to Project**
    ```bash
-   cd {requirements['contract_name']}
+   cd UserProfile
    ```
 
 3. **Install Dependencies**

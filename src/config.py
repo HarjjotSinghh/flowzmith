@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = Field(default_factory=lambda: os.getenv("GROQ_API_KEY"), env="GROQ_API_KEY")
     # Models (were missing before, map from .env)
     openai_model: Optional[str] = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4"), env="OPENAI_MODEL")
-    groq_model: Optional[str] = Field(default_factory=lambda: os.getenv("GROQ_MODEL", "meta-llama/llama-4-maverick-17b-128e-instruct"), env="GROQ_MODEL")
+    groq_model: Optional[str] = Field(default_factory=lambda: os.getenv("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct"), env="GROQ_MODEL")
     # Preferred/default provider selection
     preferred_provider: Optional[str] = Field(default_factory=lambda: os.getenv("PREFERRED_PROVIDER"), env="PREFERRED_PROVIDER")
     default_llm_provider: str = Field(default_factory=lambda: os.getenv("DEFAULT_LLM_PROVIDER", "openai"), env="DEFAULT_LLM_PROVIDER")

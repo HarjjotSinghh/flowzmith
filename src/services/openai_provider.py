@@ -66,8 +66,12 @@ class OpenAIProvider(LLMProvider):
             # Calculate approximate cost (may vary based on exact model)
             cost = self._calculate_cost(response.usage.total_tokens)
 
+            # Strip markdown code blocks from contract content
+            from .flow_service import strip_markdown_code_blocks
+            cleaned_content = strip_markdown_code_blocks(response.choices[0].message.content)
+
             return LLMResponse(
-                content=response.choices[0].message.content,
+                content=cleaned_content,
                 provider=LLMProviderType.OPENAI,
                 model=self.model,
                 tokens_used=response.usage.total_tokens,

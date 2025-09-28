@@ -226,8 +226,12 @@ class GroqProvider(LLMProvider):
 
             cost = self._calculate_cost(tokens_used)
 
+            # Strip markdown code blocks from contract content
+            from .flow_service import strip_markdown_code_blocks
+            cleaned_content = strip_markdown_code_blocks(text)
+
             return LLMResponse(
-                content=text,
+                content=cleaned_content,
                 provider=LLMProviderType.GROQ,
                 model=self.model,
                 tokens_used=tokens_used,

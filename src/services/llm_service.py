@@ -70,7 +70,7 @@ class LLMService:
                 self.providers[LLMProviderType.GROQ] = LLMProviderFactory.create_provider(
                     LLMProviderType.GROQ,
                     groq_api_key,
-                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-maverick-17b-128e-instruct"
+                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-scout-17b-16e-instruct"
                 )
                 logger.info("Groq provider initialized successfully")
             except Exception as e:
@@ -119,7 +119,7 @@ class LLMService:
                 self.providers[LLMProviderType.GROQ] = LLMProviderFactory.create_provider(
                     LLMProviderType.GROQ,
                     groq_api_key,
-                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-maverick-17b-128e-instruct"
+                    os.getenv('GROQ_MODEL') or "meta-llama/llama-4-scout-17b-16e-instruct"
                 )
                 logger.info("Groq provider initialized successfully")
             except Exception as e:

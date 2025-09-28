@@ -16,7 +16,7 @@ def ensure_groq_api_key_loaded() -> None:
 def demo_basic_invoke() -> None:
     """Instantiate ChatGroq and run a simple invocation following the guide."""
     llm = ChatGroq(
-        model="meta-llama/llama-4-maverick-17b-128e-instruct",
+        model="meta-llama/llama-4-scout-17b-16e-instruct",
         temperature=0,
         max_tokens=None,
         reasoning_format="parsed",

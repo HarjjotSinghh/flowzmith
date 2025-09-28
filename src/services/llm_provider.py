@@ -134,7 +134,7 @@ Additional context:
 - Pre-conditions: {pre_conditions}
 - Post-conditions: {post_conditions}
 
-Return only the Cadence contract code without any explanations.""",
+Return only the raw Cadence contract code without any explanations or markdown code blocks (no ```cadence or ``` formatting).""",
             variables=["requirements", "pre_conditions", "post_conditions"],
             description="Template for generating Cadence smart contracts"
         )
@@ -164,7 +164,7 @@ Additional context:
 - Pre-conditions: {pre_conditions}
 - Post-conditions: {post_conditions}
 
-Return only the Cadence contract code without any explanations.""",
+Return only the raw Cadence contract code without any explanations or markdown code blocks (no ```cadence or ``` formatting).""",
             variables=["requirements", "external_context", "pre_conditions", "post_conditions"],
             description="Template for generating Cadence contracts using external context"
         )
