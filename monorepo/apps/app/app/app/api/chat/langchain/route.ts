@@ -1,16 +1,10 @@
-import { streamText } from 'ai';
-import { createStreamableValue } from 'ai/rsc';
-import { StreamingTextResponse, Message } from 'ai';
+import { streamText, StreamingTextResponse } from 'ai';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-
-    // Simulate LangChain streaming response for demo purposes
-    // In a real implementation, you would integrate with actual LangChain
-    const stream = createStreamableValue('');
 
     // Mock streaming response
     const responseText = `I'm processing your request through a LangChain stream...
@@ -47,22 +41,29 @@ pub contract ExampleContract {
 
 This contract demonstrates basic resource management in Cadence with proper initialization and destruction patterns.`;
 
-    // Simulate streaming by sending chunks
-    let currentIndex = 0;
-    const chunkSize = 10;
+    // Create a readable stream
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        let currentIndex = 0;
+        const chunkSize = 10;
 
-    const streamInterval = setInterval(() => {
-      if (currentIndex < responseText.length) {
-        const chunk = responseText.substring(currentIndex, currentIndex + chunkSize);
-        stream.update(chunk);
-        currentIndex += chunkSize;
-      } else {
-        stream.done();
-        clearInterval(streamInterval);
+        const sendChunk = () => {
+          if (currentIndex < responseText.length) {
+            const chunk = responseText.substring(currentIndex, currentIndex + chunkSize);
+            controller.enqueue(encoder.encode(chunk));
+            currentIndex += chunkSize;
+            setTimeout(sendChunk, 50);
+          } else {
+            controller.close();
+          }
+        };
+
+        sendChunk();
       }
-    }, 50);
+    });
 
-    return new StreamingTextResponse(stream.value);
+    return new StreamingTextResponse(stream);
   } catch (error) {
     console.error('LangChain API error:', error);
     return new Response(

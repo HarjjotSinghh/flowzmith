@@ -9,6 +9,8 @@
     "allowJs": true,
     "jsx": "preserve",
     "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "paths": {
       "@/*": ["./*"],
       "@repo/*": ["../../packages/*"]
