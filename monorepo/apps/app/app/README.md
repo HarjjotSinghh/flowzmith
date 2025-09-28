@@ -27,7 +27,7 @@ AI-powered smart contract generation and deployment platform for Flow blockchain
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd smart-contract-llm
+   cd flowzmith
    ```
 
 2. **Set up environment**
@@ -393,7 +393,7 @@ pytest -m integration  # Run only integration tests
 
 1. **Build Docker image**
    ```bash
-   docker build -t smart-contract-llm .
+   docker build -t flowzmith .
    ```
 
 2. **Run with Docker Compose**

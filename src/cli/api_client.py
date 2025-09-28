@@ -530,3 +530,81 @@ class APIClient:
                 callback(data)
 
         await self.listen_messages(message_handler)
+
+    # MCP Explorer Methods
+    async def list_mcp_accounts(self) -> List[Dict[str, Any]]:
+        """List available Flow accounts via MCP."""
+        logger.info("Fetching MCP accounts")
+        result = await self.get("/api/v1/mcp/accounts")
+        return result.get("accounts", [])
+
+    async def view_mcp_account(self, address: str) -> Dict[str, Any]:
+        """View account details via MCP."""
+        logger.info("Viewing MCP account: address=%s", address)
+        return await self.get(f"/api/v1/mcp/accounts/{address}")
+
+    async def view_mcp_contract(self, address: str, name: str) -> Dict[str, Any]:
+        """View contract details via MCP."""
+        logger.info("Viewing MCP contract: address=%s, name=%s", address, name)
+        return await self.get(f"/api/v1/mcp/contracts/{address}/{name}")
+
+    async def view_mcp_transaction(self, tx_id: str) -> Dict[str, Any]:
+        """View transaction details via MCP."""
+        logger.info("Viewing MCP transaction: tx_id=%s", tx_id)
+        return await self.get(f"/api/v1/mcp/transactions/{tx_id}")
+
+    async def list_mcp_transactions(self, address: Optional[str] = None) -> Dict[str, Any]:
+        """List recent transactions via MCP."""
+        params = {}
+        if address:
+            params["address"] = address
+        logger.info("Listing MCP transactions: address=%s", address)
+        return await self.get("/api/v1/mcp/transactions", params=params)
+
+    # Documentation Methods
+    async def upload_documentation_files(self, file_paths: List[Path], metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Upload multiple documentation files."""
+        logger.info("Uploading documentation files: count=%d", len(file_paths))
+        
+        data = aiohttp.FormData()
+        for file_path in file_paths:
+            if file_path.exists():
+                data.add_field("files", open(file_path, "rb"), filename=file_path.name)
+        
+        data.add_field("metadata", json.dumps(metadata))
+        # Include system address for CLI uploads
+        data.add_field("system_address", self._get_system_address())
+        
+        return await self.post("/api/v1/documentation/upload", data=data)
+
+    async def browse_documentation_categories(self) -> Dict[str, Any]:
+        """Browse documentation by categories."""
+        logger.info("Browsing documentation categories")
+        return await self.get("/api/v1/documentation/categories")
+
+    # System Methods
+    async def setup_system(self) -> Dict[str, Any]:
+        """Setup and verify system environment."""
+        logger.info("Setting up system")
+        return await self.post("/api/v1/system/setup")
+
+    async def get_system_version(self) -> Dict[str, Any]:
+        """Get system version information."""
+        logger.info("Getting system version")
+        return await self.get("/api/v1/system/version")
+
+    # Enhanced contract creation with wizard support
+    async def create_contract_wizard(self, wizard_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Run the complete contract creation wizard."""
+        wizard_data = dict(wizard_data)
+        wizard_data.setdefault("system_address", self._get_system_address())
+        logger.info("Running contract creation wizard")
+        return await self.post("/api/v1/contracts/wizard", json=wizard_data)
+
+    # Flow automation workflow
+    async def run_flow_automation(self, automation_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Run automated Flow workflow."""
+        automation_data = dict(automation_data)
+        automation_data.setdefault("system_address", self._get_system_address())
+        logger.info("Running Flow automation workflow")
+        return await self.post("/api/v1/flow/automation", json=automation_data)

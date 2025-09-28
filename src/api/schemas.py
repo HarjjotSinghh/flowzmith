@@ -457,3 +457,96 @@ class CLILogResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# MCP Explorer Schemas
+class MCPAccountResponse(BaseModel):
+    """Schema for MCP account response."""
+    address: str
+    balance: Optional[str] = None
+    keys: Optional[List[Dict[str, Any]]] = None
+    contracts: Optional[Dict[str, Any]] = None
+
+class MCPContractResponse(BaseModel):
+    """Schema for MCP contract response."""
+    address: str
+    name: str
+    code: Optional[str] = None
+    events: Optional[List[Dict[str, Any]]] = None
+
+class MCPTransactionResponse(BaseModel):
+    """Schema for MCP transaction response."""
+    id: str
+    status: str
+    block_id: Optional[str] = None
+    block_height: Optional[int] = None
+    events: Optional[List[Dict[str, Any]]] = None
+    error_message: Optional[str] = None
+
+# System Setup Schemas
+class SystemSetupResponse(BaseModel):
+    """Schema for system setup response."""
+    database_connected: bool
+    llm_providers: List[str]
+    flow_cli_available: bool
+    setup_complete: bool
+
+class SystemVersionResponse(BaseModel):
+    """Schema for system version response."""
+    name: str
+    version: str
+    description: str
+    github: str
+
+# Documentation Upload Schemas
+class DocumentationUploadResponse(BaseModel):
+    """Schema for documentation upload response."""
+    uploaded_files: List[Dict[str, Any]]
+    total_uploaded: int
+
+class DocumentationCategoriesResponse(BaseModel):
+    """Schema for documentation categories response."""
+    categories: Dict[str, Any]
+
+# Contract Wizard Schemas
+class ContractWizardRequest(BaseModel):
+    """Schema for contract wizard request."""
+    input_method: Optional[str] = "natural_language"
+    requirements: Optional[Dict[str, Any]] = None
+    auto_deploy: bool = False
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+
+class ContractWizardResponse(BaseModel):
+    """Schema for contract wizard response."""
+    status: str
+    message: str
+    result: Dict[str, Any]
+
+# Flow Automation Schemas
+class FlowAutomationRequest(BaseModel):
+    """Schema for Flow automation request."""
+    contract_content: str = Field(..., min_length=1)
+    config_content: Optional[Dict[str, Any]] = None
+    contract_name: str = Field("AutoContract", min_length=1)
+    network: str = Field("emulator", pattern=r'^(testnet|mainnet|emulator)$')
+    auto_deploy: bool = True
+    flow_init: bool = True
+
+class FlowAutomationStepResponse(BaseModel):
+    """Schema for Flow automation step response."""
+    step: str
+    status: str
+    result: Dict[str, Any]
+
+class FlowAutomationResponse(BaseModel):
+    """Schema for Flow automation response."""
+    status: str
+    steps: List[FlowAutomationStepResponse]
+    error: Optional[str] = None
+
+# Dashboard Stats Schema (enhanced)
+class DashboardStatsResponse(BaseModel):
+    """Schema for dashboard statistics response."""
+    total_contracts: int
+    successful_deployments: int
+    pending_submissions: int
+    total_docs: int
