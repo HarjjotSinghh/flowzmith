@@ -3,6 +3,7 @@ API routes for Flowzmith.
 """
 
 import asyncio
+import json
 import time
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -56,7 +57,19 @@ from ..schemas import (
     FlowProjectStatusResponse,
     FlowGenerateDeployRequest,
     FlowDeploymentHistoryResponse,
-    FlowDeploymentStatsResponse
+    FlowDeploymentStatsResponse,
+    MCPAccountResponse,
+    MCPContractResponse,
+    MCPTransactionResponse,
+    SystemSetupResponse,
+    SystemVersionResponse,
+    DocumentationUploadResponse,
+    DocumentationCategoriesResponse,
+    ContractWizardRequest,
+    ContractWizardResponse,
+    FlowAutomationRequest,
+    FlowAutomationResponse,
+    DashboardStatsResponse
 )
 from .schemas import HealthResponse
 
@@ -1319,6 +1332,318 @@ async def get_statistics(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# MCP Explorer endpoints
+@router.get("/mcp/accounts", response_model=List[MCPAccountResponse])
+async def list_mcp_accounts(db: Session = Depends(get_db)):
+    """List available Flow accounts via MCP."""
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+        client = MCPFlowClient()
+        await client.connect()
+        try:
+            accounts = await client.list_accounts()
+            return {"accounts": accounts}
+        finally:
+            await client.disconnect()
+    except ImportError:
+        raise HTTPException(status_code=503, detail="MCP client not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MCP error: {str(e)}")
+
+@router.get("/mcp/accounts/{address}", response_model=MCPAccountResponse)
+async def view_mcp_account(address: str, db: Session = Depends(get_db)):
+    """View account details via MCP."""
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+        client = MCPFlowClient()
+        await client.connect()
+        try:
+            result = await client.view_account(address)
+            return result
+        finally:
+            await client.disconnect()
+    except ImportError:
+        raise HTTPException(status_code=503, detail="MCP client not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MCP error: {str(e)}")
+
+@router.get("/mcp/contracts/{address}/{name}", response_model=MCPContractResponse)
+async def view_mcp_contract(address: str, name: str, db: Session = Depends(get_db)):
+    """View contract details via MCP."""
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+        client = MCPFlowClient()
+        await client.connect()
+        try:
+            result = await client.view_contract(address, name)
+            return result
+        finally:
+            await client.disconnect()
+    except ImportError:
+        raise HTTPException(status_code=503, detail="MCP client not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MCP error: {str(e)}")
+
+@router.get("/mcp/transactions/{tx_id}", response_model=MCPTransactionResponse)
+async def view_mcp_transaction(tx_id: str, db: Session = Depends(get_db)):
+    """View transaction details via MCP."""
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+        client = MCPFlowClient()
+        await client.connect()
+        try:
+            result = await client.view_transaction(tx_id)
+            return result
+        finally:
+            await client.disconnect()
+    except ImportError:
+        raise HTTPException(status_code=503, detail="MCP client not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MCP error: {str(e)}")
+
+@router.get("/mcp/transactions", response_model=List[MCPTransactionResponse])
+async def list_mcp_transactions(address: Optional[str] = None, db: Session = Depends(get_db)):
+    """List recent transactions via MCP."""
+    try:
+        from flow_mcp.mcp_client import MCPFlowClient
+        client = MCPFlowClient()
+        await client.connect()
+        try:
+            result = await client.list_transactions(address)
+            return result
+        finally:
+            await client.disconnect()
+    except ImportError:
+        raise HTTPException(status_code=503, detail="MCP client not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MCP error: {str(e)}")
+
+# Documentation upload endpoint
+@router.post("/documentation/upload", response_model=DocumentationUploadResponse)
+async def upload_documentation(
+    files: List[UploadFile] = File(...),
+    metadata: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Upload documentation files."""
+    try:
+        doc_service = DocumentationService(db)
+        results = []
+        
+        for file in files:
+            if not file.filename.endswith(('.md', '.txt', '.pdf', '.doc', '.docx')):
+                continue
+                
+            content = await file.read()
+            content_str = content.decode('utf-8', errors='ignore')
+            
+            # Parse metadata if provided
+            file_metadata = {}
+            if metadata:
+                try:
+                    file_metadata = json.loads(metadata)
+                except:
+                    pass
+            
+            # Add the document
+            doc = doc_service.add_document(
+                source=file.filename,
+                title=file_metadata.get('title', file.filename),
+                content=content_str,
+                content_type=file_metadata.get('content_type', 'DOCUMENTATION'),
+                version=file_metadata.get('version', '1.0')
+            )
+            
+            results.append({
+                "filename": file.filename,
+                "document_id": str(doc.id),
+                "status": "uploaded"
+            })
+        
+        return {"uploaded_files": results, "total_uploaded": len(results)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Documentation browse categories endpoint
+@router.get("/documentation/categories", response_model=DocumentationCategoriesResponse)
+async def browse_documentation_categories(db: Session = Depends(get_db)):
+    """Browse documentation by categories."""
+    try:
+        doc_service = DocumentationService(db)
+        categories = doc_service.get_documentation_categories()
+        return {"categories": categories}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# System setup/status endpoints
+@router.post("/system/setup", response_model=SystemSetupResponse)
+async def setup_system(db: Session = Depends(get_db)):
+    """Setup and verify the system environment."""
+    try:
+        # Check database connection
+        from ..models.database import check_database_connection
+        db_connected = check_database_connection()
+        
+        # Check LLM providers
+        from ..config import get_settings
+        settings = get_settings()
+        llm_providers = []
+        if settings.openai_api_key:
+            llm_providers.append("OpenAI")
+        if settings.groq_api_key:
+            llm_providers.append("Groq")
+        
+        # Check Flow CLI
+        flow_cli_available = False
+        try:
+            import subprocess
+            result = subprocess.run(["flow", "version"], capture_output=True, text=True)
+            flow_cli_available = result.returncode == 0
+        except:
+            pass
+        
+        setup_status = {
+            "database_connected": db_connected,
+            "llm_providers": llm_providers,
+            "flow_cli_available": flow_cli_available,
+            "setup_complete": db_connected and len(llm_providers) > 0
+        }
+        
+        return setup_status
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/system/version", response_model=SystemVersionResponse)
+async def get_system_version():
+    """Get system version information."""
+    return {
+        "name": "Flowzmith CLI",
+        "version": "1.0.0",
+        "description": "AI-powered smart contract generation and deployment platform",
+        "github": "https://github.com/HarjjotSinghh/flowzmith"
+    }
+
+# Contract wizard endpoint
+@router.post("/contracts/wizard", response_model=ContractWizardResponse)
+async def run_contract_wizard(
+    wizard_data: ContractWizardRequest,
+    user_id: str = None,
+    request: Request = None,
+    db: Session = Depends(get_db)
+):
+    """Run the complete contract creation wizard."""
+    try:
+        # Initialize API client and contract creator
+        api_client = APIClient(base_url="http://localhost:8000")
+        contract_creator = ContractCreator(api_client, db)
+        
+        # Run the wizard workflow
+        result = await contract_creator.create_contract_interactive()
+        
+        return {
+            "status": "success" if result.get("status") == "success" else "failed",
+            "message": "Contract wizard completed successfully" if result.get("status") == "success" else f"Wizard failed: {result.get('error', 'Unknown error')}",
+            "result": result
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Wizard failed: {str(e)}")
+
+# Flow automation endpoint
+@router.post("/flow/automation", response_model=FlowAutomationResponse)
+async def run_flow_automation(
+    automation_data: FlowAutomationRequest,
+    user_id: str = None,
+    request: Request = None,
+    db: Session = Depends(get_db)
+):
+    """Run automated Flow workflow."""
+    try:
+        from ..cli.flow_manager import FlowProjectManager
+        from ..cli.deployment_service import ContractDeploymentService
+        
+        flow_manager = FlowProjectManager()
+        deployment_service = ContractDeploymentService()
+        
+        contract_content = automation_data.contract_content
+        config_content = automation_data.config_content or {}
+        contract_name = automation_data.contract_name
+        network = automation_data.network
+        auto_deploy = automation_data.auto_deploy
+        flow_init = automation_data.flow_init
+        
+        result = {"status": "success", "steps": []}
+        
+        if flow_init:
+            # Initialize Flow project
+            project_result = await flow_manager.create_flow_project(
+                project_id=contract_name,
+                contract_name=contract_name,
+                contract_content=contract_content,
+                network=network
+            )
+            result["steps"].append({
+                "step": "flow_init",
+                "status": "success" if project_result.get("status") == "success" else "failed",
+                "result": project_result
+            })
+            
+            if project_result.get("status") != "success":
+                result["status"] = "failed"
+                result["error"] = f"Flow init failed: {project_result.get('error')}"
+                return result
+        
+        if auto_deploy:
+            # Deploy contract
+            deployment_result = await deployment_service.deploy_contract_automatically(
+                contract_name=contract_name,
+                contract_content=contract_content,
+                network=network,
+                auto_deploy=True
+            )
+            result["steps"].append({
+                "step": "auto_deploy",
+                "status": deployment_result.get("status", "failed"),
+                "result": deployment_result
+            })
+            
+            if deployment_result.get("status") != "deployed":
+                result["status"] = "failed"
+                result["error"] = f"Deployment failed: {deployment_result.get('error')}"
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Flow automation failed: {str(e)}")
+
+# Dashboard stats endpoint (matches CLI status command)
+@router.get("/dashboard/stats", response_model=DashboardStatsResponse)
+async def get_dashboard_stats(db: Session = Depends(get_db)):
+    """Get dashboard statistics."""
+    try:
+        user_service = UserService(db)
+        doc_service = DocumentationService(db)
+        
+        # Get basic stats
+        from ..models import ContractSubmission, DeploymentLog
+        total_contracts = db.query(ContractSubmission).count()
+        successful_deployments = db.query(DeploymentLog).filter(
+            DeploymentLog.status == "SUCCESS"
+        ).count()
+        pending_submissions = db.query(ContractSubmission).filter(
+            ContractSubmission.status == "PENDING"
+        ).count()
+        
+        doc_stats = doc_service.get_documentation_stats()
+        total_docs = doc_stats.get("total_documents", 0)
+        
+        return {
+            "total_contracts": total_contracts,
+            "successful_deployments": successful_deployments,
+            "pending_submissions": pending_submissions,
+            "total_docs": total_docs
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Error handler should be added to the main FastAPI app, not the router
 
 # Streaming contract generation endpoint
@@ -1443,6 +1768,7 @@ async def generate_contract_with_context_streaming(
                 except Exception:
                     # Fallback manual save if Flow CLI is unavailable
                     try:
+                        from pathlib import Path as _Path
                         settings = _get_settings()
                         proj = _Path(settings.flow_projects_path) / str(submission_stream.id)
                         (proj / "contracts").mkdir(parents=True, exist_ok=True)

@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy requirements and install Python dependencies system-wide
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Flow CLI
 RUN curl -sSL https://storage.googleapis.com/flow-cli/install.sh | bash && \
@@ -31,8 +31,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+# Copy installed packages and binaries from builder
+COPY --from=builder /usr/local /usr/local
 COPY --from=builder /usr/local/bin/flow /usr/local/bin/flow
 
 # Set working directory
@@ -43,15 +43,17 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY static/ ./static/
 COPY context/ ./context/
-COPY prompts/ ./prompts/
+COPY templates/ ./templates/
+COPY knowledge_base/ ./knowledge_base/
+COPY docs/ ./docs/
+COPY contracts/ ./contracts/
 
 # Create necessary directories with proper permissions
-RUN mkdir -p /app/flow_projects /app/vector_db /app/logs /app/uploads /app/knowledge_base && \
+RUN mkdir -p /app/flow_projects /app/vector_db /app/logs /app/uploads /app/knowledge_base /app/data && \
     chmod -R 755 /app
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV PATH=$PATH:/root/.local/bin
 ENV DATABASE_URL=sqlite:///./smart_contract_llm.db
 ENV VECTOR_DB_PATH=/app/vector_db
 ENV FLOW_PROJECTS_PATH=/app/flow_projects
@@ -68,5 +70,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Run the application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Run the application via Python module to avoid permission issues with local bin scripts
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
