@@ -70,6 +70,13 @@ class GeneratedConfiguration(Base):
     generated_contract_code = Column(Text, nullable=False)
     validation_status = Column(Enum(ValidationStatus), default=ValidationStatus.PENDING)
     validation_errors = Column(JSON, nullable=True)
+    
+    # IPFS Storage fields
+    ipfs_cid = Column(String(255), nullable=True, index=True)  # IPFS Content Identifier
+    ipfs_pin_id = Column(String(255), nullable=True)  # Pinata pin ID for management
+    ipfs_uploaded_at = Column(DateTime(timezone=True), nullable=True)
+    ipfs_metadata = Column(JSON, nullable=True)  # Additional IPFS metadata
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     last_modified = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

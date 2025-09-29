@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional, List, AsyncGenerator
 import logging
 from enum import Enum
 from sqlalchemy.orm import Session
+from datetime import datetime
 import os
 
 from dotenv import load_dotenv
@@ -32,6 +33,7 @@ from ..models import (
 from ..config import get_settings
 from .openai_provider import OpenAIProvider  # ensure provider registration
 from .groq_provider import GroqProvider  # ensure provider registration
+from .pinata_service import get_pinata_service, PinataError
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +46,7 @@ class LLMService:
         self.settings = get_settings()
         self.prompt_manager = PromptTemplateManager()
         self.providers: Dict[LLMProviderType, Any] = {}
+        self.pinata_service = get_pinata_service()
 
         openai_api_key = self._clean(os.getenv('OPENAI_API_KEY'))
         groq_api_key = self._clean(os.getenv('GROQ_API_KEY'))
@@ -217,6 +220,23 @@ class LLMService:
                 validation_status="PENDING"
             )
 
+            # Upload to IPFS if enabled
+            if self.pinata_service:
+                try:
+                    ipfs_result = await self._upload_contract_to_ipfs(
+                        generated_config, 
+                        submission
+                    )
+                    if ipfs_result:
+                        generated_config.ipfs_cid = ipfs_result.get("ipfs_cid")
+                        generated_config.ipfs_pin_id = ipfs_result.get("pin_id")
+                        generated_config.ipfs_uploaded_at = datetime.utcnow()
+                        generated_config.ipfs_metadata = ipfs_result.get("pinata_metadata")
+                        logger.info(f"Successfully uploaded contract to IPFS: {generated_config.ipfs_cid}")
+                except PinataError as e:
+                    logger.error(f"Failed to upload contract to IPFS: {e}")
+                    # Continue without IPFS storage - don't fail the entire operation
+
             self.db_session.add(generated_config)
             self.db_session.commit()
 
@@ -265,6 +285,23 @@ class LLMService:
                 generated_contract_code=response.content,
                 validation_status="PENDING"
             )
+
+            # Upload to IPFS if enabled
+            if self.pinata_service:
+                try:
+                    ipfs_result = await self._upload_contract_to_ipfs(
+                        generated_config, 
+                        submission
+                    )
+                    if ipfs_result:
+                        generated_config.ipfs_cid = ipfs_result.get("ipfs_cid")
+                        generated_config.ipfs_pin_id = ipfs_result.get("pin_id")
+                        generated_config.ipfs_uploaded_at = datetime.utcnow()
+                        generated_config.ipfs_metadata = ipfs_result.get("pinata_metadata")
+                        logger.info(f"Successfully uploaded contract to IPFS: {generated_config.ipfs_cid}")
+                except PinataError as e:
+                    logger.error(f"Failed to upload contract to IPFS: {e}")
+                    # Continue without IPFS storage - don't fail the entire operation
 
             self.db_session.add(generated_config)
             self.db_session.commit()
@@ -564,3 +601,132 @@ class LLMService:
         except Exception as e:
             logger.error(f"Failed to parse validation response: {e}")
             return {"valid": False, "errors": [str(e)]}
+
+    async def _upload_contract_to_ipfs(
+        self,
+        generated_config: GeneratedConfiguration,
+        submission: ContractSubmission
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Upload generated contract to IPFS via Pinata.
+        
+        Args:
+            generated_config: The generated configuration containing contract code
+            submission: The original contract submission
+            
+        Returns:
+            IPFS upload result or None if failed
+        """
+        if not self.pinata_service:
+            return None
+            
+        try:
+            # Prepare contract metadata
+            contract_metadata = {
+                "submission_id": str(submission.id),
+                "user_id": str(submission.user_id),
+                "input_type": submission.input_type.value,
+                "generated_at": datetime.utcnow().isoformat(),
+                "validation_status": generated_config.validation_status.value,
+                "flow_config_included": bool(generated_config.config_content)
+            }
+            
+            # Add any existing metadata from submission
+            if submission.pre_conditions:
+                contract_metadata["pre_conditions"] = submission.pre_conditions
+            if submission.post_conditions:
+                contract_metadata["post_conditions"] = submission.post_conditions
+            
+            # Generate a contract name for IPFS
+            contract_name = f"contract_{submission.id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            
+            # Upload the contract code to IPFS
+            result = await self.pinata_service.upload_contract_to_ipfs(
+                contract_code=generated_config.generated_contract_code,
+                contract_name=contract_name,
+                metadata=contract_metadata
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failed to upload contract to IPFS: {e}")
+            return None
+
+    async def retrieve_contract_from_ipfs(self, cid: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve contract from IPFS using CID.
+        
+        Args:
+            cid: The IPFS Content Identifier
+            
+        Returns:
+            Contract data from IPFS or None if failed
+        """
+        if not self.pinata_service:
+            logger.warning("Pinata service not available for IPFS retrieval")
+            return None
+            
+        try:
+            result = await self.pinata_service.retrieve_from_ipfs(cid)
+            logger.info(f"Successfully retrieved contract from IPFS: {cid}")
+            return result
+            
+        except PinataError as e:
+            logger.error(f"Failed to retrieve contract from IPFS: {e}")
+            return None
+
+    async def get_contract_with_ipfs_fallback(
+        self,
+        generated_config: GeneratedConfiguration
+    ) -> str:
+        """
+        Get contract code with IPFS fallback if database storage fails.
+        
+        Args:
+            generated_config: The generated configuration object
+            
+        Returns:
+            Contract code from database or IPFS
+        """
+        # Try to get from database first
+        if generated_config.generated_contract_code:
+            return generated_config.generated_contract_code
+        
+        # Fallback to IPFS if available
+        if generated_config.ipfs_cid and self.pinata_service:
+            try:
+                ipfs_data = await self.retrieve_contract_from_ipfs(generated_config.ipfs_cid)
+                if ipfs_data and "contract_code" in ipfs_data:
+                    logger.info(f"Retrieved contract from IPFS fallback: {generated_config.ipfs_cid}")
+                    return ipfs_data["contract_code"]
+            except Exception as e:
+                logger.error(f"IPFS fallback failed: {e}")
+        
+        logger.warning(f"No contract code available for config {generated_config.id}")
+        return ""
+
+    async def sync_ipfs_metadata(self, generated_config: GeneratedConfiguration) -> bool:
+        """
+        Sync metadata from IPFS for a generated configuration.
+        
+        Args:
+            generated_config: The generated configuration to sync
+            
+        Returns:
+            True if sync successful, False otherwise
+        """
+        if not self.pinata_service or not generated_config.ipfs_cid:
+            return False
+            
+        try:
+            metadata = await self.pinata_service.get_pin_metadata(generated_config.ipfs_cid)
+            if metadata:
+                generated_config.ipfs_metadata = metadata
+                self.db_session.commit()
+                logger.info(f"Synced IPFS metadata for config {generated_config.id}")
+                return True
+        except Exception as e:
+            logger.error(f"Failed to sync IPFS metadata: {e}")
+            
+        return False

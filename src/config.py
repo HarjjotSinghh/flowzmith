@@ -61,6 +61,11 @@ class Settings(BaseSettings):
 
     # External Services
     redis_url: str = Field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"), env="REDIS_URL")
+    
+    # IPFS Storage (Pinata)
+    pinata_jwt: Optional[str] = Field(default_factory=lambda: os.getenv("PINATA_JWT"), env="PINATA_JWT")
+    pinata_gateway: Optional[str] = Field(default_factory=lambda: os.getenv("PINATA_GATEWAY"), env="PINATA_GATEWAY")
+    enable_ipfs_storage: bool = Field(default_factory=lambda: os.getenv("ENABLE_IPFS_STORAGE", "false").lower() in ("true", "1", "yes"), env="ENABLE_IPFS_STORAGE")
 
     # Documentation & Learning
     enable_analytics: bool = Field(default_factory=lambda: os.getenv("ENABLE_ANALYTICS", "true").lower() in ("true", "1", "yes"), env="ENABLE_ANALYTICS")
@@ -129,5 +134,12 @@ def validate_settings() -> List[str]:
     # Check database configuration
     if settings.database_url.startswith("sqlite") and not settings.debug:
         warnings.append("Using SQLite in production is not recommended")
+    
+    # Check IPFS configuration
+    if settings.enable_ipfs_storage:
+        if not settings.pinata_jwt:
+            warnings.append("IPFS storage enabled but PINATA_JWT not configured")
+        if not settings.pinata_gateway:
+            warnings.append("IPFS storage enabled but PINATA_GATEWAY not configured")
 
     return warnings

@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
-from src.api import router, websocket_router, knowledge_base_router
+from src.api import router, websocket_router, knowledge_base_router, ipfs_router
 from src.api.middleware import (
     AuthenticationMiddleware,
     RateLimitMiddleware,
@@ -117,6 +117,9 @@ app.include_router(websocket_router)
 
 # Include Knowledge Base routes
 app.include_router(knowledge_base_router, prefix="/api/v1")
+
+# Include IPFS routes
+app.include_router(ipfs_router)
 
 # Mount static files
 if os.path.exists("static"):
