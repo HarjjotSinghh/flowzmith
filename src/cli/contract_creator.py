@@ -24,6 +24,7 @@ from rich.text import Text
 from .api_client import APIClient
 from .file_generators import FlowFileGenerator
 from .flow_automation_service import FlowAutomationService
+from .suggestions import suggestions
 from ..models.database import get_db
 from ..models.generated_contract import GeneratedContract, ContractType, NetworkType, GenerationMethod
 from ..mcp_generator.mcp_server_generator import MCPServerGenerator
@@ -73,7 +74,13 @@ class ContractCreator:
 
         # Step 3: Review and confirm
         if await self._review_contract(requirements, contract_content):
-            return await self._submit_contract_with_additional_files(requirements, contract_content, "markdown_context")
+            result = await self._submit_contract_with_additional_files(requirements, contract_content, "markdown_context")
+            
+            # Step 4: Show what's next suggestions
+            if result.get("status") == "success":
+                suggestions.show_suggestions("contract_creation", result)
+            
+            return result
         else:
             console.print("❌ Contract creation cancelled", style="yellow")
             return {"status": "cancelled"}

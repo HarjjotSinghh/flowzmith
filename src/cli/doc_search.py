@@ -17,6 +17,7 @@ from rich.text import Text
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from .api_client import APIClient
+from .suggestions import suggestions
 
 console = Console()
 
@@ -36,6 +37,8 @@ class DocumentationSearch:
             query = Prompt.ask("\n🔍 Enter search query (or 'quit' to exit)")
 
             if query.lower() in ['quit', 'exit', 'q']:
+                # Show what's next suggestions before exiting
+                suggestions.show_suggestions("documentation_search", {"status": "completed"})
                 break
 
             if not query.strip():
@@ -236,6 +239,9 @@ class DocumentationSearch:
 
             console.print("✅ Documentation uploaded successfully!", style="green")
             console.print(f"Document ID: {result.get('document_id', 'unknown')}", style="cyan")
+            
+            # Show what's next suggestions
+            suggestions.show_suggestions("documentation_upload", result)
 
         except Exception as e:
             console.print(f"❌ Upload failed: {e}", style="red")

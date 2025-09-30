@@ -17,6 +17,7 @@ from rich.live import Live
 from rich.text import Text
 
 from .api_client import APIClient
+from .suggestions import suggestions
 
 console = Console()
 
@@ -43,7 +44,13 @@ class DeploymentManager:
 
         # Step 3: Review and confirm
         if await self._review_deployment(contract, deployment_config):
-            return await self._execute_deployment(contract, deployment_config)
+            result = await self._execute_deployment(contract, deployment_config)
+            
+            # Step 4: Show what's next suggestions
+            if result.get("status") == "success":
+                suggestions.show_suggestions("contract_deployment", result)
+            
+            return result
         else:
             console.print("❌ Deployment cancelled", style="yellow")
             return {"status": "cancelled"}
