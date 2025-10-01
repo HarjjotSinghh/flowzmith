@@ -168,6 +168,39 @@ Content-Type: application/json
 GET /api/v1/documentation/stats
 ```
 
+#### Firecrawl Integration
+
+**Scrape URL**
+```http
+POST /api/v1/firecrawl/scrape
+Content-Type: application/json
+
+{
+  "url": "https://developers.flow.com/cadence",
+  "formats": ["markdown", "html"],
+  "include_tags": ["main", "article"],
+  "exclude_tags": ["nav", "footer"]
+}
+```
+
+**Crawl Website**
+```http
+POST /api/v1/firecrawl/crawl
+Content-Type: application/json
+
+{
+  "url": "https://developers.flow.com",
+  "limit": 100,
+  "include_paths": ["/cadence/*"],
+  "exclude_paths": ["/blog/*"]
+}
+```
+
+**Check Crawl Status**
+```http
+GET /api/v1/firecrawl/crawl/{crawl_id}/status
+```
+
 #### Learning & Analytics
 
 **Get Learning Insights**
@@ -221,6 +254,12 @@ FLOW_PRIVATE_KEY=your_flow_private_key
 JWT_SECRET_KEY=your_jwt_secret_key
 JWT_ALGORITHM=HS256
 JWT_EXPIRATION_HOURS=24
+
+# Firecrawl Configuration
+FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+FIRECRAWL_BASE_URL=https://api.firecrawl.dev
+FIRECRAWL_TIMEOUT=30000
+FIRECRAWL_MAX_RETRIES=3
 
 # CORS
 ALLOWED_ORIGINS=["http://localhost:3000", "http://localhost:8000"]
@@ -551,6 +590,43 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" https://api.openai.com/v1/models
 - Caching for documentation search results
 - Background job processing for long-running operations
 - Efficient WebSocket connection management
+
+## Command Line Interface (CLI)
+
+Flowzmith includes a comprehensive CLI for developers who prefer command-line workflows. The CLI provides:
+
+- **Interactive Contract Creation**: Step-by-step guided contract generation
+- **Real-time Documentation Search**: Search and browse Cadence documentation
+- **Firecrawl Integration**: Crawl and index external documentation sources
+- **Contract Deployment**: Deploy contracts directly from the command line
+- **System Monitoring**: Check system status and view statistics
+
+### Quick CLI Usage
+
+```bash
+# Setup environment
+python cli.py setup
+
+# Create a contract interactively
+python cli.py create-contract
+
+# Search documentation
+python cli.py search-docs
+
+# Crawl external documentation with Firecrawl
+python cli.py crawl-docs
+
+# Interactive Firecrawl documentation search
+python cli.py firecrawl-search
+
+# Deploy a contract
+python cli.py deploy-contract
+
+# Run the complete wizard
+python cli.py wizard
+```
+
+For detailed CLI documentation, see [CLI_README.md](CLI_README.md).
 
 ## License
 
