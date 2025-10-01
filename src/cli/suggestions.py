@@ -105,12 +105,12 @@ class CLISuggestions:
                 {
                     "title": "Contract Security Audit",
                     "description": "AI-powered security analysis and vulnerability detection",
-                    "eta": "Q2 2024"
+                    "eta": "Q2 2026"
                 },
                 {
                     "title": "Automated Testing Suite",
                     "description": "Generate comprehensive test cases for your contract",
-                    "eta": "Q2 2024"
+                    "eta": "Q2 2026"
                 }
             ],
             "tips": [
@@ -200,7 +200,7 @@ class CLISuggestions:
                 {
                     "title": "Contract Monitoring",
                     "description": "Real-time monitoring of contract events and transactions",
-                    "eta": "Q3 2024"
+                    "eta": "Q3 2026"
                 }
             ],
             "tips": [

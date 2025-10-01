@@ -16,3 +16,5 @@ specs/
 .cursor/
 .specify/
 prompts/
+test_vector_db/
+vector_db/

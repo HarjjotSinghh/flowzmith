@@ -9,6 +9,10 @@ import sys
 import subprocess
 import json
 from pathlib import Path
+import os
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def run_command(cmd, description):
     """Run a command and return the result."""
@@ -47,6 +51,8 @@ def test_cli_commands():
         ("python cli.py --help", "CLI help command"),
         ("python cli.py version", "CLI version command"),
         ("python cli.py status", "CLI status command"),
+        ("python cli.py crawl-docs --help", "Firecrawl crawl-docs command help"),
+        ("python cli.py firecrawl-search --help", "Firecrawl search command help"),
     ]
 
     passed = 0
@@ -93,6 +99,81 @@ def test_server_connection():
         return False
     except Exception as e:
         print(f"❌ Error checking server: {e}")
+        return False
+
+def test_firecrawl_integration():
+    """Test Firecrawl integration functionality."""
+    print("\n🔥 Testing Firecrawl Integration")
+    print("-" * 30)
+
+    # Test Firecrawl CLI integration import
+    try:
+        from src.cli.firecrawl_integration import FirecrawlCLIIntegration
+        from src.cli.api_client import APIClient
+        print("✅ FirecrawlCLIIntegration import successful")
+        
+        # Test initialization with required api_client
+        api_client = APIClient("http://localhost:8000")
+        firecrawl_cli = FirecrawlCLIIntegration(api_client)
+        print("✅ FirecrawlCLIIntegration initialization successful")
+        
+        # Test that required methods exist
+        required_methods = [
+            'search_documentation_for_contract',
+            'crawl_custom_documentation',
+            'interactive_documentation_search'
+        ]
+        
+        for method in required_methods:
+            if hasattr(firecrawl_cli, method):
+                print(f"✅ Method {method} exists")
+            else:
+                print(f"❌ Method {method} missing")
+                return False
+        
+        return True
+        
+    except ImportError as e:
+        print(f"❌ Import error: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error testing Firecrawl integration: {e}")
+        return False
+
+def test_contract_creator_firecrawl():
+    """Test ContractCreator Firecrawl integration."""
+    print("\n📝 Testing ContractCreator Firecrawl Integration")
+    print("-" * 30)
+
+    try:
+        from src.cli.contract_creator import ContractCreator
+        from src.cli.api_client import APIClient
+        
+        # Test that ContractCreator can be initialized with Firecrawl
+        api_client = APIClient("http://localhost:8000")
+        creator = ContractCreator(api_client)
+        
+        # Test that firecrawl_integration attribute exists
+        if hasattr(creator, 'firecrawl_integration'):
+            print("✅ ContractCreator has firecrawl_integration attribute")
+        else:
+            print("❌ ContractCreator missing firecrawl_integration attribute")
+            return False
+        
+        # Test that _get_firecrawl_search_input method exists
+        if hasattr(creator, '_get_firecrawl_search_input'):
+            print("✅ ContractCreator has _get_firecrawl_search_input method")
+        else:
+            print("❌ ContractCreator missing _get_firecrawl_search_input method")
+            return False
+        
+        return True
+        
+    except ImportError as e:
+        print(f"❌ Import error: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error testing ContractCreator Firecrawl integration: {e}")
         return False
 
 def test_dependencies():
@@ -142,17 +223,25 @@ def main():
     # Test CLI commands
     cli_ok = test_cli_commands()
 
+    # Test Firecrawl integration
+    firecrawl_ok = test_firecrawl_integration()
+
+    # Test ContractCreator Firecrawl integration
+    contract_firecrawl_ok = test_contract_creator_firecrawl()
+
     print("\n" + "=" * 60)
     print("📋 Test Summary")
     print("-" * 30)
     print(f"Dependencies: {'✅' if deps_ok else '❌'}")
     print(f"Server: {'✅' if server_ok else '❌'}")
     print(f"CLI Commands: {'✅' if cli_ok else '❌'}")
+    print(f"Firecrawl Integration: {'✅' if firecrawl_ok else '❌'}")
+    print(f"ContractCreator Firecrawl: {'✅' if contract_firecrawl_ok else '❌'}")
 
-    if deps_ok and cli_ok:
+    if deps_ok and cli_ok and firecrawl_ok and contract_firecrawl_ok:
         print("\n🎉 CLI tool is ready to use!")
         if server_ok:
-            print("✅ Full functionality available")
+            print("✅ Full functionality available including Firecrawl integration")
         else:
             print("⚠️  Server needs to be started for full functionality")
         return 0

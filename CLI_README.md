@@ -7,6 +7,7 @@ A comprehensive command-line interface for the Flowzmith application. Provides s
 - **🚀 Smart Contract Creation**: Interactive contract creation with multiple input methods
 - **🔧 Contract Deployment**: Deploy contracts to Flow blockchain with real-time monitoring
 - **📚 Documentation Search**: Search and browse documentation with semantic search
+- **🔥 Firecrawl Integration**: Crawl and index external documentation sources in real-time
 - **📊 System Monitoring**: Check system status and view statistics
 - **⚡ Real-time Updates**: WebSocket integration for live progress tracking
 - **🧙 Guided Wizard**: Complete end-to-end workflow automation
@@ -104,6 +105,32 @@ Browse documentation by categories.
 python cli.py browse-docs
 ```
 
+#### `crawl-docs`
+Crawl and index external documentation sources using Firecrawl.
+```bash
+python cli.py crawl-docs
+```
+
+**Features:**
+- Interactive URL input for documentation sources
+- Real-time crawling with progress tracking
+- Automatic content extraction and indexing
+- Support for multiple documentation formats
+- Integration with contract generation workflow
+
+#### `firecrawl-search`
+Interactive documentation search using Firecrawl integration.
+```bash
+python cli.py firecrawl-search
+```
+
+**Features:**
+- Search across crawled documentation sources
+- Interactive source selection for contract generation
+- Real-time content retrieval
+- Context-aware search results
+- Seamless integration with contract creation
+
 ### Workflow Automation
 
 #### `wizard`
@@ -172,6 +199,40 @@ python cli.py search-docs
 # - Find related content
 ```
 
+### Using Firecrawl Integration
+
+```bash
+# Crawl external documentation
+python cli.py crawl-docs
+
+# Follow the prompts:
+# 1. Enter documentation URLs (e.g., "https://developers.flow.com/cadence")
+# 2. Watch real-time crawling progress
+# 3. Review indexed content summary
+
+# Search crawled documentation
+python cli.py firecrawl-search
+
+# Follow the prompts:
+# 1. Enter search query: "NFT contract examples"
+# 2. Select relevant documentation sources
+# 3. Choose additional URLs to crawl (optional)
+# 4. Use results for contract generation context
+```
+
+### Enhanced Contract Creation with Firecrawl
+
+```bash
+python cli.py create-contract
+
+# During contract creation:
+# 1. Select "Firecrawl Documentation Search" as input method
+# 2. Enter contract requirements: "Create an NFT marketplace contract"
+# 3. Search and select relevant documentation sources
+# 4. Optionally crawl additional URLs for more context
+# 5. Generate contract with real-time documentation context
+```
+
 ## Requirements
 
 - Python 3.8 or higher
@@ -186,6 +247,7 @@ The CLI requires the following environment variables:
 - `DATABASE_URL`: PostgreSQL connection string
 - `OPENAI_API_KEY`: OpenAI API key (for AI features)
 - `GROQ_API_KEY`: Groq API key (for alternative AI provider)
+- `FIRECRAWL_API_KEY`: Firecrawl API key (for documentation crawling features)
 
 ## Architecture
 
@@ -205,7 +267,8 @@ src/cli/
 ├── api_client.py          # HTTP/WebSocket client
 ├── contract_creator.py    # Contract creation logic
 ├── deployment_manager.py  # Deployment management
-└── doc_search.py         # Documentation search
+├── doc_search.py         # Documentation search
+└── firecrawl_integration.py # Firecrawl documentation crawling
 ```
 
 ## Real-time Features

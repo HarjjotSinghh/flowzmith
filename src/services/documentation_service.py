@@ -11,19 +11,20 @@ from enum import Enum
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import re
+from datetime import datetime
 
 from ..models import (
     DocumentationKnowledgeBase,
     ContentType
 )
 from ..config import get_settings
+from .firecrawl_service import FirecrawlService
 
 logger = logging.getLogger(__name__)
 
 # Try to import ChromaDB for vector search
 try:
     import chromadb
-    from chromadb.config import Settings as ChromaSettings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -45,19 +46,19 @@ class DocumentationService:
         self.settings = get_settings()
         self.chroma_client = None
         self.vector_collection = None
+        self.firecrawl_service = FirecrawlService()
         self._initialize_vector_db()
 
     def _initialize_vector_db(self):
-        """Initialize vector database for semantic search."""
-        if CHROMADB_AVAILABLE and self.settings.enable_vector_search:
+        """Initialize vector database if available."""
+        # Check if enable_vector_search exists, default to True if ChromaDB is available
+        enable_vector_search = getattr(self.settings, 'enable_vector_search', CHROMADB_AVAILABLE)
+        if CHROMADB_AVAILABLE and enable_vector_search:
             try:
-                # Initialize ChromaDB client
-                chroma_settings = ChromaSettings(
-                    chroma_db_impl="duckdb+parquet",
-                    persist_directory=self.settings.vector_db_path
-                )
-                self.chroma_client = chromadb.Client(chroma_settings)
-
+                # Initialize ChromaDB client with new API
+                import chromadb
+                self.chroma_client = chromadb.PersistentClient(path=self.settings.vector_db_path)
+                
                 # Get or create collection
                 self.vector_collection = self.chroma_client.get_or_create_collection(
                     name="flow_documentation",
@@ -509,3 +510,184 @@ class DocumentationService:
         except Exception as e:
             logger.error(f"Failed to get documentation stats: {e}")
             return {}
+
+    def crawl_and_index_cadence_docs(self, force_refresh: bool = False) -> Dict[str, Any]:
+        """Crawl and index real Cadence documentation using Firecrawl."""
+        if not self.firecrawl_service.is_available():
+            logger.error("Firecrawl service is not available")
+            return {"success": False, "error": "Firecrawl service unavailable"}
+
+        try:
+            # Check if we already have recent Cadence docs (unless force refresh)
+            if not force_refresh:
+                recent_docs = self.db_session.query(DocumentationKnowledgeBase).filter(
+                    DocumentationKnowledgeBase.source == DocumentSource.OFFICIAL_CADENCE_DOCS.value,
+                    DocumentationKnowledgeBase.last_updated >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                ).count()
+                
+                if recent_docs > 0:
+                    logger.info("Recent Cadence documentation already indexed today")
+                    return {"success": True, "message": "Documentation already up to date", "pages_indexed": recent_docs}
+
+            # Crawl Cadence documentation
+            logger.info("Starting Cadence documentation crawl...")
+            crawl_results = self.firecrawl_service.crawl_cadence_documentation()
+            
+            if not crawl_results or crawl_results.get("successful_crawls", 0) == 0:
+                return {"success": False, "error": "Failed to crawl Cadence documentation"}
+
+            pages_indexed = 0
+            pages_failed = 0
+
+            # Process each crawled source
+            for url, source_data in crawl_results.get("sources", {}).items():
+                if source_data.get("status") == "success" and source_data.get("data"):
+                    # Process each page in this source
+                    for page_data in source_data.get("data", []):
+                        try:
+                            # Extract content from page data
+                            content = page_data.get("markdown", "")
+                            metadata = page_data.get("metadata", {})
+                            title = metadata.get("title", url.split("/")[-1])
+                            
+                            if content and len(content.strip()) > 100:  # Only index substantial content
+                                # Determine content type based on URL and content
+                                content_type = self._determine_content_type(url, content)
+                                
+                                # Check if this page already exists
+                                existing_doc = self.db_session.query(DocumentationKnowledgeBase).filter(
+                                    DocumentationKnowledgeBase.source == DocumentSource.OFFICIAL_CADENCE_DOCS.value,
+                                    DocumentationKnowledgeBase.title == title
+                                ).first()
+
+                                if existing_doc:
+                                    # Update existing document
+                                    existing_doc.content = content
+                                    existing_doc.last_updated = datetime.now()
+                                    existing_doc.metadata = {"url": url, "crawled_at": datetime.now().isoformat()}
+                                else:
+                                    # Create new document
+                                    doc_entry = DocumentationKnowledgeBase(
+                                        source=DocumentSource.OFFICIAL_CADENCE_DOCS.value,
+                                        title=title,
+                                        content_type=content_type,
+                                        content=content,
+                                        version="latest",
+                                        metadata={"url": url, "crawled_at": datetime.now().isoformat()}
+                                    )
+                                    self.db_session.add(doc_entry)
+                                
+                                pages_indexed += 1
+                            else:
+                                logger.warning(f"Skipping page with insufficient content: {url}")
+                                pages_failed += 1
+
+                        except Exception as e:
+                            logger.error(f"Error processing page {url}: {e}")
+                            pages_failed += 1
+
+            # Commit all changes
+            self.db_session.commit()
+            
+            # Update vector embeddings for new content
+            if pages_indexed > 0:
+                self.update_documentation_embeddings()
+
+            logger.info(f"Crawl completed: {pages_indexed} pages indexed, {pages_failed} pages failed")
+            
+            return {
+                "success": True,
+                "pages_indexed": pages_indexed,
+                "pages_failed": pages_failed,
+                "total_pages": pages_indexed + pages_failed
+            }
+
+        except Exception as e:
+            logger.error(f"Error during Cadence documentation crawl: {e}")
+            self.db_session.rollback()
+            return {"success": False, "error": str(e)}
+
+    def _determine_content_type(self, url: str, content: str) -> ContentType:
+        """Determine content type based on URL and content analysis."""
+        url_lower = url.lower()
+        content_lower = content.lower()
+
+        # Check URL patterns
+        if "tutorial" in url_lower or "guide" in url_lower:
+            return ContentType.TUTORIAL
+        elif "example" in url_lower:
+            return ContentType.CODE_EXAMPLE
+        elif "api" in url_lower or "reference" in url_lower:
+            return ContentType.API_REFERENCE
+        elif "language" in url_lower or "spec" in url_lower:
+            return ContentType.LANGUAGE_SPEC
+
+        # Check content patterns
+        if "example" in content_lower and "```" in content:
+            return ContentType.CODE_EXAMPLE
+        elif "tutorial" in content_lower or "step" in content_lower:
+            return ContentType.TUTORIAL
+        elif "function" in content_lower or "method" in content_lower:
+            return ContentType.API_REFERENCE
+        else:
+            return ContentType.LANGUAGE_SPEC
+
+    def scrape_single_page(self, url: str) -> Dict[str, Any]:
+        """Scrape a single documentation page and optionally index it."""
+        if not self.firecrawl_service.is_available():
+            return {"success": False, "error": "Firecrawl service unavailable"}
+
+        try:
+            result = self.firecrawl_service.scrape_url(url)
+            
+            if result and result.get("status") == "success":
+                return {
+                    "success": True,
+                    "data": result.get("data", {}),
+                    "url": url
+                }
+            else:
+                error_msg = result.get("error", "Failed to scrape page") if result else "No data returned"
+                return {"success": False, "error": error_msg}
+
+        except Exception as e:
+            logger.error(f"Error scraping page {url}: {e}")
+            return {"success": False, "error": str(e)}
+
+    def index_scraped_content(
+        self,
+        url: str,
+        title: str,
+        content: str,
+        source: str = DocumentSource.CUSTOM_DOCUMENTATION.value,
+        content_type: Optional[ContentType] = None
+    ) -> DocumentationKnowledgeBase:
+        """Index scraped content into the knowledge base."""
+        if not content_type:
+            content_type = self._determine_content_type(url, content)
+
+        doc_entry = DocumentationKnowledgeBase(
+            source=source,
+            title=title,
+            content_type=content_type,
+            content=content,
+            version="latest",
+            metadata={"url": url, "scraped_at": datetime.now().isoformat()}
+        )
+
+        self.db_session.add(doc_entry)
+        self.db_session.commit()
+
+        logger.info(f"Indexed scraped content: {title} from {url}")
+        return doc_entry
+
+    def get_crawl_status(self, crawl_id: str) -> Dict[str, Any]:
+        """Get the status of a Firecrawl crawl job."""
+        if not self.firecrawl_service.is_available():
+            return {"success": False, "error": "Firecrawl service unavailable"}
+
+        try:
+            return self.firecrawl_service.get_crawl_status(crawl_id)
+        except Exception as e:
+            logger.error(f"Error getting crawl status: {e}")
+            return {"success": False, "error": str(e)}
