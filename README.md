@@ -14,6 +14,7 @@ AI-powered smart contract generation and deployment platform for Flow blockchain
 - **User Privacy Controls**: GDPR-compliant data management and export capabilities
 - **Real-time Updates**: WebSocket-powered progress tracking and notifications
 - **Web Interface**: Complete frontend for contract management and deployment
+- **Firecrawl Integration**: Seamless documentation indexing and search using Firecrawl
 
 ## Quick Start
 

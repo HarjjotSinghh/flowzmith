@@ -1,0 +1,79 @@
+{
+  "timestamp": "2025-10-01T18:49:43.847012",
+  "tests": {
+    "firecrawl_availability": {
+      "success": true,
+      "message": "Firecrawl service is available"
+    },
+    "single_page_scraping": {
+      "success": true,
+      "url": "https://cadence-lang.org/docs/",
+      "title": "Introduction to Cadence | Cadence",
+      "content_length": 17021,
+      "message": "Successfully scraped 17021 characters"
+    },
+    "cadence_documentation_crawling": {
+      "success": true,
+      "pages_indexed": 2,
+      "pages_failed": 0,
+      "total_pages": 2,
+      "new_documents": 2,
+      "message": "Indexed 2 pages, 0 failed"
+    },
+    "documentation_search": {
+      "success": true,
+      "search_terms": [
+        "resource",
+        "capability",
+        "transaction",
+        "account"
+      ],
+      "results": {
+        "resource": {
+          "count": 1,
+          "titles": [
+            "Introduction to Cadence | Cadence"
+          ]
+        },
+        "capability": {
+          "count": 1,
+          "titles": [
+            "Introduction to Cadence | Cadence"
+          ]
+        },
+        "transaction": {
+          "count": 2,
+          "titles": [
+            "Introduction to Cadence | Cadence",
+            "Cadence 1.0 Migration Guide | Cadence"
+          ]
+        },
+        "account": {
+          "count": 1,
+          "titles": [
+            "Introduction to Cadence | Cadence"
+          ]
+        }
+      },
+      "total_results": 5,
+      "message": "Found 5 total results across 4 search terms"
+    },
+    "content_indexing": {
+      "success": true,
+      "document_id": "8f8d66e9-934f-4f8f-b69f-ba9597830571",
+      "title": "Test Documentation",
+      "content_length": 517,
+      "message": "Successfully indexed test content"
+    },
+    "documentation_stats": {
+      "success": true,
+      "stats": {},
+      "message": "Retrieved stats for 0 documents"
+    }
+  },
+  "summary": {
+    "total_tests": 6,
+    "passed_tests": 6,
+    "success_rate": 100.0
+  }
+}

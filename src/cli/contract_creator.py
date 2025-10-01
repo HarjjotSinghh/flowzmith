@@ -25,6 +25,7 @@ from .api_client import APIClient
 from .file_generators import FlowFileGenerator
 from .flow_automation_service import FlowAutomationService
 from .suggestions import suggestions
+from .firecrawl_integration import FirecrawlCLIIntegration
 from ..models.database import get_db
 from ..models.generated_contract import GeneratedContract, ContractType, NetworkType, GenerationMethod
 from ..mcp_generator.mcp_server_generator import MCPServerGenerator
@@ -43,6 +44,7 @@ class ContractCreator:
         self.llm_service = LLMService(db_session)
         self.cadence_generator = CadenceCodeGenerator(self.llm_service)
         self.db_session = db_session
+        self.firecrawl_integration = FirecrawlCLIIntegration(api_client)
 
     async def create_contract_interactive(self) -> Dict[str, Any]:
         """Guide user through interactive contract creation with automatic context loading."""
@@ -95,7 +97,8 @@ class ContractCreator:
             ("3", "Upload Solidity (.sol) File", "Provide Solidity file for conversion"),
             ("4", "Paste Contract Code Directly", "Type or paste contract code"),
             ("5", "Use Template/Example", "Start from pre-built template"),
-            ("6", "Markdown Context + AI Generation", "Provide markdown docs for AI to learn from")
+            ("6", "Markdown Context + AI Generation", "Provide markdown docs for AI to learn from"),
+            ("7", "Firecrawl Documentation Search", "Search and use documentation from web sources")
         ]
 
         table = Table(show_header=True, header_style="bold blue")
@@ -110,7 +113,7 @@ class ContractCreator:
 
         choice = Prompt.ask(
             "\nSelect an option",
-            choices=["1", "2", "3", "4", "5", "6"],
+            choices=["1", "2", "3", "4", "5", "6", "7"],
             default="1"
         )
 
@@ -120,7 +123,8 @@ class ContractCreator:
             "3": "solidity_file",
             "4": "direct_code",
             "5": "template",
-            "6": "markdown_context"
+            "6": "markdown_context",
+            "7": "firecrawl_search"
         }
 
         return method_map[choice]
@@ -181,6 +185,8 @@ class ContractCreator:
             return await self._get_template_selection()
         elif input_method == "markdown_context":
             return await self._get_markdown_context_input()
+        elif input_method == "firecrawl_search":
+            return await self._get_firecrawl_search_input()
         else:
             raise Exception(f"Unknown input method: {input_method}")
 
@@ -388,6 +394,44 @@ pub contract NFTMarketplace {
 
         return await self._generate_contract_from_context(context_data)
 
+    async def _get_firecrawl_search_input(self) -> str:
+        """Get contract content using Firecrawl documentation search."""
+        console.print("\n🔍 Firecrawl Documentation Search", style="bold blue")
+        console.print("Search and use documentation from web sources to generate your contract.", style="dim")
+        
+        # Get contract requirements first
+        contract_requirements = await self._get_enhanced_contract_requirements()
+        
+        # Use Firecrawl integration to search and select documentation
+        search_results = await self.firecrawl_integration.search_documentation_interactive()
+        
+        if not search_results:
+            console.print("❌ No documentation found. Falling back to natural language generation.", style="yellow")
+            return await self._get_natural_language_input()
+        
+        # Allow user to select documentation sources
+        selected_docs = await self.firecrawl_integration.select_documentation_sources(search_results)
+        
+        if not selected_docs:
+            console.print("❌ No documentation selected. Falling back to natural language generation.", style="yellow")
+            return await self._get_natural_language_input()
+        
+        # Optionally crawl additional URLs
+        additional_urls = await self.firecrawl_integration.get_additional_urls()
+        if additional_urls:
+            console.print(f"\n🕷️ Crawling {len(additional_urls)} additional URLs...", style="blue")
+            additional_docs = await self.firecrawl_integration.crawl_urls(additional_urls)
+            selected_docs.extend(additional_docs)
+        
+        # Build context data for contract generation
+        context_data = {
+            "documentation": selected_docs,
+            "requirements": contract_requirements,
+            "generation_mode": "firecrawl_search"
+        }
+        
+        return await self._generate_contract_from_context(context_data)
+
     async def _get_markdown_files(self) -> List[Dict[str, str]]:
         """Get markdown files for context."""
         console.print("\n📁 Provide markdown documentation files:", style="blue")
@@ -583,6 +627,21 @@ pub contract NFTMarketplace {
                 fname = md.get("filename", f"context_{i+1}.md")
                 content = md.get("content", "")
                 context_text_parts.append(f"\n### {fname}\n\n{content}\n")
+            
+            # Add Firecrawl documentation context
+            for i, doc in enumerate(context_data.get("firecrawl_docs", [])):
+                title = doc.get("title", f"Firecrawl Doc {i+1}")
+                url = doc.get("url", "N/A")
+                content = doc.get("content", "")
+                context_text_parts.append(f"\n### {title} (from {url})\n\n{content}\n")
+            
+            # Add crawled URLs context
+            for i, crawled in enumerate(context_data.get("crawled_urls", [])):
+                title = crawled.get("title", f"Crawled URL {i+1}")
+                url = crawled.get("url", "N/A")
+                content = crawled.get("content", "")
+                context_text_parts.append(f"\n### {title} (crawled from {url})\n\n{content}\n")
+            
             context_text = "".join(context_text_parts)
 
             generation_request = {
@@ -669,6 +728,26 @@ pub contract NFTMarketplace {
             prompt += f"""
 ### Context File {i+1}: {md_file['filename']}
 {md_file['content'][:1000]}...  # Truncated for brevity
+"""
+
+        # Add Firecrawl documentation context if available
+        if "firecrawl_docs" in context_data and context_data["firecrawl_docs"]:
+            prompt += "\n## Firecrawl Documentation Context:\n"
+            for i, doc in enumerate(context_data["firecrawl_docs"]):
+                prompt += f"""
+### Documentation Source {i+1}: {doc.get('title', 'Unknown')}
+URL: {doc.get('url', 'N/A')}
+Content: {doc.get('content', '')[:1500]}...  # Truncated for brevity
+"""
+
+        # Add crawled URLs context if available
+        if "crawled_urls" in context_data and context_data["crawled_urls"]:
+            prompt += "\n## Additional Crawled Documentation:\n"
+            for i, crawled in enumerate(context_data["crawled_urls"]):
+                prompt += f"""
+### Crawled Source {i+1}: {crawled.get('title', 'Unknown')}
+URL: {crawled.get('url', 'N/A')}
+Content: {crawled.get('content', '')[:1500]}...  # Truncated for brevity
 """
 
         # Add specific requirements

@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from src.config import get_settings
 from src.models.database import get_db, create_tables, check_database_connection
 from src.cli import APIClient, ContractCreator, DeploymentManager, DocumentationSearch
+from src.cli.firecrawl_integration import FirecrawlCLIIntegration
 from src.cli.flow_manager import FlowProjectManager
 from src.cli.deployment_service import ContractDeploymentService
 from src.services.flow_service import strip_markdown_code_blocks
@@ -412,6 +413,60 @@ def browse_docs():
             return await search.browse_categories()
 
     asyncio.run(browse_docs_async())
+
+
+@app.command("crawl-docs")
+def crawl_docs():
+    """Crawl and index external documentation sources using Firecrawl."""
+    logger.info("Running crawl_docs command")
+    console.print("🕷️ Firecrawl Documentation Crawler", style="bold blue")
+
+    # Check environment
+    async def async_checks():
+        logger.info("Running async checks for crawl_docs")
+        server_ok = await check_server_health()
+        logger.info("Async checks finished: server_ok=%s", server_ok)
+        return server_ok
+
+    if not asyncio.run(async_checks()):
+        logger.error("Environment checks failed for crawl_docs")
+        console.print("❌ Cannot proceed without server connection", style="red")
+        raise typer.Exit(1)
+
+    # Crawl documentation using FirecrawlCLIIntegration
+    async def crawl_docs_async():
+        firecrawl = FirecrawlCLIIntegration()
+        logger.info("Starting Firecrawl documentation crawling flow")
+        return await firecrawl.crawl_and_index_interactive()
+
+    asyncio.run(crawl_docs_async())
+
+
+@app.command("firecrawl-search")
+def firecrawl_search():
+    """Interactive Firecrawl documentation search and selection."""
+    logger.info("Running firecrawl_search command")
+    console.print("🔍 Firecrawl Documentation Search", style="bold blue")
+
+    # Check environment
+    async def async_checks():
+        logger.info("Running async checks for firecrawl_search")
+        server_ok = await check_server_health()
+        logger.info("Async checks finished: server_ok=%s", server_ok)
+        return server_ok
+
+    if not asyncio.run(async_checks()):
+        logger.error("Environment checks failed for firecrawl_search")
+        console.print("❌ Cannot proceed without server connection", style="red")
+        raise typer.Exit(1)
+
+    # Search documentation using FirecrawlCLIIntegration
+    async def firecrawl_search_async():
+        firecrawl = FirecrawlCLIIntegration()
+        logger.info("Starting Firecrawl documentation search flow")
+        return await firecrawl.search_documentation_interactive()
+
+    asyncio.run(firecrawl_search_async())
 
 
 @app.command()

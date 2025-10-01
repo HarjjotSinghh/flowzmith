@@ -17,6 +17,7 @@ class ContentType(str, enum.Enum):
     API_REFERENCE = "API_REFERENCE"
     TUTORIAL = "TUTORIAL"
     EXAMPLE = "EXAMPLE"
+    CODE_EXAMPLE = "CODE_EXAMPLE"
 
 
 class DocumentationKnowledgeBase(Base):

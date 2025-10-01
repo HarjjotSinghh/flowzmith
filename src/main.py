@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
-from src.api import router, websocket_router, knowledge_base_router, ipfs_router
+from src.api import router, websocket_router, knowledge_base_router, ipfs_router, firecrawl_router
 from src.api.middleware import (
     AuthenticationMiddleware,
     RateLimitMiddleware,
@@ -120,6 +120,9 @@ app.include_router(knowledge_base_router, prefix="/api/v1")
 
 # Include IPFS routes
 app.include_router(ipfs_router)
+
+# Include Firecrawl routes
+app.include_router(firecrawl_router, prefix="/api/v1")
 
 # Mount static files
 if os.path.exists("static"):
