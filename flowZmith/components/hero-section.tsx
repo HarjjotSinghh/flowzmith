@@ -511,7 +511,7 @@ export function HeroSection() {
             sparkCount={6}
             duration={300}
           >
-            <Link href="/convex-test">
+            <Link href="https://www.youtube.com/watch?v=LL6dfPs0COo" target="_blank">
               <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary/80 px-8 py-4 rounded-full font-medium text-base transition-all duration-300 hover-lift">
                 Live Demo
               </Button>

@@ -138,13 +138,15 @@ const LiveDemoSection = () => {
           {/* Demo Controls */}
           <div className="flex justify-center gap-4">
             {!isDemoRunning ? (
-              <Button
-                onClick={startDemo}
-                className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-primary-foreground px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 "
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Start Live Demo
-              </Button>
+              <Link href={'https://www.youtube.com/watch?v=LL6dfPs0COo'} target="_blank">
+                <Button
+                  onClick={startDemo}
+                  className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-primary-foreground px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 "
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Start Live Demo
+                </Button>
+              </Link>
             ) : (
               <Button
                 onClick={stopDemo}
