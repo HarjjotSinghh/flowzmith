@@ -31,13 +31,13 @@ export async function GET(request: NextRequest) {
       ] = await Promise.all([
         // Current month requests
         db.select({ count: count() }).from(chatRequests).where(
-          and(eq(chatRequests.userId, user.id), gte(chatRequests.startedAt, startOfMonth))
+          and(eq(chatRequests.userId, session.user.id), gte(chatRequests.startedAt, startOfMonth))
         ),
         
         // Last month requests
         db.select({ count: count() }).from(chatRequests).where(
           and(
-            eq(chatRequests.userId, user.id), 
+            eq(chatRequests.userId, session.user.id), 
             gte(chatRequests.startedAt, startOfLastMonth),
             gte(chatRequests.startedAt, endOfLastMonth)
           )
@@ -45,12 +45,12 @@ export async function GET(request: NextRequest) {
         
         // Total requests
         db.select({ count: count() }).from(chatRequests).where(
-          eq(chatRequests.userId, user.id)
+          eq(chatRequests.userId, session.user.id)
         ),
         
         // Total cost (sum of cost field)
         db.select({ totalCost: sum(chatRequests.cost) }).from(chatRequests).where(
-          eq(chatRequests.userId, user.id)
+          eq(chatRequests.userId, session.user.id)
         )
       ])
 
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       const currentMonthCount = currentMonthRequests[0]?.count || 0
       const lastMonthCount = lastMonthRequests[0]?.count || 0
       const totalCount = totalRequests[0]?.count || 0
-      const totalCostValue = totalCost[0]?.totalCost || 0
+      const totalCostValue = Number(totalCost[0]?.totalCost) || 0
 
       // Calculate costs based on real usage
       const costPerRequest = 0.001 // $0.001 per request
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       const costData = {
         totalCost: actualTotalCost.toFixed(4),
         projectedMonthlyCost: projectedMonthlyCost.toFixed(4),
-        remainingCredits: Math.max(0, (user.requestsLimit || 1000) - totalCount),
+        remainingCredits: Math.max(0, (session.user.requestsLimit || 1000) - totalCount),
         costBreakdown: {
           apiCalls: { 
             count: totalCount, 
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
       const fallbackCostData = {
         totalCost: "0.0000",
         projectedMonthlyCost: "0.0000",
-        remainingCredits: user.requestsLimit || 1000,
+        remainingCredits: session.user.requestsLimit || 5,
         costBreakdown: {
           apiCalls: { count: 0, cost: 0, percentage: 0 },
           storage: { count: 0, cost: 0, percentage: 0 },

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
           startedAt: chatRequests.startedAt,
           duration: chatRequests.duration
         }).from(chatRequests).where(
-          and(eq(chatRequests.userId, user.id), gte(chatRequests.startedAt, last7Days))
+          and(eq(chatRequests.userId, session.user.id), gte(chatRequests.startedAt, last7Days))
         ).orderBy(chatRequests.startedAt),
         
         // Weekly aggregated data
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
           status: chatRequests.status,
           count: count() 
         }).from(chatRequests).where(
-          and(eq(chatRequests.userId, user.id), gte(chatRequests.startedAt, last7Days))
+          and(eq(chatRequests.userId, session.user.id), gte(chatRequests.startedAt, last7Days))
         ).groupBy(chatRequests.status),
         
         // Monthly aggregated data
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           status: chatRequests.status,
           count: count() 
         }).from(chatRequests).where(
-          and(eq(chatRequests.userId, user.id), gte(chatRequests.startedAt, last30Days))
+          and(eq(chatRequests.userId, session.user.id), gte(chatRequests.startedAt, last30Days))
         ).groupBy(chatRequests.status)
       ])
 

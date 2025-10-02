@@ -89,7 +89,8 @@ export default function ChatPage() {
         setAkaveStatus(isAvailable ? 'available' : 'unavailable')
         console.log('Akave service status:', isAvailable ? 'available' : 'unavailable')
       } catch (error) {
-        console.log('Akave service not available:', error)
+        // Silently handle Akave unavailability - it's optional for the app to function
+        console.log('Akave service not available (storage will be local only):')
         setIsAkaveEnabled(false)
         setAkaveStatus('unavailable')
       }
@@ -522,12 +523,12 @@ export default function ChatPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-              <Image src="/images/flowZmithsLogo.svg" alt="FlowZmith" width={32} height={32} />
+              <Image src="/images/flowZmithsLogo.svg" alt="Flowzmith" width={32} height={32} />
               </div>
               <div>
               <div className="flex items-center space-x-3">
             
-            <span className="text-xl font-semibold text-foreground">FlowZmith</span>
+            <span className="text-xl font-semibold text-foreground">Flowzmith</span>
           </div>
                 <p className="text-sm text-muted-foreground">
                   Generate and edit code with AI assistance
@@ -616,7 +617,7 @@ export default function ChatPage() {
                   {messages.length === 0 ? (
                     <div className="text-center text-muted-foreground">
                       <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p className="mb-2">Welcome to FlowZmith!</p>
+                      <p className="mb-2">Welcome to Flowzmith!</p>
                       <p className="text-sm">Describe what you want to build and I'll generate the code for you.</p>
                     </div>
                   ) : (

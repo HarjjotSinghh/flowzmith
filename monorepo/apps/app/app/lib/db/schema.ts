@@ -90,7 +90,7 @@ export const chatRequests = pgTable('chat_requests', {
   prompt: text('prompt').notNull(),
   response: text('response'),
   // Request metadata
-  model: varchar('model', { length: 50 }).default('gpt-4'),
+  model: varchar('model', { length: 50 }).default('gpt-5-nano'),
   tokensUsed: integer('tokens_used').default(0),
   cost: integer('cost').default(0), // Cost in cents
   duration: integer('duration').default(0), // Duration in milliseconds

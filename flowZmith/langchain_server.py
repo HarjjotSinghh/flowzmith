@@ -46,7 +46,7 @@ class StreamingCallbackHandler(BaseCallbackHandler):
 
 # Initialize the language model
 llm = ChatOpenAI(
-    model_name="gpt-4",
+    model_name="gpt-5-nano",
     temperature=0.7,
     streaming=True,
     openai_api_key=os.getenv("OPENAI_API_KEY")

@@ -260,7 +260,7 @@ Generate a smart contract from natural language description.
       "validation_status": "VALID",
       "llm_metadata": {
         "provider": "OPENAI",
-        "model": "gpt-4",
+        "model": "gpt-5-nano",
         "tokens_used": 500,
         "cost": 0.01,
         "generation_time_ms": 2000

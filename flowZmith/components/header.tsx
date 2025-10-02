@@ -38,8 +38,8 @@ export function Header() {
       <div className=" mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
         <div className="flex items-center space-x-3">
-            <Image src="/images/flowZmithsLogo.svg" alt="FlowZmith" width={32} height={32} />
-            <span className="text-xl font-semibold text-foreground">FlowZmith</span>
+            <Image src="/images/flowZmithsLogo.svg" alt="Flowzmith" width={32} height={32} />
+            <span className="text-xl font-semibold text-foreground">Flowzmith</span>
           </div>
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (
@@ -47,7 +47,7 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)} // Add onClick handler
-                className="text-[#888888] hover:text-foreground px-4 py-2 rounded-full font-medium transition-colors"
+                className="text-foreground/80 hover:text-foreground px-4 py-2 rounded-full font-medium transition-colors"
               >
                 {item.name}
               </Link>
@@ -87,7 +87,7 @@ export function Header() {
                     key={item.name}
                     href={item.href}
                     onClick={(e) => handleScroll(e, item.href)} // Add onClick handler
-                    className="text-[#888888] hover:text-foreground justify-start text-lg py-2"
+                    className="text-foreground/90 hover:text-foreground justify-start text-lg py-2"
                   >
                     {item.name}
                   </Link>

@@ -137,7 +137,7 @@ const DeploymentEasy: React.FC<DeploymentEasyProps> = ({ width = "100%", height 
           background: "var(--deploy-primary-color)",
           color: "hsl(var(--primary-foreground))",
           border: "none",
-          cursor: "FlowZmith",
+          cursor: "Flowzmith",
           borderRadius: "8.925px",
           fontFamily: "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           fontSize: "16.575px",

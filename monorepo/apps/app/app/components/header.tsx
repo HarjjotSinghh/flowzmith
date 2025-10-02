@@ -38,8 +38,8 @@ export function Header() {
       <div className=" mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
         <div className="flex items-center space-x-3">
-            <Image src="/images/flowZmithsLogo.svg" alt="FlowZmith" width={32} height={32} />
-            <span className="text-xl font-semibold text-foreground">FlowZmith</span>
+            <Image src="/images/flowZmithsLogo.svg" alt="Flowzmith" width={32} height={32} />
+            <span className="text-xl font-semibold text-foreground">Flowzmith</span>
           </div>
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (

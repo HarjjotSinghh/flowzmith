@@ -6,15 +6,59 @@ import type { HTMLAttributes, ReactNode } from "react"
 interface AnimatedSectionProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
   delay?: number
+  animation?: "fadeInUp" | "fadeInDown" | "fadeInLeft" | "fadeInRight" | "scaleIn" | "blurIn"
+  duration?: number
+  viewport?: { once?: boolean; amount?: number }
 }
 
-export function AnimatedSection({ children, className, delay = 0, ...props }: AnimatedSectionProps) {
+const animations = {
+  fadeInUp: {
+    initial: { opacity: 0, y: 60 },
+    whileInView: { opacity: 1, y: 0 }
+  },
+  fadeInDown: {
+    initial: { opacity: 0, y: -60 },
+    whileInView: { opacity: 1, y: 0 }
+  },
+  fadeInLeft: {
+    initial: { opacity: 0, x: -60 },
+    whileInView: { opacity: 1, x: 0 }
+  },
+  fadeInRight: {
+    initial: { opacity: 0, x: 60 },
+    whileInView: { opacity: 1, x: 0 }
+  },
+  scaleIn: {
+    initial: { opacity: 0, scale: 0.8 },
+    whileInView: { opacity: 1, scale: 1 }
+  },
+  blurIn: {
+    initial: { opacity: 0, filter: "blur(10px)", scale: 0.95 },
+    whileInView: { opacity: 1, filter: "blur(0px)", scale: 1 }
+  }
+}
+
+export function AnimatedSection({
+  children,
+  className,
+  delay = 0,
+  animation = "fadeInUp",
+  duration = 0.8,
+  viewport = { once: true, amount: 0.2 },
+  ...props
+}: AnimatedSectionProps) {
+  const selectedAnimation = animations[animation]
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.98 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1], delay }}
+      initial={selectedAnimation.initial}
+      whileInView={selectedAnimation.whileInView}
+      viewport={viewport}
+      transition={{
+        duration,
+        ease: [0.33, 1, 0.68, 1],
+        delay
+      }}
       className={className}
       {...props}
     >

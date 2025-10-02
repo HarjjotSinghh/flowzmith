@@ -92,21 +92,21 @@ const ParallelCodingAgents: React.FC<ParallelCodingAgentsProps> = ({ className =
       title: "Update buttons",
       tokens: "12k tokens",
       model: "o3",
-      branch: "FlowZmith/update-pain...",
+      branch: "Flowzmith/update-pain...",
     },
     {
       icon: <RefreshIcon />,
       title: "Fix sanity issue",
       tokens: "12k tokens",
       model: "claude-sonnet-4",
-      branch: "FlowZmith/update-pain...",
+      branch: "Flowzmith/update-pain...",
     },
     {
       icon: <SparklesIcon />,
       title: "Plan for seamless toast",
       tokens: "30k tokens",
       model: "o3",
-      branch: "FlowZmith/update-pain...",
+      branch: "Flowzmith/update-pain...",
     },
   ]
 

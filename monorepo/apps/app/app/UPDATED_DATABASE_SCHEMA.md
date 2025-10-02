@@ -95,7 +95,7 @@ I've updated the database schema to support comprehensive chat request tracking,
 {
   "prompt": "Create an NFT contract",
   "sessionId": "session-123",
-  "model": "gpt-4",
+  "model": "gpt-5-nano",
   "requestType": "code_generation",
   "category": "nft",
   "complexity": "high"

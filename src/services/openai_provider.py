@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class OpenAIProvider(LLMProvider):
     """OpenAI API provider implementation."""
 
-    def __init__(self, api_key: str, model: str = "gpt-4"):
+    def __init__(self, api_key: str, model: str = "gpt-5-nano"):
         super().__init__(api_key, model)
         # Explicitly set provider type for downstream streaming wrappers and logging
         self.provider_type = LLMProviderType.OPENAI
@@ -162,8 +162,8 @@ Return a JSON response with:
     def _calculate_cost(self, total_tokens: int) -> float:
         """Calculate approximate cost for OpenAI API usage."""
         # Cost estimates (may vary based on exact model and region)
-        if self.model.startswith("gpt-4"):
-            # GPT-4: ~$0.03 per 1K tokens (input), $0.06 per 1K tokens (output)
+        if self.model.startswith("gpt-5-nano"):
+            # GPT-5: ~$0.03 per 1K tokens (input), $0.06 per 1K tokens (output)
             return total_tokens * 0.000045  # Average rate
         elif self.model.startswith("gpt-3.5"):
             # GPT-3.5: ~$0.0015 per 1K tokens (input), $0.002 per 1K tokens (output)

@@ -13,7 +13,7 @@ interface ActionCardProps {
 }
 
 function ActionCard({ title, description, icon, href, variant = "default" }: ActionCardProps) {
-  const baseClasses = "w-full p-4 rounded-lg border transition-all duration-200 hover:scale-105 cursor-pointer"
+  const baseClasses = "w-full p-4 rounded-lg border transition-all duration-200  cursor-pointer"
   const variantClasses = variant === "default" 
     ? "bg-card/50 border-border hover:bg-card/70 hover:border-primary/50"
     : "bg-primary/10 border-primary/20 hover:bg-primary/20 hover:border-primary/40"

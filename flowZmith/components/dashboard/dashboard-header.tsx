@@ -29,8 +29,8 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center space-x-3">
-            <Image src="/images/flowZmithsLogo.svg" alt="FlowZmith" width={32} height={32} />
-            <span className="text-xl font-semibold text-foreground">FlowZmith</span>
+            <Image src="/images/flowZmithsLogo.svg" alt="Flowzmith" width={32} height={32} />
+            <span className="text-xl font-semibold text-foreground">Flowzmith</span>
           </div>
 
           {/* Navigation */}

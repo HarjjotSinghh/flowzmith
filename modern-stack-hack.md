@@ -20,7 +20,7 @@ Template Selection → Customization → Production-Ready Code
 ```
 
 ### **AI-Powered Generation Pipeline**
-1. **LLM Processing**: Uses OpenAI GPT-4.1 or Groq models with specialized Cadence prompts
+1. **LLM Processing**: Uses OpenAI GPT-5 or Groq models with specialized Cadence prompts
 2. **Code Generation**: Generates complete Cadence contracts with proper resource handling
 3. **Validation**: Validates generated code against Flow CLI standards
 4. **Optimization**: Applies best practices and security patterns
@@ -74,7 +74,7 @@ To democratize Web3/blockchain development by making smart contract creation acc
 ## Modern Stack Cohosts Included
 
 ### **AI & Machine Learning**
-- **OpenAI GPT-4.1**: Primary LLM for contract generation
+- **OpenAI GPT-5**: Primary LLM for contract generation
 - **Convex**: For backend API + DB (Next.js integration)
 - **Groq**: Alternative high-speed inference engine
 - **LangChain**: LLM orchestration and prompt management
@@ -102,7 +102,7 @@ Alembic >= 1.13.0          # Database migrations
 PostgreSQL/SQLite           # Primary/development databases
 
 # AI & Vector Processing
-OpenAI >= 1.3.0            # GPT-4 integration
+OpenAI >= 1.3.0            # GPT-5 integration
 Groq >= 0.4.0              # Alternative LLM provider
 LangChain >= 0.1.0         # LLM orchestration
 ChromaDB >= 0.4.0          # Vector database
@@ -173,7 +173,7 @@ Pinata                     # IPFS pinning service
 
 ## Prize Category
 
-**OpenAI** - This project extensively leverages OpenAI's GPT-4.1 model as the primary AI engine for:
+**OpenAI** - This project extensively leverages OpenAI's GPT-5 model as the primary AI engine for:
 - Natural language to Cadence smart contract generation
 - Context-aware code optimization using Flow documentation
 - Intelligent error handling and code suggestions
@@ -184,7 +184,7 @@ The integration with OpenAI's API is central to the platform's core functionalit
 ## Prize Category
 
 ### **Primary: OpenAI** 
-This project extensively leverages OpenAI's GPT-4 model as the primary AI engine for:
+This project extensively leverages OpenAI's GPT-5 model as the primary AI engine for:
 - Natural language to Cadence smart contract generation
 - Context-aware code optimization using Flow documentation
 - Intelligent error handling and code suggestions

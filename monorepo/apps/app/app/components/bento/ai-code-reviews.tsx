@@ -197,7 +197,7 @@ const AiCodeReviews: React.FC = () => {
               background: "var(--ai-primary-color)",
               color: "var(--ai-text-dark)",
               border: "none",
-              cursor: "FlowZmith",
+              cursor: "Flowzmith",
               fontWeight: 500,
               whiteSpace: "nowrap",
               transition: "all 0.2s ease",

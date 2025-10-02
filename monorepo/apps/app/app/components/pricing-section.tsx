@@ -18,7 +18,7 @@ export function PricingSection() {
         "Basic integration logos",
         "Single MCP server connection",
         "Up to 2 AI coding agents",
-        "Vercel deployments with FlowZmith branding",
+        "Vercel deployments with Flowzmith branding",
       ],
       buttonText: "Get Started",
       buttonClass:

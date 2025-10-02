@@ -246,7 +246,7 @@ def mock_openai_response():
         "tokens_used": 150,
         "cost": 0.015,
         "provider": "OPENAI",
-        "model": "gpt-4"
+        "model": "gpt-5-nano"
     }
 
 @pytest.fixture

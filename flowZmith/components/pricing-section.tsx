@@ -18,7 +18,7 @@ export function PricingSection() {
         "Basic integration logos",
         "Single MCP server connection",
         "Up to 2 AI coding agents",
-        "Vercel deployments with FlowZmith branding",
+        "Vercel deployments with Flowzmith branding",
       ],
       buttonText: "Get Started",
       buttonClass:
@@ -62,7 +62,7 @@ export function PricingSection() {
   ]
 
   return (
-    <section className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
+    <section className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14 bg-card/30 backdrop-blur-sm">
       <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
         <div className="flex flex-col justify-start items-center gap-4">
           <h2 className="text-center text-foreground text-4xl md:text-5xl font-semibold leading-tight md:leading-[40px]">

@@ -43,7 +43,7 @@ class LLMService:
 
     async def _generate_with_openai(self, system_prompt: str, user_prompt: str) -> str:
         response = self.openai_client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-5-nano",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

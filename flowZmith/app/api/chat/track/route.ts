@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const { 
       prompt, 
       sessionId, 
-      model = 'gpt-4',
+      model = 'gpt-5-nano',
       requestType = 'chat',
       category,
       complexity = 'medium'

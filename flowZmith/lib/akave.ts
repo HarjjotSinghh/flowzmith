@@ -188,13 +188,20 @@ class AkaveService {
    */
   async checkHealth(): Promise<boolean> {
     try {
+      // Add timeout to prevent long waits
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+
       const response = await fetch(`${this.config.endpoint}/health`, {
         method: 'GET',
+        signal: controller.signal,
       })
 
+      clearTimeout(timeoutId)
       return response.ok
     } catch (error) {
-      console.error('Akave health check failed:', error)
+      // Don't log as error since this is expected when service is not available
+      console.log('Akave service not available (this is normal if not configured):', error instanceof Error ? error.message : 'Unknown error')
       return false
     }
   }

@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
 import { SessionProvider } from 'next-auth/react'
 import AppKitProvider from '@/contexts/AppKitProvider'
+import { SimpleConvexProvider } from "@/components/providers/convex-provider";
 import { headers } from 'next/headers'
 import './globals.css'
 import ContextProvider from '@/context'
@@ -23,7 +24,7 @@ export default async function RootLayout({
   const cookies = headersObj.get('cookie')
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <style>{`
 html {
@@ -34,15 +35,15 @@ html {
         `}</style>
       </head>
       <body>
-        <AppKitProvider cookies={cookies}>
-        <ContextProvider cookies={cookies}>
-          <SessionProvider>
-              {children}
-            </SessionProvider>
-          </ContextProvider>
-        </AppKitProvider>
+        <SimpleConvexProvider>
+          <AppKitProvider cookies={cookies}>
+            <ContextProvider cookies={cookies}>
+              <SessionProvider>{children}</SessionProvider>
+            </ContextProvider>
+          </AppKitProvider>
+        </SimpleConvexProvider>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

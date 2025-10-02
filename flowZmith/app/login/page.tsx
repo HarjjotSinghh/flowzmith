@@ -63,7 +63,7 @@ export default function LoginPage() {
                 </div>
                 <h2 className="text-foreground text-5xl font-bold leading-tight">
                   Welcome Back to
-                  <span className="text-primary"> FlowZmith</span>
+                  <span className="text-primary"> Flowzmith</span>
                 </h2>
                 <p className="text-muted-foreground text-xl leading-relaxed">
                   Continue your smart contract development journey with AI-powered tools.

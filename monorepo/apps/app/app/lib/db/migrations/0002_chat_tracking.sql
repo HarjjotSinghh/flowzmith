@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "chat_requests" (
 	"session_id" text,
 	"prompt" text NOT NULL,
 	"response" text,
-	"model" varchar(50) DEFAULT 'gpt-4',
+	"model" varchar(50) DEFAULT 'gpt-5-nano',
 	"tokens_used" integer DEFAULT 0,
 	"cost" integer DEFAULT 0,
 	"duration" integer DEFAULT 0,

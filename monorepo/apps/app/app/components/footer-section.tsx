@@ -8,8 +8,8 @@ export function FooterSection() {
       {/* Left Section: Logo, Description, Social Links */}
       <div className="flex flex-col justify-start items-start gap-8 p-4 md:p-8">
       <div className="flex items-center space-x-3">
-            <Image src="/images/flowZmithsLogo.svg" alt="FlowZmith" width={32} height={32} />
-            <span className="text-xl font-semibold text-foreground">FlowZmith</span>
+            <Image src="/images/flowZmithsLogo.svg" alt="Flowzmith" width={32} height={32} />
+            <span className="text-xl font-semibold text-foreground">Flowzmith</span>
           </div>
         <p className="text-foreground/90 text-sm font-medium leading-[18px] text-left">Coding made effortless</p>
         <div className="flex justify-start items-start gap-3">

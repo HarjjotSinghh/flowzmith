@@ -1,16 +1,28 @@
+'use client'
+
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Header } from "./header"
 import Link from "next/link"
+import { motion } from "framer-motion"
+import GradientText from "@/components/GradientText"
+import ShinyText from "@/components/ShinyText"
+import Aurora from "@/components/Aurora"
+import Magnet from "@/components/Magnet"
+import ClickSpark from "@/components/ClickSpark"
 
 export function HeroSection() {
   return (
     <section
-      className="flex flex-col items-center text-center relative mx-auto rounded-2xl overflow-hidden my-6 py-0 px-4
+      className="flex flex-col items-center text-center relative mx-auto rounded-2xl overflow-hidden my-6 py-0 px-4 bg-card/50 backdrop-blur-sm border border-border/30
          w-full h-[400px] md:w-[1220px] md:h-[600px] lg:h-[810px] md:px-0"
     >
-      {/* SVG Background */}
+      {/* Enhanced Background with Aurora */}
       <div className="absolute inset-0 z-0">
+        <Aurora
+          colorStops={["#78fcd6", "#5effba", "#78fcd6"]}
+          blend={0.5}
+        />
         <svg
           width="100%"
           height="100%"
@@ -437,27 +449,125 @@ export function HeroSection() {
         <Header />
       </div>
 
-      <div className="relative z-10 space-y-4 md:space-y-5 lg:space-y-6 mb-6 md:mb-7 lg:mb-9 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-16 md:mt-[120px] lg:mt-[160px] px-4">
-        <h1 className="text-foreground text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight">
-          AI-Powered Smart Contract Builder
-        </h1>
-        <p className="text-muted-foreground text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
-          Generate and deploy Cadence smart contracts for Flow blockchain using advanced AI. Multi-modal input, real-time deployment, and intelligent optimization.
-        </p>
+      <div className="relative z-10 space-y-4 md:space-y-5 lg:space-y-6 mb-6 md:mb-7 lg:mb-9 mt-16 md:mt-[120px] lg:mt-[160px] px-6">
+        {/* Animated Hackathon Badge */}
+        <motion.div
+          className="flex justify-start mb-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full text-sm font-medium text-primary backdrop-blur-sm hover-lift">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+            <ShinyText text="We are now live!" className="text-primary" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <h1 className="text-foreground text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight font-mono text-left text-balance">
+            {/* <GradientText className="text-foreground"> */}
+              The Future of Smart Contract Development.
+            {/* </GradientText> */}
+            <span className="block text-transparent bg-clip-text bg-gradient-to-tl from-primary/70 to-foreground to-60% mt-2 text-2xl md:text-3xl lg:text-5xl">
+              Powered by Convex, OpenAI & Firecrawl
+            </span>
+          </h1>
+        </motion.div>
+        {/* <p className="text-muted-foreground text-base md:text-lg lg:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+          Experience the revolutionary platform that combines real-time collaboration, AI-powered contract generation, and intelligent web crawling to transform how you build Flow blockchain smart contracts.
+        </p> */}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-        <Link href="/login">
-          <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-3 rounded-full font-medium text-base shadow-lg ring-1 ring-white/10">
-            Get Started
-          </Button>
-        </Link>
-        <Link href="/dashboard">
-          <Button variant="outline" className="border-border text-foreground hover:bg-accent hover:text-accent-foreground px-8 py-3 rounded-full font-medium text-base">
-            View Dashboard
-          </Button>
-        </Link>
-      </div>
+      <motion.div
+        className="flex sm:flex-row gap-4 relative z-10 px-6 items-start flex-row justify-start w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <Magnet>
+          <ClickSpark
+            sparkColor="#78fcd6"
+            sparkSize={4}
+            sparkCount={8}
+            duration={400}
+          >
+            <Link href="/login">
+              <Button className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-primary-foreground px-8 py-4 rounded-full font-semibold text-base shadow-xl ring-2 ring-primary/50 transition-all duration-300 hover-lift animate-pulse-glow">
+                Start Building Now
+              </Button>
+            </Link>
+          </ClickSpark>
+        </Magnet>
+          <ClickSpark
+            sparkColor="#78fcd6"
+            sparkSize={3}
+            sparkCount={6}
+            duration={300}
+          >
+            <Link href="/convex-test">
+              <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary/80 px-8 py-4 rounded-full font-medium text-base transition-all duration-300 hover-lift">
+                Live Demo
+              </Button>
+            </Link>
+          </ClickSpark>
+      </motion.div>
+
+      {/* Animated Tech Stack Showcase */}
+      <motion.div
+        className="relative z-10 mt-12 grid grid-cols-3 gap-4 max-w-md mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+      >
+        <motion.div
+          className="flex flex-col items-center text-center p-3 bg-primary/10 border border-primary/20 rounded-lg backdrop-blur-sm hover-lift"
+          whileHover={{ scale: 1.05, y: -5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+          <motion.div
+            className="w-8 h-8 bg-gradient-to-r from-primary to-primary-dark rounded-lg mb-2 flex items-center justify-center animate-float"
+            style={{ animationDelay: "0s" }}
+          >
+            <span className="text-primary-foreground text-xs font-bold">C</span>
+          </motion.div>
+          <span className="text-xs text-primary font-medium">Convex</span>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col items-center text-center p-3 bg-accent/10 border border-accent/20 rounded-lg backdrop-blur-sm hover-lift"
+          whileHover={{ scale: 1.05, y: -5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+          <motion.div
+            className="w-8 h-8 bg-gradient-to-r from-accent to-muted rounded-lg mb-2 flex items-center justify-center animate-float"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <span className="text-accent-foreground text-xs font-bold">AI</span>
+          </motion.div>
+          <span className="text-xs text-accent-foreground font-medium">OpenAI</span>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col items-center text-center p-3 bg-secondary/10 border border-secondary/20 rounded-lg backdrop-blur-sm hover-lift"
+          whileHover={{ scale: 1.05, y: -5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+          <motion.div
+            className="w-8 h-8 bg-gradient-to-r from-secondary to-muted rounded-lg mb-2 flex items-center justify-center animate-float"
+            style={{ animationDelay: "0.4s" }}
+          >
+            <span className="text-secondary-foreground text-xs font-bold">🔥</span>
+          </motion.div>
+          <span className="text-xs text-secondary-foreground font-medium">Firecrawl</span>
+        </motion.div>
+      </motion.div>
     </section>
   )
 }

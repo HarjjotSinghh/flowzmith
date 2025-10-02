@@ -7,6 +7,6 @@ const openai = createOpenAI({
 });
 
 export const models = {
-  chat: openai('gpt-4o-mini'),
+  chat: openai('gpt-5-nanoo-mini'),
   embeddings: openai('text-embedding-3-small'),
 };

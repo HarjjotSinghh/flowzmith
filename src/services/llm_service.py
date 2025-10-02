@@ -61,7 +61,7 @@ class LLMService:
                 self.providers[LLMProviderType.OPENAI] = LLMProviderFactory.create_provider(
                     LLMProviderType.OPENAI,
                     openai_api_key,
-                    os.getenv('OPENAI_MODEL') or "gpt-4"
+                    os.getenv('OPENAI_MODEL') or "gpt-5-nano"
                 )
                 logger.info("OpenAI provider initialized successfully")
             except Exception as e:
@@ -110,7 +110,7 @@ class LLMService:
                 self.providers[LLMProviderType.OPENAI] = LLMProviderFactory.create_provider(
                     LLMProviderType.OPENAI,
                     openai_api_key,
-                    os.getenv('OPENAI_MODEL') or "gpt-4"
+                    os.getenv('OPENAI_MODEL') or "gpt-5-nano"
                 )
                 logger.info("OpenAI provider initialized successfully")
             except Exception as e:
