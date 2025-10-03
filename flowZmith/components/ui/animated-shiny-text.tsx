@@ -16,7 +16,7 @@ export function AnimatedShinyText({
   return (
     <p
       className={cn(
-        "animate-shiny-text bg-gradient-to-r from-transparent via-foreground/40 to-transparent bg-[length:var(--shimmer-width)_100%] bg-clip-text text-transparent",
+        "animate-shiny-text bg-gradient-to-r from-foreground/80 via-foreground to-foreground/80 bg-[length:var(--shimmer-width)_100%] bg-clip-text text-foreground",
         className
       )}
       style={{

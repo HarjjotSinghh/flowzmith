@@ -340,6 +340,31 @@ class LLMService:
             logger.error(f"System prompt generation failed: {e}")
             raise RuntimeError(f"Text generation failed: {e}")
 
+    async def generate_contract_streaming(
+        self,
+        prompt: str,
+        progress_tracker: Optional[StreamingProgressTracker] = None
+    ) -> str:
+        """Generate contract response from a simple prompt string (for chat completions)."""
+        try:
+            provider_type = self.get_preferred_provider()
+            
+            # Use the streaming service to generate response
+            full_response = ""
+            async for chunk in self.streaming_service.generate_contract_with_streaming(
+                provider_type=provider_type,
+                prompt=prompt,
+                progress_tracker=progress_tracker
+            ):
+                full_response += chunk
+            
+            logger.info(f"Generated streaming contract response using {provider_type.value}")
+            return full_response
+            
+        except Exception as e:
+            logger.error(f"Streaming contract generation failed: {e}")
+            raise RuntimeError(f"Streaming contract generation failed: {e}")
+
     async def generate_contract_with_external_context_streaming(
         self,
         submission: ContractSubmission,

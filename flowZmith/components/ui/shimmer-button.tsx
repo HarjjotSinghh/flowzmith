@@ -3,15 +3,15 @@
 import { cn } from "@/lib/utils"
 import { forwardRef } from "react"
 
-interface ShimmerButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode
-  shimmerColor?: string
-  shimmerSize?: string
-  borderRadius?: string
-  shimmerDuration?: string
-  background?: string
-  className?: string
-  ...props
+interface ShimmerButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  shimmerColor?: string;
+  shimmerSize?: string;
+  borderRadius?: string;
+  shimmerDuration?: string;
+  background?: string;
+  className?: string;
 }
 
 const ShimmerButton = forwardRef<HTMLButtonElement, ShimmerButtonProps>(

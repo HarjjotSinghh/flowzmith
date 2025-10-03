@@ -12,6 +12,7 @@ import { CTASection } from "@/components/cta-section"
 import { FooterSection } from "@/components/footer-section"
 import { AnimatedSection } from "@/components/animated-section"
 import Aurora from "@/components/Aurora"
+import { motion } from "framer-motion"
 
 export default function LandingPage() {
   return (
@@ -69,6 +70,34 @@ export default function LandingPage() {
           <CTASection />
         </AnimatedSection>
         <AnimatedSection className="relative z-10 mx-auto mt-8 md:mt-16" delay={0.2} animation="fadeInUp">
+        <div className="absolute inset-0 scale-y-[-1] -z-[10] opacity-30">
+        <Aurora colorStops={["#78fcd6", "#5effba", "#78fcd6"]} blend={0.9} amplitude={0.3}  />
+        <div className="absolute inset-0" />
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
+          animate={{
+            x: [0, -50, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
           <FooterSection />
         </AnimatedSection>
       </div>

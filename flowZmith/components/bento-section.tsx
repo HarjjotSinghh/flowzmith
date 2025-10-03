@@ -96,37 +96,6 @@ export function BentoSection() {
   return (
     <section className="w-full px-5 py-16 relative overflow-hidden">
       {/* Enhanced Background with Aurora */}
-      <div className="absolute inset-0 z-0">
-        <Aurora
-          colorStops={["#78fcd6", "#5effba", "#78fcd6"]}
-          blend={0.1}
-        />
-        <div className="absolute inset-0" />
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
-          animate={{
-            x: [0, -50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Animated Header */}
@@ -176,7 +145,8 @@ export function BentoSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Experience the power of real-time collaboration, AI intelligence, and web crawling combined in one revolutionary platform
+            Experience the power of real-time collaboration, AI intelligence,
+            and web crawling combined in one revolutionary platform
           </motion.p>
         </motion.div>
 
@@ -192,7 +162,7 @@ export function BentoSection() {
               "Live deployment tracking",
               "Instant notifications",
               "Multi-user contract editing",
-              "Automatic data synchronization"
+              "Automatic data synchronization",
             ]}
             gradient="from-primary/20 to-primary/40"
             index={0}
@@ -208,7 +178,7 @@ export function BentoSection() {
               "Intelligent code optimization",
               "Security pattern detection",
               "Automated testing suggestions",
-              "Context-aware generation"
+              "Context-aware generation",
             ]}
             gradient="from-accent/20 to-accent/40"
             index={1}
@@ -224,7 +194,7 @@ export function BentoSection() {
               "Real-time documentation updates",
               "Smart content extraction",
               "Sub-second performance",
-              "Interactive scraping technology"
+              "Interactive scraping technology",
             ]}
             gradient="from-secondary/20 to-secondary/40"
             index={2}
@@ -257,7 +227,9 @@ export function BentoSection() {
                 <Database className="w-6 h-6 text-primary" />
               </motion.div>
               <div className="text-left">
-                <div className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Convex</div>
+                <div className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                  Convex
+                </div>
                 <div className="text-xs text-muted-foreground">Real-time</div>
               </div>
             </motion.div>
@@ -283,15 +255,24 @@ export function BentoSection() {
                 <Bot className="w-6 h-6 text-accent-foreground" />
               </motion.div>
               <div className="text-left">
-                <div className="text-sm font-medium text-foreground group-hover:text-accent-foreground transition-colors">OpenAI</div>
-                <div className="text-xs text-muted-foreground">Intelligence</div>
+                <div className="text-sm font-medium text-foreground group-hover:text-accent-foreground transition-colors">
+                  OpenAI
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Intelligence
+                </div>
               </div>
             </motion.div>
 
             <motion.div
               className="text-muted-foreground text-2xl"
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.5,
+              }}
             >
               +
             </motion.div>
@@ -309,7 +290,9 @@ export function BentoSection() {
                 <Globe className="w-6 h-6 text-secondary-foreground" />
               </motion.div>
               <div className="text-left">
-                <div className="text-sm font-medium text-foreground group-hover:text-secondary-foreground transition-colors">Firecrawl</div>
+                <div className="text-sm font-medium text-foreground group-hover:text-secondary-foreground transition-colors">
+                  Firecrawl
+                </div>
                 <div className="text-xs text-muted-foreground">Data</div>
               </div>
             </motion.div>
@@ -317,7 +300,12 @@ export function BentoSection() {
             <motion.div
               className="text-muted-foreground text-2xl"
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1,
+              }}
             >
               =
             </motion.div>
@@ -350,5 +338,5 @@ export function BentoSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

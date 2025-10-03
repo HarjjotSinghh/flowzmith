@@ -8,6 +8,7 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       githubId?: string
+      requestsLimit?: number
     }
   }
 
@@ -17,6 +18,7 @@ declare module "next-auth" {
     name?: string | null
     image?: string | null
     githubId?: string
+    requestsLimit?: number
   }
 }
 
@@ -27,5 +29,6 @@ declare module "next-auth/jwt" {
     name?: string | null
     image?: string | null
     githubId?: string
+    requestsLimit?: number
   }
 }

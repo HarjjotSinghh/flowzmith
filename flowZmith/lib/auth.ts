@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
 import type { NextAuthConfig } from "next-auth"
+import { userQueries } from "@/lib/db/queries"
 
 // Debug environment variables
 console.log("Auth Debug:", {
@@ -63,6 +64,16 @@ export const config = {
         session.user.name = token.name as string
         session.user.image = token.image as string
         session.user.githubId = token.githubId as string
+        
+        // Fetch user data from database to get requestsLimit
+        try {
+          const userData = await userQueries.findByEmail(session.user.email)
+          if (userData) {
+            session.user.requestsLimit = userData.requestsLimit || 0
+          }
+        } catch (error) {
+          console.error("Error fetching user data for session:", error)
+        }
       }
       return session
     },
