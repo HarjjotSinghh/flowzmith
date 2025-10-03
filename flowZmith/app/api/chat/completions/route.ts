@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         messages: body.messages,
-        model: body.model || 'gpt-4',
+        model: body.model || 'meta-llama/llama-4-scout-17b-16e-instruct',
         stream: true,
         temperature: body.temperature || 0.7,
         max_tokens: body.max_tokens || 2000,

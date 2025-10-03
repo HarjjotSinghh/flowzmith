@@ -45,7 +45,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[ChatMessage]
-    model: Optional[str] = "gpt-4"
+    model: Optional[str] = "meta-llama/llama-4-scout-17b-16e-instruct"
     stream: Optional[bool] = True
     temperature: Optional[float] = 0.7
     max_tokens: Optional[int] = 2000
