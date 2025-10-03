@@ -22,20 +22,28 @@ from ..schemas import (
 )
 
 def load_system_prompt() -> str:
-    """Load the Cadence generation system prompt from file."""
+    """Load the detailed Cadence 1.0 system prompt from the markdown file."""
+    import os
+    
+    # Get the project root directory (go up from src/api to project root)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(current_dir))
+    prompt_file_path = os.path.join(project_root, "prompts", "detailed_cadence_v1_system_prompt.md")
+    
     try:
-        # Get the project root directory (go up from src/api to project root)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(os.path.dirname(current_dir))
-        prompt_path = os.path.join(project_root, "prompts", "cadence_generation_system_prompt.md")
-        
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        with open(prompt_file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+            # Remove the markdown header if present
+            if content.startswith("# Detailed Cadence 1.0 System Prompt\n"):
+                content = content.replace("# Detailed Cadence 1.0 System Prompt\n", "", 1)
+            return content.strip()
     except FileNotFoundError:
-        return "You are an expert Cadence smart contract developer for the Flow blockchain."
+        # Fallback to a basic prompt if file is not found
+        return "You are an expert Cadence smart contract developer. Generate secure, efficient Cadence 1.0 contracts for the Flow blockchain."
     except Exception as e:
-        print(f"Error loading system prompt: {e}")
-        return "You are an expert Cadence smart contract developer for the Flow blockchain."
+        # Fallback to a basic prompt if there's an error
+        return "You are an expert Cadence smart contract developer. Generate secure, efficient Cadence 1.0 contracts for the Flow blockchain."
+
 
 router = APIRouter(prefix="/api/ai", tags=["AI Streaming"])
 

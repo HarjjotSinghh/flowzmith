@@ -1,0 +1,391 @@
+{
+  "version": "1.0.0",
+  "commands": [
+    {
+      "id": "setup",
+      "name": "Setup",
+      "description": "Setup and verify the development environment",
+      "icon": "Settings",
+      "category": "system",
+      "requiresInput": false,
+      "endpoint": null
+    },
+    {
+      "id": "create_contract",
+      "name": "Create Contract",
+      "description": "Create a new smart contract with step-by-step guidance",
+      "icon": "FileCode",
+      "category": "contract",
+      "requiresInput": true,
+      "endpoint": "/api/contracts/submit",
+      "method": "POST",
+      "steps": [
+        {
+          "id": "requirements",
+          "title": "Contract Requirements",
+          "description": "Describe what your contract should do",
+          "fields": [
+            {
+              "name": "requirements",
+              "label": "Contract Description",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe your smart contract requirements...",
+              "helpText": "Be specific about the functionality you need"
+            },
+            {
+              "name": "network",
+              "label": "Target Network",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "label": "Emulator", "value": "emulator" },
+                { "label": "Testnet", "value": "testnet" },
+                { "label": "Mainnet", "value": "mainnet" }
+              ],
+              "defaultValue": "emulator"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deploy_contract",
+      "name": "Deploy Contract",
+      "description": "Deploy a smart contract to the blockchain",
+      "icon": "Rocket",
+      "category": "deployment",
+      "requiresInput": true,
+      "endpoint": "/api/deployments/deploy",
+      "method": "POST",
+      "steps": [
+        {
+          "id": "deployment_config",
+          "title": "Deployment Configuration",
+          "fields": [
+            {
+              "name": "contract_name",
+              "label": "Contract Name",
+              "type": "text",
+              "required": true,
+              "placeholder": "MyContract"
+            },
+            {
+              "name": "network",
+              "label": "Network",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "label": "Emulator", "value": "emulator" },
+                { "label": "Testnet", "value": "testnet" },
+                { "label": "Mainnet", "value": "mainnet" }
+              ]
+            },
+            {
+              "name": "auto_deploy",
+              "label": "Auto Deploy",
+              "type": "checkbox",
+              "required": false,
+              "defaultValue": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generate_from_context",
+      "name": "Generate from Context",
+      "description": "Generate a contract using local markdown context",
+      "icon": "Sparkles",
+      "category": "contract",
+      "requiresInput": true,
+      "endpoint": "/api/context/generate/stream",
+      "method": "POST",
+      "streaming": true,
+      "steps": [
+        {
+          "id": "context_generation",
+          "title": "Context-Based Generation",
+          "fields": [
+            {
+              "name": "requirements",
+              "label": "Contract Requirements",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the contract you want to build..."
+            },
+            {
+              "name": "context_dir",
+              "label": "Context Directory",
+              "type": "text",
+              "required": false,
+              "placeholder": "context",
+              "defaultValue": "context"
+            },
+            {
+              "name": "network",
+              "label": "Network",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "label": "Emulator", "value": "emulator" },
+                { "label": "Testnet", "value": "testnet" },
+                { "label": "Mainnet", "value": "mainnet" }
+              ]
+            },
+            {
+              "name": "auto_deploy",
+              "label": "Auto Deploy",
+              "type": "checkbox",
+              "required": false,
+              "defaultValue": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "search_docs",
+      "name": "Search Documentation",
+      "description": "Search documentation and knowledge base",
+      "icon": "Search",
+      "category": "documentation",
+      "requiresInput": true,
+      "endpoint": "/api/documentation/search",
+      "method": "POST",
+      "steps": [
+        {
+          "id": "search",
+          "title": "Search Query",
+          "fields": [
+            {
+              "name": "query",
+              "label": "Search Query",
+              "type": "text",
+              "required": true,
+              "placeholder": "Enter your search query..."
+            },
+            {
+              "name": "limit",
+              "label": "Results Limit",
+              "type": "number",
+              "required": false,
+              "defaultValue": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "upload_docs",
+      "name": "Upload Documentation",
+      "description": "Upload documentation to the knowledge base",
+      "icon": "Upload",
+      "category": "documentation",
+      "requiresInput": true,
+      "endpoint": "/api/documentation/upload",
+      "method": "POST"
+    },
+    {
+      "id": "browse_docs",
+      "name": "Browse Documentation",
+      "description": "Browse documentation by categories",
+      "icon": "FolderOpen",
+      "category": "documentation",
+      "requiresInput": false,
+      "endpoint": "/api/documentation/categories",
+      "method": "GET"
+    },
+    {
+      "id": "crawl_docs",
+      "name": "Crawl Documentation",
+      "description": "Crawl and index external documentation sources",
+      "icon": "Globe",
+      "category": "documentation",
+      "requiresInput": true,
+      "endpoint": "/api/documentation/crawl",
+      "method": "POST"
+    },
+    {
+      "id": "firecrawl_search",
+      "name": "Firecrawl Search",
+      "description": "Interactive Firecrawl documentation search",
+      "icon": "Search",
+      "category": "documentation",
+      "requiresInput": true,
+      "endpoint": "/api/documentation/firecrawl/search",
+      "method": "POST"
+    },
+    {
+      "id": "list_deployments",
+      "name": "List Deployments",
+      "description": "View all contract deployments",
+      "icon": "History",
+      "category": "deployment",
+      "requiresInput": false,
+      "endpoint": "/api/deployments",
+      "method": "GET"
+    },
+    {
+      "id": "status",
+      "name": "System Status",
+      "description": "Check system status and statistics",
+      "icon": "Activity",
+      "category": "system",
+      "requiresInput": false,
+      "endpoint": "/api/system/status",
+      "method": "GET"
+    },
+    {
+      "id": "wizard",
+      "name": "Contract Wizard",
+      "description": "Complete contract creation wizard",
+      "icon": "Wand2",
+      "category": "contract",
+      "requiresInput": false,
+      "endpoint": null
+    },
+    {
+      "id": "flow_init",
+      "name": "Initialize Flow Project",
+      "description": "Initialize a new Flow project",
+      "icon": "FolderPlus",
+      "category": "flow",
+      "requiresInput": false,
+      "endpoint": "/api/flow/init",
+      "method": "POST",
+      "steps": [
+        {
+          "id": "project_init",
+          "title": "Project Initialization",
+          "fields": [
+            {
+              "name": "name",
+              "label": "Project Name (optional)",
+              "type": "text",
+              "required": false,
+              "placeholder": "Auto-generated if not provided"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flow_deploy",
+      "name": "Deploy Flow Contract",
+      "description": "Deploy contracts in a Flow project",
+      "icon": "Rocket",
+      "category": "flow",
+      "requiresInput": true,
+      "endpoint": "/api/flow/deploy",
+      "method": "POST"
+    },
+    {
+      "id": "flow_status",
+      "name": "Flow Project Status",
+      "description": "Get status information for a Flow project",
+      "icon": "Info",
+      "category": "flow",
+      "requiresInput": true,
+      "endpoint": "/api/flow/status",
+      "method": "GET"
+    },
+    {
+      "id": "flow_list",
+      "name": "List Flow Projects",
+      "description": "List all Flow projects",
+      "icon": "List",
+      "category": "flow",
+      "requiresInput": false,
+      "endpoint": "/api/flow/projects",
+      "method": "GET"
+    },
+    {
+      "id": "flow_generate_deploy",
+      "name": "Generate & Deploy",
+      "description": "Generate and deploy a contract automatically",
+      "icon": "Zap",
+      "category": "flow",
+      "requiresInput": true,
+      "endpoint": "/api/flow/generate-deploy",
+      "method": "POST"
+    },
+    {
+      "id": "flow_auto",
+      "name": "Automated Flow Workflow",
+      "description": "Generate, create MCP server, and deploy to Flow",
+      "icon": "Zap",
+      "category": "flow",
+      "requiresInput": true,
+      "endpoint": "/api/flow/auto",
+      "method": "POST",
+      "steps": [
+        {
+          "id": "auto_workflow",
+          "title": "Automated Workflow",
+          "description": "This will handle the complete workflow automatically",
+          "fields": [
+            {
+              "name": "requirements",
+              "label": "Contract Requirements",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe your contract..."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mcp_explorer",
+      "name": "MCP Explorer",
+      "description": "Explore Flow blockchain using MCP",
+      "icon": "Compass",
+      "category": "flow",
+      "requiresInput": false,
+      "endpoint": null
+    },
+    {
+      "id": "chat",
+      "name": "Chat Assistant",
+      "description": "Chat with AI assistant for guidance",
+      "icon": "MessageSquare",
+      "category": "chat",
+      "requiresInput": false,
+      "endpoint": null,
+      "redirectTo": "/chat"
+    }
+  ],
+  "categories": [
+    {
+      "id": "contract",
+      "label": "Smart Contracts",
+      "color": "bg-blue-500"
+    },
+    {
+      "id": "deployment",
+      "label": "Deployment",
+      "color": "bg-green-500"
+    },
+    {
+      "id": "flow",
+      "label": "Flow CLI",
+      "color": "bg-purple-500"
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation",
+      "color": "bg-yellow-500"
+    },
+    {
+      "id": "system",
+      "label": "System",
+      "color": "bg-gray-500"
+    },
+    {
+      "id": "chat",
+      "label": "Chat",
+      "color": "bg-pink-500"
+    }
+  ]
+}
