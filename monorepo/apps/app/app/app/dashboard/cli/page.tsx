@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { FileCode, Terminal, Loader2 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { FileCode, Terminal, Loader2, Download, Github, Play, Rocket, ChevronDown, Folder, File } from "lucide-react"
 import type { CLICommand } from "@flowzmith/schema"
 import { apiClient } from "@/lib/api-client"
 import Editor from "@monaco-editor/react"
@@ -27,6 +33,9 @@ export default function CLIWorkspacePage() {
   const [selectedFile, setSelectedFile] = React.useState<FileNode | null>(null)
   const [executionHistory, setExecutionHistory] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
+  const [loadingMessage, setLoadingMessage] = React.useState("Processing...")
+  const [currentProjectPath, setCurrentProjectPath] = React.useState<string | null>(null)
+  const [expandedFolders, setExpandedFolders] = React.useState<Set<string>>(new Set())
 
   const handleCommandSelect = (command: CLICommand) => {
     setSelectedCommand(command)

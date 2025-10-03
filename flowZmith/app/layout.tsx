@@ -12,7 +12,6 @@ import ContextProvider from '@/context'
 export const metadata: Metadata = {
   title: 'Smart Contract AI Builder',
   description: 'AI-powered smart contract generation platform',
-  generator: 'v0.app',
 }
 
 export default async function RootLayout({
@@ -25,16 +24,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <style>{`
-html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
-  --font-mono: ${GeistMono.variable};
-}
-        `}</style>
-      </head>
-      <body>
+      <body className={`${GeistSans.variable} ${GeistMono.variable}`} style={{fontFamily: GeistSans.style.fontFamily }}>
         <SimpleConvexProvider>
           <AppKitProvider cookies={cookies}>
             <ContextProvider cookies={cookies}>

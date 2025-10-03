@@ -71,7 +71,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
   }
 
   return (
-    <div className={cn("flex flex-col h-full bg-black rounded-lg border border-gray-800", className)}>
+    <div className={cn("flex flex-col h-full max-h-[500px] bg-black rounded-lg border border-gray-800", className)}>
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800 rounded-t-lg">
         <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
       </div>
 
       {/* Terminal Content */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <div className="flex-1 p-4 overflow-y-auto" ref={scrollRef}>
         {logs.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-500">
             <div className="text-center">
@@ -117,7 +117,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
             </div>
           </div>
         ) : (
-          <div className="font-mono text-sm space-y-1">
+          <div className="font-mono text-sm space-y-1 oveflow-y-auto">
             {logs.map((log, idx) => (
               <div key={idx} className="flex gap-3 hover:bg-gray-900/50 px-2 py-1 rounded">
                 <span className="text-gray-500 text-xs flex-shrink-0 select-none">
@@ -133,7 +133,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
             ))}
           </div>
         )}
-      </ScrollArea>
+      </div>
 
       {/* Terminal Footer */}
       <div className="px-4 py-2 bg-gray-900 border-t border-gray-800 rounded-b-lg">

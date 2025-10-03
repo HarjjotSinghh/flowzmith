@@ -1,307 +1,273 @@
-# Quick Reference - CLI Frontend Integration
+# CLI Workspace Quick Reference
 
-## 🚀 Quick Start
+## Quick Commands
 
+### Start Development
 ```bash
-# Build schema package
-cd monorepo/packages/flowzmith-schema && npm run build
+# Terminal 1: Backend
+python -m uvicorn src.main:app --reload --port 8000
 
-# Start frontend
-cd monorepo/apps/app/app && npm run dev
-
-# Visit
-open http://localhost:3000/dashboard/cli
+# Terminal 2: Frontend
+cd flowZmith && npm run dev
 ```
 
-## 📁 Key Files
+### Environment Setup
+```bash
+cp .env.example .env.local
+# Edit .env.local with your values
+```
+
+### Install Flow CLI
+```bash
+sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-cli/master/install.sh)"
+```
+
+## Key Files
 
 | File | Purpose |
 |------|---------|
-| `monorepo/packages/flowzmith-schema/src/index.ts` | Schema definitions |
-| `monorepo/apps/app/app/components/cli-sidebar.tsx` | Command sidebar |
-| `monorepo/apps/app/app/components/command-dialog.tsx` | Command dialog |
-| `monorepo/apps/app/app/app/dashboard/cli/page.tsx` | CLI workspace |
-| `monorepo/apps/app/app/lib/api-client.ts` | API client |
+| `app/cli/page.tsx` | Main CLI workspace component |
+| `app/api/projects/files/route.ts` | Fetch project files |
+| `app/api/contracts/compile/route.ts` | Compile contracts |
+| `app/api/contracts/deploy/route.ts` | Deploy contracts |
+| `app/api/github/create-repo/route.ts` | Create GitHub repos |
+| `components/cli/cli-sidebar.tsx` | Command sidebar |
+| `components/cli/command-dialog.tsx` | Command input dialog |
+| `components/cli/terminal-output.tsx` | Terminal logs |
 
-## 🎯 Common Tasks
+## API Endpoints
+
+### GET `/api/projects/files`
+```bash
+curl "http://localhost:3001/api/projects/files?path=flow_projects/abc123"
+```
+
+### POST `/api/contracts/compile`
+```bash
+curl -X POST http://localhost:3001/api/contracts/compile \
+  -H "Content-Type: application/json" \
+  -d '{"contract_code":"pub contract Test {}","contract_name":"Test"}'
+```
+
+### POST `/api/contracts/deploy`
+```bash
+curl -X POST http://localhost:3001/api/contracts/deploy \
+  -H "Content-Type: application/json" \
+  -d '{"project_path":"flow_projects/abc123","contract_name":"Test","network":"testnet"}'
+```
+
+### POST `/api/github/create-repo`
+```bash
+curl -X POST http://localhost:3001/api/github/create-repo \
+  -H "Content-Type: application/json" \
+  -H "Cookie: github_access_token=YOUR_TOKEN" \
+  -d '{"repo_name":"my-project","files":[...]}'
+```
+
+## Component Props
+
+### CLISidebar
+```typescript
+interface CLISidebarProps {
+  onCommandSelect: (command: CLICommand) => void
+  selectedCommand?: CLICommand | null
+  className?: string
+}
+```
+
+### CommandDialog
+```typescript
+interface CommandDialogProps {
+  command: CLICommand | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onExecute: (command: CLICommand, data: any) => Promise<any>
+}
+```
+
+### TerminalOutput
+```typescript
+interface TerminalOutputProps {
+  logs: TerminalLog[]
+  isStreaming: boolean
+  onClear: () => void
+  className?: string
+}
+```
+
+## State Management
+
+### Main State Variables
+```typescript
+const [selectedCommand, setSelectedCommand] = useState<CLICommand | null>(null)
+const [dialogOpen, setDialogOpen] = useState(false)
+const [files, setFiles] = useState<FileNode[]>([])
+const [selectedFile, setSelectedFile] = useState<FileNode | null>(null)
+const [projectData, setProjectData] = useState<ProjectData | null>(null)
+const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
+const [isLoading, setIsLoading] = useState(false)
+const [isCompiling, setIsCompiling] = useState(false)
+const [isDeploying, setIsDeploying] = useState(false)
+const [isExporting, setIsExporting] = useState(false)
+```
+
+## Common Tasks
 
 ### Add New Command
+1. Edit `config/cli-commands.json`
+2. Add command definition
+3. Add icon to `cli-sidebar.tsx` iconMap
+4. Implement handler in `page.tsx`
 
+### Add New API Endpoint
+1. Create `app/api/[route]/route.ts`
+2. Implement GET/POST handler
+3. Add error handling
+4. Update documentation
+
+### Modify File Tree
+1. Update `FileNode` interface
+2. Modify `buildFileTree()` function
+3. Update `renderFileTree()` rendering
+4. Test with nested folders
+
+### Add Export Format
+1. Add to Export dropdown menu
+2. Implement handler function
+3. Add file generation logic
+4. Test download
+
+## Debugging
+
+### Enable Verbose Logging
 ```typescript
-// 1. In schema package (src/index.ts)
-{
-  id: "my_command",
-  name: "My Command",
-  description: "Description",
-  icon: "Sparkles",
-  category: "contract",
-  requiresInput: true,
-  steps: [...]
-}
-
-// 2. Generate Python types
-npm run generate-python
-
-// 3. Implement backend
-@app.post("/api/my-command")
-async def my_command(request: MyCommandRequest):
-    return {"status": "success"}
-
-// 4. Add to API client
-async myCommand(data: MyCommandRequest) {
-  return this.request("/api/my-command", ...)
-}
+// In page.tsx
+console.log('Debug:', { files, selectedFile, projectData })
 ```
 
-### Update Existing Command
-
+### Check API Responses
 ```typescript
-// 1. Edit in schema package
-// 2. Rebuild: npm run build
-// 3. Regenerate Python: npm run generate-python
-// 4. Update backend if needed
+// In API route
+console.log('Request:', await request.json())
+console.log('Response:', result)
 ```
 
-### Sync Schema to Backend
+### Monitor Terminal Logs
+```typescript
+// Use addLog function
+addLog('Debug message', 'info')
+addLog('Warning message', 'warning')
+addLog('Error message', 'error')
+addLog('Success message', 'success')
+```
 
+## Common Issues
+
+### Files Not Loading
+```typescript
+// Check project path
+console.log('Project path:', projectData?.projectPath)
+
+// Verify API response
+const response = await fetch(`/api/projects/files?path=${projectPath}`)
+console.log('Files:', await response.json())
+```
+
+### Compilation Fails
 ```bash
-./scripts/sync-schema-to-backend.sh
+# Check Flow CLI
+flow version
+
+# Test manually
+flow cadence check Contract.cdc
 ```
 
-## 🔧 Development Commands
-
+### GitHub OAuth Not Working
 ```bash
-# Schema package
-cd monorepo/packages/flowzmith-schema
-npm run build              # Build package
-npm run dev                # Watch mode
-npm run generate-python    # Generate Python types
+# Verify environment variables
+echo $GITHUB_CLIENT_ID
+echo $GITHUB_CLIENT_SECRET
 
-# Frontend
-cd monorepo/apps/app/app
-npm run dev                # Start dev server
-npm run build              # Production build
-npm run lint               # Lint code
-
-# Backend
-python -m uvicorn src.main:app --reload  # Start server
+# Check callback URL
+# Should be: http://localhost:3001/api/auth/github/callback
 ```
 
-## 📦 Package Structure
+## Testing Checklist
 
-```
-@flowzmith/schema/
-├── src/
-│   └── index.ts           # TypeScript definitions
-├── python/
-│   └── schema.py          # Generated Python types
-└── scripts/
-    └── generate-python.js # Generator script
-```
+- [ ] Generate contract
+- [ ] View file tree
+- [ ] Expand/collapse folders
+- [ ] Open file in editor
+- [ ] Edit file content
+- [ ] Export as ZIP
+- [ ] Export as TAR
+- [ ] Compile contract
+- [ ] Deploy contract
+- [ ] Push to GitHub
+- [ ] Check terminal logs
+- [ ] Verify error handling
 
-## 🎨 UI Components
+## Performance Tips
 
-| Component | Import |
-|-----------|--------|
-| Button | `@/components/ui/button` |
-| Dialog | `@/components/ui/dialog` |
-| Sheet | `@/components/ui/sheet` |
-| Input | `@/components/ui/input` |
-| Select | `@/components/ui/select` |
-| Textarea | `@/components/ui/textarea` |
-| Checkbox | `@/components/ui/checkbox` |
-| Badge | `@/components/ui/badge` |
-| Tabs | `@/components/ui/tabs` |
-| ScrollArea | `@/components/ui/scroll-area` |
-| Progress | `@/components/ui/progress` |
-
-## 🔌 API Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/health` | GET | Health check |
-| `/api/contracts/submit` | POST | Create contract |
-| `/api/contracts/generate-with-context` | POST | Generate with context |
-| `/api/deployments/deploy` | POST | Deploy contract |
-| `/api/deployments` | GET | List deployments |
-| `/api/documentation/search` | POST | Search docs |
-| `/api/flow/init` | POST | Init Flow project |
-| `/api/flow/projects` | GET | List projects |
-| `/api/system/status` | GET | System status |
-
-## 🎯 Command Categories
-
-| Category | Commands |
-|----------|----------|
-| **contract** | create_contract, generate_from_context |
-| **deployment** | deploy_contract, list_deployments |
-| **flow** | flow_init, flow_deploy, flow_list, flow_status, flow_auto |
-| **documentation** | search_docs, upload_docs, browse_docs, crawl_docs |
-| **system** | setup, status |
-| **chat** | chat |
-
-## 🔍 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Schema not found | `cd monorepo/packages/flowzmith-schema && npm run build` |
-| API connection failed | Check backend is running on port 8000 |
-| TypeScript errors | Clear `.next` cache and rebuild |
-| Monaco not loading | `npm add @monaco-editor/react` |
-| UI components missing | Check Radix UI packages installed |
-
-## 📚 Documentation
-
-| Document | Purpose |
-|----------|---------|
-| `CENTRALIZED_SCHEMA_ARCHITECTURE.md` | Architecture details |
-| `SETUP_CLI_INTEGRATION.md` | Setup instructions |
-| `CLI_FRONTEND_INTEGRATION_SUMMARY.md` | Implementation summary |
-| `QUICK_REFERENCE.md` | This file |
-
-## 🎨 Icons Available
-
-FileCode, Rocket, Search, Upload, FolderOpen, Globe, History, Activity, Sparkles, FolderPlus, List, Zap, MessageSquare, CheckCircle2, XCircle, Loader2, Terminal, ChevronRight, X
-
-## 🔐 Environment Variables
-
-```env
-# Frontend (.env.local)
-NEXT_PUBLIC_API_URL=http://localhost:8000
-
-# Backend (.env)
-DATABASE_URL=postgresql://...
-OPENAI_API_KEY=sk-...
-GROQ_API_KEY=gsk_...
-```
-
-## 📊 Command Field Types
-
-| Type | Description | Example |
-|------|-------------|---------|
-| `text` | Single line input | Contract name |
-| `textarea` | Multi-line input | Requirements |
-| `select` | Dropdown | Network selection |
-| `checkbox` | Boolean | Auto-deploy |
-| `number` | Numeric input | Limit |
-| `file` | File upload | Context files |
-
-## 🎯 Request/Response Types
-
+### Optimize File Loading
 ```typescript
-// Request
-CreateContractRequest {
-  requirements: string
-  context?: string
-  network: "emulator" | "testnet" | "mainnet"
-}
-
-// Response
-CreateContractResponse {
-  status: "success" | "failed" | "pending"
-  submission_id?: string
-  generated_contract_code?: string
-  error?: string
-}
+// Use pagination for large projects
+const BATCH_SIZE = 50
+const files = await fetchFilesBatch(projectPath, 0, BATCH_SIZE)
 ```
 
-## 🚦 Status Values
-
-| Status | Meaning |
-|--------|---------|
-| `success` | Operation completed |
-| `failed` | Operation failed |
-| `pending` | In progress |
-| `deployed` | Successfully deployed |
-| `queued` | Waiting to execute |
-
-## 🎨 Category Colors
-
-| Category | Color |
-|----------|-------|
-| contract | Blue |
-| deployment | Green |
-| flow | Purple |
-| documentation | Yellow |
-| system | Gray |
-| chat | Pink |
-
-## 📝 Example Command Definition
-
+### Lazy Load Editor
 ```typescript
-{
-  id: "create_contract",
-  name: "Create Contract",
-  description: "Create a new smart contract",
-  icon: "FileCode",
-  category: "contract",
-  requiresInput: true,
-  steps: [
-    {
-      id: "requirements",
-      title: "Contract Requirements",
-      fields: [
-        {
-          name: "requirements",
-          label: "Description",
-          type: "textarea",
-          required: true,
-          placeholder: "Describe your contract..."
-        }
-      ]
-    }
-  ]
-}
+// Already implemented
+const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 ```
 
-## 🔄 Workflow
-
-```
-User clicks command
-    ↓
-Dialog opens
-    ↓
-User fills form
-    ↓
-Validation (Zod)
-    ↓
-API call
-    ↓
-Backend processes
-    ↓
-Response returned
-    ↓
-Results displayed
-    ↓
-Files shown in editor
+### Cache File Contents
+```typescript
+const fileCache = new Map<string, string>()
+const content = fileCache.get(filePath) || await fetchFile(filePath)
 ```
 
-## 💡 Tips
+## Security Checklist
 
-- Use `Cmd/Ctrl + K` for command palette (if implemented)
-- Click category headers to expand/collapse
-- Use tabs to switch between editor and history
-- Check execution history for past commands
-- Monaco editor supports syntax highlighting
-- Forms validate in real-time
-- Multi-step commands show progress
+- [ ] Path traversal protection enabled
+- [ ] OAuth tokens in httpOnly cookies
+- [ ] Input validation on all endpoints
+- [ ] CORS properly configured
+- [ ] Rate limiting implemented
+- [ ] Error messages don't leak sensitive info
+- [ ] File access restricted to allowed directories
 
-## 🎓 Learning Path
+## Deployment Checklist
 
-1. Read `SETUP_CLI_INTEGRATION.md`
-2. Review `CENTRALIZED_SCHEMA_ARCHITECTURE.md`
-3. Explore schema package code
-4. Try adding a simple command
-5. Implement backend endpoint
-6. Test end-to-end
+- [ ] Environment variables set
+- [ ] GitHub OAuth configured
+- [ ] Flow CLI installed
+- [ ] Database connected
+- [ ] Backend running
+- [ ] Frontend built
+- [ ] HTTPS enabled (production)
+- [ ] Monitoring configured
 
-## 📞 Quick Links
+## Useful Links
 
-- Frontend: `http://localhost:3000/dashboard/cli`
-- Backend: `http://localhost:8000`
-- API Docs: `http://localhost:8000/docs`
-- Health: `http://localhost:8000/health`
+- [Flow CLI Docs](https://developers.flow.com/tools/flow-cli)
+- [Monaco Editor API](https://microsoft.github.io/monaco-editor/api/index.html)
+- [GitHub OAuth Guide](https://docs.github.com/en/developers/apps/building-oauth-apps)
+- [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)
+- [JSZip Documentation](https://stuk.github.io/jszip/)
 
----
+## Support
 
-**Keep this handy for quick reference!**
+- **Issues**: Create GitHub issue with logs
+- **Questions**: Ask in Discord #support
+- **Bugs**: Include reproduction steps
+- **Features**: Submit feature request
+
+## Version Info
+
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-10-03
+- **Node Version**: 18+
+- **Next.js Version**: 15.2.4
+- **React Version**: 19

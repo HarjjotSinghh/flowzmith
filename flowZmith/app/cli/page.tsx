@@ -11,9 +11,30 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { FileCode, Terminal, Loader2, Activity } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  FileCode,
+  Terminal,
+  Loader2,
+  Activity,
+  Download,
+  Github,
+  Play,
+  Rocket,
+  ChevronDown,
+  Folder,
+  File,
+  ChevronRight
+} from "lucide-react";
 import type { CLICommand } from "@/lib/cli-commands"
 import dynamic from "next/dynamic"
+import JSZip from "jszip"
+import { configureMonacoLanguages, getLanguageFromFileName, getEditorOptions } from "@/lib/monaco-config"
 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
@@ -25,6 +46,12 @@ interface FileNode {
   children?: FileNode[]
 }
 
+interface ProjectData {
+  projectPath: string
+  projectId: string
+  files: FileNode[]
+}
+
 export default function CLIWorkspacePage() {
   const [selectedCommand, setSelectedCommand] =
     React.useState<CLICommand | null>(null);
@@ -33,6 +60,11 @@ export default function CLIWorkspacePage() {
   const [selectedFile, setSelectedFile] = React.useState<FileNode | null>(null);
   const [executionHistory, setExecutionHistory] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [projectData, setProjectData] = React.useState<ProjectData | null>(null);
+  const [expandedFolders, setExpandedFolders] = React.useState<Set<string>>(new Set());
+  const [isCompiling, setIsCompiling] = React.useState(false);
+  const [isDeploying, setIsDeploying] = React.useState(false);
+  const [isExporting, setIsExporting] = React.useState(false);
 
   // Terminal logs
   const {
@@ -43,6 +75,339 @@ export default function CLIWorkspacePage() {
     startStreaming,
     stopStreaming,
   } = useTerminalLogs();
+
+  // Fetch project files from backend
+  const fetchProjectFiles = async (projectPath: string) => {
+    try {
+      addLog(`Fetching project files from ${projectPath}...`, "info");
+
+      const response = await fetch(`/api/projects/files?path=${encodeURIComponent(projectPath)}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch project files");
+      }
+
+      const data = await response.json();
+      return data.files || [];
+    } catch (error: any) {
+      addLog(`Error fetching files: ${error.message}`, "error");
+      return [];
+    }
+  };
+
+  // Build file tree from flat file list
+  const buildFileTree = (fileList: any[]): FileNode[] => {
+    const root: FileNode[] = [];
+    const map = new Map<string, FileNode>();
+
+    fileList.forEach((file) => {
+      const node: FileNode = {
+        name: file.name,
+        path: file.path,
+        type: file.type,
+        content: file.content,
+        children: file.type === "directory" ? [] : undefined,
+      };
+      map.set(file.path, node);
+    });
+
+    fileList.forEach((file) => {
+      const node = map.get(file.path);
+      if (!node) return;
+
+      const parentPath = file.path.substring(0, file.path.lastIndexOf("/"));
+      const parent = map.get(parentPath);
+
+      if (parent && parent.children) {
+        parent.children.push(node);
+      } else {
+        root.push(node);
+      }
+    });
+
+    return root;
+  };
+
+  // Export project as ZIP
+  const handleExportZip = async () => {
+    if (!projectData || files.length === 0) {
+      addLog("No project to export", "warning");
+      return;
+    }
+
+    setIsExporting(true);
+    addLog("Creating ZIP archive...", "info");
+
+    try {
+      const zip = new JSZip();
+
+      const addFilesToZip = (nodes: FileNode[], folder: JSZip) => {
+        nodes.forEach((node) => {
+          if (node.type === "file" && node.content) {
+            folder.file(node.name, node.content);
+          } else if (node.type === "directory" && node.children) {
+            const subFolder = folder.folder(node.name);
+            if (subFolder) {
+              addFilesToZip(node.children, subFolder);
+            }
+          }
+        });
+      };
+
+      addFilesToZip(files, zip);
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${projectData.projectId || "project"}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      addLog("Project exported successfully as ZIP", "success");
+    } catch (error: any) {
+      addLog(`Export failed: ${error.message}`, "error");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Export project as TAR
+  const handleExportTar = async () => {
+    if (!projectData || files.length === 0) {
+      addLog("No project to export", "warning");
+      return;
+    }
+
+    setIsExporting(true);
+    addLog("Creating TAR archive...", "info");
+
+    try {
+      // For TAR, we'll use a simple text-based format
+      // In production, you'd want to use a proper TAR library
+      const tarContent: string[] = [];
+
+      const addFilesToTar = (nodes: FileNode[], prefix = "") => {
+        nodes.forEach((node) => {
+          const fullPath = prefix + node.name;
+          if (node.type === "file" && node.content) {
+            tarContent.push(`=== ${fullPath} ===`);
+            tarContent.push(node.content);
+            tarContent.push("");
+          } else if (node.type === "directory" && node.children) {
+            addFilesToTar(node.children, fullPath + "/");
+          }
+        });
+      };
+
+      addFilesToTar(files);
+
+      const blob = new Blob([tarContent.join("\n")], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${projectData.projectId || "project"}.tar`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      addLog("Project exported successfully as TAR", "success");
+    } catch (error: any) {
+      addLog(`Export failed: ${error.message}`, "error");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Compile contract
+  const handleCompile = async () => {
+    if (!selectedFile || !selectedFile.content) {
+      addLog("No contract selected for compilation", "warning");
+      return;
+    }
+
+    setIsCompiling(true);
+    addLog(`Compiling ${selectedFile.name}...`, "info");
+
+    try {
+      const response = await fetch("/api/contracts/compile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contract_code: selectedFile.content,
+          contract_name: selectedFile.name.replace(".cdc", ""),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Compilation failed");
+      }
+
+      const result = await response.json();
+      addLog("Compilation successful!", "success");
+
+      if (result.warnings && result.warnings.length > 0) {
+        result.warnings.forEach((warning: string) => {
+          addLog(`Warning: ${warning}`, "warning");
+        });
+      }
+    } catch (error: any) {
+      addLog(`Compilation error: ${error.message}`, "error");
+    } finally {
+      setIsCompiling(false);
+    }
+  };
+
+  // Deploy contract on-chain
+  const handleDeploy = async () => {
+    if (!selectedFile || !selectedFile.content) {
+      addLog("No contract selected for deployment", "warning");
+      return;
+    }
+
+    if (!projectData) {
+      addLog("No project data available", "warning");
+      return;
+    }
+
+    setIsDeploying(true);
+    addLog(`Deploying ${selectedFile.name} on-chain...`, "info");
+
+    try {
+      const response = await fetch("/api/contracts/deploy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project_path: '../' + projectData.projectPath,
+          contract_name: selectedFile.name.replace(".cdc", ""),
+          network: "testnet",
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Deployment failed");
+      }
+
+      const result = await response.json();
+      addLog("Deployment successful!", "success");
+
+      if (result.transaction_id) {
+        addLog(`Transaction ID: ${result.transaction_id}`, "info");
+      }
+
+      if (result.contract_address) {
+        addLog(`Contract Address: ${result.contract_address}`, "info");
+      }
+    } catch (error: any) {
+      addLog(`Deployment error: ${error.message}`, "error");
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
+  // GitHub integration
+  const handleGitHubExport = async () => {
+    if (!projectData || files.length === 0) {
+      addLog("No project to export to GitHub", "warning");
+      return;
+    }
+
+    // Check if already authenticated
+    const urlParams = new URLSearchParams(window.location.search);
+    const isConnected = urlParams.get("github_connected") === "true";
+
+    if (!isConnected) {
+      addLog("Redirecting to GitHub OAuth...", "info");
+
+      // Store project data in sessionStorage for after OAuth redirect
+      sessionStorage.setItem("pendingGitHubExport", JSON.stringify({
+        projectId: projectData.projectId,
+        projectPath: projectData.projectPath,
+      }));
+
+      // Redirect to GitHub OAuth
+      window.location.href = "/api/auth/github?redirect=/cli";
+      return;
+    }
+
+    // Create repository
+    addLog("Creating GitHub repository...", "info");
+
+    try {
+      const repoName = `flow-${projectData.projectId.substring(0, 8)}`;
+
+      // Flatten files for upload
+      const flatFiles: any[] = [];
+      const flattenFiles = (nodes: FileNode[], prefix = "") => {
+        nodes.forEach((node) => {
+          if (node.type === "file" && node.content) {
+            flatFiles.push({
+              path: prefix + node.name,
+              content: node.content,
+            });
+          } else if (node.type === "directory" && node.children) {
+            flattenFiles(node.children, prefix + node.name + "/");
+          }
+        });
+      };
+      flattenFiles(files);
+
+      const response = await fetch("/api/github/create-repo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repo_name: repoName,
+          description: "Flow smart contract project generated by Flowzmith",
+          files: flatFiles,
+          is_private: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create repository");
+      }
+
+      const result = await response.json();
+      addLog(`Repository created: ${result.repo_url}`, "success");
+
+      // Open repository in new tab
+      window.open(result.repo_url, "_blank");
+    } catch (error: any) {
+      addLog(`GitHub export failed: ${error.message}`, "error");
+    }
+  };
+
+  // Check for GitHub OAuth callback on mount
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isConnected = urlParams.get("github_connected") === "true";
+
+    if (isConnected) {
+      const pendingExport = sessionStorage.getItem("pendingGitHubExport");
+      if (pendingExport) {
+        sessionStorage.removeItem("pendingGitHubExport");
+        addLog("GitHub connected successfully", "success");
+
+        // Trigger export
+        setTimeout(() => {
+          handleGitHubExport();
+        }, 500);
+      }
+
+      // Clean URL
+      window.history.replaceState({}, "", "/cli");
+    }
+  }, []);
+
+  // Configure Monaco Editor languages on mount
+  React.useEffect(() => {
+    configureMonacoLanguages();
+  }, []);
 
   const handleCommandSelect = (command: CLICommand) => {
     setSelectedCommand(command);
@@ -233,8 +598,45 @@ export default function CLIWorkspacePage() {
         ...prev,
       ]);
 
-      // If result contains generated files, add them to the file tree
-      if (result.generated_contract_code) {
+      // If result contains project path, fetch all files
+      if (result.project_path) {
+        addLog("Loading project files...", "info");
+        addLog(`Project path: ${result.project_path}`, "info");
+
+        const projectFiles = await fetchProjectFiles(result.project_path);
+
+        if (projectFiles.length > 0) {
+          const fileTree = buildFileTree(projectFiles);
+          setFiles(fileTree);
+
+          // Set project data
+          setProjectData({
+            projectPath: result.project_path,
+            projectId: result.submission_id || result.project_id || "unknown",
+            files: fileTree,
+          });
+
+          // Select the main contract file
+          const mainContract = projectFiles.find((f: any) =>
+            f.type === "file" && f.name.endsWith(".cdc") && f.path.includes("/contracts/")
+          );
+
+          if (mainContract) {
+            setSelectedFile({
+              name: mainContract.name,
+              path: mainContract.path,
+              type: "file",
+              content: mainContract.content,
+            });
+          }
+
+          addLog(`Loaded ${projectFiles.length} files`, "success");
+        } else {
+          addLog("No files found in project directory", "warning");
+        }
+      }
+      // Fallback for old format
+      else if (result.generated_contract_code) {
         addLog("Generated contract code received", "success");
         addLog(`Contract name: ${result.contract_name || "Contract"}`, "info");
 
@@ -269,20 +671,59 @@ export default function CLIWorkspacePage() {
     }
   };
 
+  const toggleFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(path)) {
+        next.delete(path);
+      } else {
+        next.add(path);
+      }
+      return next;
+    });
+  };
+
   const renderFileTree = (nodes: FileNode[], level: number = 0) => {
-    return nodes.map((node) => (
-      <div key={node.path} style={{ paddingLeft: `${level * 16}px` }}>
+    return nodes.map((node) => {
+      const isExpanded = expandedFolders.has(node.path);
+      const isSelected = selectedFile?.path === node.path;
+
+      if (node.type === "directory") {
+        return (
+          <div key={node.path}>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-sm h-8"
+              style={{ paddingLeft: `${level * 12 + 8}px` }}
+              onClick={() => toggleFolder(node.path)}
+            >
+              <ChevronRight
+                className={`h-4 w-4 mr-1 transition-transform ${isExpanded ? "rotate-90" : ""
+                  }`}
+              />
+              <Folder className="h-4 w-4 mr-2" />
+              {node.name}
+            </Button>
+            {isExpanded && node.children && (
+              <div>{renderFileTree(node.children, level + 1)}</div>
+            )}
+          </div>
+        );
+      }
+
+      return (
         <Button
-          variant={selectedFile?.path === node.path ? "secondary" : "ghost"}
+          key={node.path}
+          variant={isSelected ? "secondary" : "ghost"}
           className="w-full justify-start text-sm h-8"
+          style={{ paddingLeft: `${level * 12 + 24}px` }}
           onClick={() => setSelectedFile(node)}
         >
-          <FileCode className="h-4 w-4 mr-2" />
+          <File className="h-4 w-4 mr-2" />
           {node.name}
         </Button>
-        {node.children && renderFileTree(node.children, level + 1)}
-      </div>
-    ));
+      );
+    });
   };
 
   return (
@@ -345,41 +786,109 @@ export default function CLIWorkspacePage() {
                 </TabsList>
               </div>
 
-              <TabsContent value="editor" className="flex-1 m-0">
-                {selectedFile ? (
-                  <Editor
-                    height="100%"
-                    defaultLanguage={
-                      selectedFile.name.endsWith(".cdc")
-                        ? "javascript"
-                        : selectedFile.name.endsWith(".json")
-                          ? "json"
-                          : "plaintext"
-                    }
-                    value={selectedFile.content || ""}
-                    theme="vs-dark"
-                    options={{
-                      readOnly: false,
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                    }}
-                    onChange={(value) => {
-                      if (selectedFile && value !== undefined) {
-                        setSelectedFile({ ...selectedFile, content: value });
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    <div className="text-center">
-                      <FileCode className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No file selected</p>
-                      <p className="text-sm mt-2">
-                        Execute a command to generate files
-                      </p>
-                    </div>
+              <TabsContent value="editor" className="flex-1 m-0 flex flex-col">
+                {/* Action Toolbar */}
+                {files.length > 0 && (
+                  <div className="border-b p-2 flex items-center gap-2 bg-muted/30">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={isExporting}
+                        >
+                          {isExporting ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Download className="h-4 w-4 mr-2" />
+                          )}
+                          Export
+                          <ChevronDown className="h-4 w-4 ml-2" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={handleExportZip}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Export as .zip
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExportTar}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Export as .tar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGitHubExport}
+                    >
+                      <Github className="h-4 w-4 mr-2" />
+                      Push to GitHub
+                    </Button>
+
+                    <div className="flex-1" />
+
+                    {selectedFile?.name.endsWith(".cdc") && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCompile}
+                          disabled={isCompiling}
+                        >
+                          {isCompiling ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Play className="h-4 w-4 mr-2" />
+                          )}
+                          Compile
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          onClick={handleDeploy}
+                          disabled={isDeploying}
+                        >
+                          {isDeploying ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Rocket className="h-4 w-4 mr-2" />
+                          )}
+                          Deploy On-Chain
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
+
+                {/* Editor */}
+                <div className="flex-1">
+                  {selectedFile ? (
+                    <Editor
+                      height="100%"
+                      language={getLanguageFromFileName(selectedFile.name)}
+                      value={selectedFile.content || ""}
+                      theme="vs-dark"
+                      options={getEditorOptions(getLanguageFromFileName(selectedFile.name))}
+                      onChange={(value) => {
+                        if (selectedFile && value !== undefined) {
+                          setSelectedFile({ ...selectedFile, content: value });
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <div className="text-center">
+                        <FileCode className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No file selected</p>
+                        <p className="text-sm mt-2">
+                          Execute a command to generate files
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </TabsContent>
 
               <TabsContent value="terminal" className="flex-1 m-0 p-4">
@@ -413,7 +922,7 @@ export default function CLIWorkspacePage() {
                             <Badge
                               variant={
                                 entry.result.status === "success" ||
-                                entry.result.status === "deployed"
+                                  entry.result.status === "deployed"
                                   ? "default"
                                   : "destructive"
                               }
@@ -457,9 +966,12 @@ export default function CLIWorkspacePage() {
       {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background p-6 rounded-lg shadow-lg">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p className="text-sm">Executing command...</p>
+          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-sm text-center font-medium mb-2">Processing...</p>
+            <p className="text-xs text-center text-muted-foreground">
+              Generating contract files and setting up project structure
+            </p>
           </div>
         </div>
       )}

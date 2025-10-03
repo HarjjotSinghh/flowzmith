@@ -1,492 +1,438 @@
-# Architecture Diagram
+# CLI Workspace Architecture Diagram
 
-Visual representation of the Flowzmith CLI Frontend Integration architecture.
-
-## 🏗️ High-Level Architecture
+## System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         User Interface                              │
-│                    (Next.js Frontend)                               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
-│  │              │  │              │  │                          │  │
-│  │  CLI Sidebar │  │   Command    │  │    CLI Workspace         │  │
-│  │              │  │    Dialog    │  │                          │  │
-│  │  - Categories│  │  - Forms     │  │  - File Explorer         │  │
-│  │  - Commands  │  │  - Validation│  │  - Monaco Editor         │  │
-│  │  - Search    │  │  - Progress  │  │  - Execution History     │  │
-│  │              │  │              │  │                          │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────────┬───────────────┘  │
-│         │                 │                     │                   │
-│         └─────────────────┴─────────────────────┘                   │
-│                           │                                         │
-│                           ▼                                         │
-│                  ┌─────────────────┐                                │
-│                  │   API Client    │                                │
-│                  │  (Type-safe)    │                                │
-│                  └────────┬────────┘                                │
-└───────────────────────────┼─────────────────────────────────────────┘
-                            │
-                            │ HTTP/REST
-                            │
-┌───────────────────────────┼─────────────────────────────────────────┐
-│                           ▼                                         │
-│                  ┌─────────────────┐                                │
-│                  │  FastAPI Backend│                                │
-│                  │                 │                                │
-│                  │  - Endpoints    │                                │
-│                  │  - Validation   │                                │
-│                  │  - Business     │                                │
-│                  │    Logic        │                                │
-│                  └────────┬────────┘                                │
-│                           │                                         │
-│                           ▼                                         │
-│                  ┌─────────────────┐                                │
-│                  │   Services      │                                │
-│                  │                 │                                │
-│                  │  - Contract     │                                │
-│                  │  - Deployment   │                                │
-│                  │  - Flow CLI     │                                │
-│                  └────────┬────────┘                                │
-└───────────────────────────┼─────────────────────────────────────────┘
-                            │
-                            ▼
-                   ┌─────────────────┐
-                   │   Database      │
-                   │   Flow CLI      │
-                   │   File System   │
-                   └─────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                         Browser (Client)                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌───────────────┐  ┌──────────────┐  ┌────────────────────┐   │
+│  │  CLI Sidebar  │  │  File Tree   │  │  Monaco Editor     │   │
+│  │  - Commands   │  │  - Folders   │  │  - Syntax Highlight│   │
+│  │  - Categories │  │  - Files     │  │  - Code Editing    │   │
+│  └───────┬───────┘  └──────┬───────┘  └─────────┬──────────┘   │
+│          │                  │                     │              │
+│          └──────────────────┴─────────────────────┘              │
+│                             │                                    │
+│                    ┌────────▼────────┐                          │
+│                    │  Action Toolbar │                          │
+│                    │  - Export       │                          │
+│                    │  - GitHub       │                          │
+│                    │  - Compile      │                          │
+│                    │  - Deploy       │                          │
+│                    └────────┬────────┘                          │
+│                             │                                    │
+└─────────────────────────────┼────────────────────────────────────┘
+                              │
+                    ┌─────────▼─────────┐
+                    │   API Routes      │
+                    │   (Next.js)       │
+                    └─────────┬─────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+┌───────▼────────┐  ┌─────────▼────────┐  ┌────────▼────────┐
+│ /api/projects  │  │ /api/contracts   │  │  /api/github    │
+│ - files        │  │ - compile        │  │  - create-repo  │
+└───────┬────────┘  │ - deploy         │  │  /api/auth      │
+        │           └─────────┬────────┘  │  - github       │
+        │                     │           └────────┬────────┘
+        │                     │                    │
+┌───────▼────────┐  ┌─────────▼────────┐  ┌────────▼────────┐
+│  File System   │  │  Python Backend  │  │  GitHub API     │
+│  flow_projects/│  │  FastAPI         │  │  OAuth + REST   │
+└────────────────┘  │  /api/v1/flow    │  └─────────────────┘
+                    └─────────┬────────┘
+                              │
+                    ┌─────────▼─────────┐
+                    │    Flow CLI       │
+                    │  - Compile        │
+                    │  - Deploy         │
+                    │  - Test           │
+                    └───────────────────┘
 ```
 
-## 🔄 Data Flow
+## Component Interaction Flow
+
+### 1. Contract Generation
 
 ```
-User Action
+User Input
     │
     ▼
-┌─────────────────┐
-│  CLI Sidebar    │  User clicks "Create Contract"
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Command Dialog  │  Dialog opens with form
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Form Input     │  User fills requirements
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Validation     │  Zod validates input
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  API Client     │  POST /api/contracts/submit
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Backend API    │  Processes request
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Service Layer  │  Generates contract
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Response       │  Returns generated code
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Dialog Result  │  Shows success/error
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Editor Display │  Shows generated files
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  History Log    │  Records execution
-└─────────────────┘
-```
-
-## 📦 Package Structure
-
-```
-monorepo/
-│
-├── packages/
-│   └── flowzmith-schema/          ⭐ CENTRALIZED SCHEMA
-│       ├── src/
-│       │   └── index.ts           → TypeScript definitions
-│       │       ├── CLI_COMMANDS   → Command metadata
-│       │       ├── Request types  → Zod schemas
-│       │       └── Response types → Type definitions
-│       │
-│       ├── python/
-│       │   └── schema.py          → Generated Python types
-│       │
-│       └── scripts/
-│           └── generate-python.js → Type generator
-│
-├── apps/app/app/
-│   ├── app/dashboard/cli/
-│   │   └── page.tsx               → Main workspace
-│   │       ├── State management
-│   │       ├── Command execution
-│   │       └── File display
-│   │
-│   ├── components/
-│   │   ├── cli-sidebar.tsx        → Command browser
-│   │   │   ├── Category display
-│   │   │   ├── Command list
-│   │   │   └── Selection handling
-│   │   │
-│   │   ├── command-dialog.tsx     → Form wizard
-│   │   │   ├── Multi-step forms
-│   │   │   ├── Field rendering
-│   │   │   ├── Validation
-│   │   │   └── Execution
-│   │   │
-│   │   └── ui/                    → UI components
-│   │       ├── dialog.tsx
-│   │       ├── sheet.tsx
-│   │       ├── tabs.tsx
-│   │       └── ...
-│   │
-│   └── lib/
-│       └── api-client.ts          → API client
-│           ├── Type-safe methods
-│           ├── Error handling
-│           └── Streaming support
-│
-└── Backend (Python)
-    ├── src/api/
-    │   └── endpoints/             → API routes
-    │       ├── contracts.py
-    │       ├── deployments.py
-    │       └── flow.py
+Command Dialog
     │
-    └── src/models/
-        └── flowzmith_schema.py    → Imported Python types
-```
-
-## 🔄 Type Flow
-
-```
-TypeScript Definition
-        │
-        ▼
-┌─────────────────┐
-│  Zod Schema     │
-│  (Runtime)      │
-└────────┬────────┘
-         │
-         ├──────────────────┐
-         │                  │
-         ▼                  ▼
-┌─────────────────┐  ┌─────────────────┐
-│  TypeScript     │  │  Python Types   │
-│  Types          │  │  (Generated)    │
-│  (Compile-time) │  │                 │
-└────────┬────────┘  └────────┬────────┘
-         │                    │
-         ▼                    ▼
-┌─────────────────┐  ┌─────────────────┐
-│  Frontend       │  │  Backend        │
-│  Components     │  │  Endpoints      │
-└─────────────────┘  └─────────────────┘
-```
-
-## 🎯 Command Execution Flow
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Command Execution                        │
-└─────────────────────────────────────────────────────────────┘
-
-1. User Interaction
-   ┌──────────────┐
-   │ Click Command│
-   └──────┬───────┘
-          │
-          ▼
-2. Dialog Display
-   ┌──────────────┐
-   │ Show Form    │
-   │ - Step 1     │
-   │ - Step 2     │
-   │ - Step N     │
-   └──────┬───────┘
-          │
-          ▼
-3. Input Collection
-   ┌──────────────┐
-   │ User Fills   │
-   │ Form Fields  │
-   └──────┬───────┘
-          │
-          ▼
-4. Validation
-   ┌──────────────┐
-   │ Zod Validates│
-   │ Input Data   │
-   └──────┬───────┘
-          │
-          ▼
-5. API Call
-   ┌──────────────┐
-   │ POST Request │
-   │ with Data    │
-   └──────┬───────┘
-          │
-          ▼
-6. Backend Processing
-   ┌──────────────┐
-   │ Execute      │
-   │ Business     │
-   │ Logic        │
-   └──────┬───────┘
-          │
-          ▼
-7. Response
-   ┌──────────────┐
-   │ Return       │
-   │ Results      │
-   └──────┬───────┘
-          │
-          ▼
-8. Display Results
-   ┌──────────────┐
-   │ Show in      │
-   │ - Dialog     │
-   │ - Editor     │
-   │ - History    │
-   └──────────────┘
-```
-
-## 🔐 Type Safety Flow
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Type Safety                            │
-└─────────────────────────────────────────────────────────────┘
-
-Schema Definition (TypeScript)
-        │
-        ▼
-┌─────────────────┐
-│ Zod Schema      │  Runtime validation
-└────────┬────────┘
-         │
-         ├─────────────────────────────────┐
-         │                                 │
-         ▼                                 ▼
-┌─────────────────┐              ┌─────────────────┐
-│ TypeScript Type │              │ Python Type     │
-│ (inferred)      │              │ (generated)     │
-└────────┬────────┘              └────────┬────────┘
-         │                                 │
-         ▼                                 ▼
-┌─────────────────┐              ┌─────────────────┐
-│ Frontend        │              │ Backend         │
-│ - Autocomplete  │              │ - Type hints    │
-│ - Type checking │              │ - Validation    │
-│ - Error catch   │              │ - IDE support   │
-└─────────────────┘              └─────────────────┘
-         │                                 │
-         └─────────────┬───────────────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Type-safe API   │
-              │ Contract        │
-              └─────────────────┘
-```
-
-## 🎨 Component Hierarchy
-
-```
-CLIWorkspacePage
-├── CLISidebar
-│   ├── CategorySection
-│   │   └── CommandButton[]
-│   └── Footer
-│
-├── MainContent
-│   ├── Header
-│   ├── ContentArea
-│   │   ├── FileExplorer
-│   │   │   └── FileTree
-│   │   │       └── FileNode[]
-│   │   │
-│   │   └── Tabs
-│   │       ├── EditorTab
-│   │       │   └── MonacoEditor
-│   │       │
-│   │       └── HistoryTab
-│   │           └── ExecutionLog[]
-│   │
-│   └── CommandDialog
-│       ├── DialogHeader
-│       ├── StepContent
-│       │   └── FormFields[]
-│       └── DialogFooter
-│           └── ActionButtons
-│
-└── LoadingOverlay
-```
-
-## 🔄 State Management
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Application State                        │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────┐
-│ CLIWorkspacePage│
-└────────┬────────┘
-         │
-         ├── selectedCommand: CLICommand | null
-         ├── dialogOpen: boolean
-         ├── files: FileNode[]
-         ├── selectedFile: FileNode | null
-         ├── executionHistory: ExecutionRecord[]
-         └── isLoading: boolean
-         
-         │
-         ├─→ CLISidebar
-         │   └── onCommandSelect(command)
-         │
-         ├─→ CommandDialog
-         │   ├── command
-         │   ├── open
-         │   └── onExecute(command, data)
-         │
-         └─→ Editor/History
-             ├── files
-             ├── selectedFile
-             └── executionHistory
-```
-
-## 📊 Data Models
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Data Models                            │
-└─────────────────────────────────────────────────────────────┘
-
-CLICommand
-├── id: string
-├── name: string
-├── description: string
-├── icon: string
-├── category: string
-├── requiresInput: boolean
-└── steps?: CommandStep[]
-
-CommandStep
-├── id: string
-├── title: string
-├── description?: string
-└── fields: CommandField[]
-
-CommandField
-├── name: string
-├── label: string
-├── type: FieldType
-├── required: boolean
-├── placeholder?: string
-├── options?: Option[]
-└── defaultValue?: any
-
-FileNode
-├── name: string
-├── path: string
-├── type: "file" | "directory"
-├── content?: string
-└── children?: FileNode[]
-
-ExecutionRecord
-├── command: string
-├── timestamp: string
-├── result: any
-└── data: any
-```
-
-## 🎯 Integration Points
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   Integration Points                        │
-└─────────────────────────────────────────────────────────────┘
-
-Frontend ←→ Schema Package
+    ▼
+POST /api/contracts/submit
     │
-    ├── Import CLI_COMMANDS
-    ├── Import Request types
-    ├── Import Response types
-    └── Use Zod validation
-
-Backend ←→ Schema Package
+    ▼
+Python Backend
     │
-    ├── Import Python types
-    ├── Use TypedDict
-    └── Type hints
-
-Frontend ←→ Backend
+    ├─► Generate Contract Code
+    ├─► Create Project Structure
+    ├─► Save to Database
+    └─► Save to File System
     │
-    ├── REST API calls
-    ├── Type-safe requests
-    ├── Type-safe responses
-    └── Error handling
+    ▼
+Return project_path
+    │
+    ▼
+Frontend Fetches Files
+    │
+    ▼
+GET /api/projects/files?path=...
+    │
+    ▼
+Read File System
+    │
+    ▼
+Return File Tree
+    │
+    ▼
+Display in UI
 ```
 
-## 🚀 Deployment Architecture
+### 2. File Viewing
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Production Setup                         │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────┐
-│   CDN/Edge      │  Next.js Frontend
-│   (Vercel)      │  - Static assets
-└────────┬────────┘  - Server components
-         │
-         │ HTTPS
-         │
-         ▼
-┌─────────────────┐
-│   API Gateway   │  Load balancer
-└────────┬────────┘
-         │
-         │
-         ▼
-┌─────────────────┐
-│  FastAPI        │  Backend services
-│  (Docker)       │  - Multiple instances
-└────────┬────────┘  - Auto-scaling
-         │
-         │
-         ▼
-┌─────────────────┐
-│  Database       │  PostgreSQL
-│  Flow CLI       │  File storage
-│  Services       │  External APIs
-└─────────────────┘
+User Clicks File
+    │
+    ▼
+Update selectedFile State
+    │
+    ▼
+Monaco Editor Loads Content
+    │
+    ▼
+Syntax Highlighting Applied
+    │
+    ▼
+User Can Edit
 ```
 
----
+### 3. Export Flow
 
-**Use these diagrams to understand the system architecture!**
+```
+User Clicks Export
+    │
+    ▼
+Select Format (ZIP/TAR)
+    │
+    ▼
+Client-Side Processing
+    │
+    ├─► Collect All Files
+    ├─► Create Archive (JSZip)
+    └─► Generate Blob
+    │
+    ▼
+Trigger Download
+```
+
+### 4. GitHub Integration
+
+```
+User Clicks "Push to GitHub"
+    │
+    ▼
+Check Authentication
+    │
+    ├─► Not Authenticated
+    │   │
+    │   ▼
+    │   Redirect to GitHub OAuth
+    │   │
+    │   ▼
+    │   User Authorizes
+    │   │
+    │   ▼
+    │   Callback Stores Token
+    │   │
+    │   ▼
+    │   Return to CLI Page
+    │
+    ▼
+POST /api/github/create-repo
+    │
+    ├─► Create Repository (GitHub API)
+    ├─► Upload Files (Parallel)
+    └─► Return Repository URL
+    │
+    ▼
+Open in New Tab
+```
+
+### 5. Compilation
+
+```
+User Clicks Compile
+    │
+    ▼
+POST /api/contracts/compile
+    │
+    ├─► Create Temp File
+    ├─► Run Flow CLI Check
+    └─► Parse Output
+    │
+    ▼
+Return Results
+    │
+    ▼
+Display in Terminal Tab
+```
+
+### 6. Deployment
+
+```
+User Clicks Deploy
+    │
+    ▼
+POST /api/contracts/deploy
+    │
+    ▼
+Proxy to Python Backend
+    │
+    ▼
+POST /api/v1/flow/deploy
+    │
+    ├─► Validate Project
+    ├─► Run Flow CLI Deploy
+    ├─► Track Transaction
+    └─► Save to Database
+    │
+    ▼
+Return Transaction ID
+    │
+    ▼
+Display in Terminal Tab
+```
+
+## Data Models
+
+### FileNode
+```typescript
+interface FileNode {
+  name: string          // File/folder name
+  path: string          // Relative path
+  type: "file" | "directory"
+  content?: string      // File content (if file)
+  children?: FileNode[] // Child nodes (if directory)
+}
+```
+
+### ProjectData
+```typescript
+interface ProjectData {
+  projectPath: string   // Path on server
+  projectId: string     // Unique identifier
+  files: FileNode[]     // File tree
+}
+```
+
+## State Management
+
+```
+┌─────────────────────────────────────┐
+│         React State                 │
+├─────────────────────────────────────┤
+│ - selectedCommand: CLICommand       │
+│ - dialogOpen: boolean               │
+│ - files: FileNode[]                 │
+│ - selectedFile: FileNode            │
+│ - projectData: ProjectData          │
+│ - expandedFolders: Set<string>      │
+│ - isLoading: boolean                │
+│ - isCompiling: boolean              │
+│ - isDeploying: boolean              │
+│ - isExporting: boolean              │
+│ - executionHistory: any[]           │
+│ - logs: TerminalLog[]               │
+│ - isStreaming: boolean              │
+└─────────────────────────────────────┘
+```
+
+## API Endpoints Summary
+
+### Frontend (Next.js)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/projects/files` | GET | Fetch project files |
+| `/api/contracts/compile` | POST | Compile contract |
+| `/api/contracts/deploy` | POST | Deploy contract |
+| `/api/auth/github` | GET | Start OAuth |
+| `/api/auth/github/callback` | GET | OAuth callback |
+| `/api/github/create-repo` | POST | Create repository |
+
+### Backend (Python)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/v1/contracts/submit` | POST | Generate contract |
+| `/api/v1/flow/deploy` | POST | Deploy to blockchain |
+| `/api/v1/flow/projects` | GET | List projects |
+
+## Security Layers
+
+```
+┌─────────────────────────────────────┐
+│         Security Measures           │
+├─────────────────────────────────────┤
+│                                     │
+│  1. Path Traversal Protection      │
+│     - Restrict to flow_projects/   │
+│     - Validate all paths           │
+│                                     │
+│  2. OAuth Token Security           │
+│     - httpOnly cookies             │
+│     - Secure flag in production    │
+│     - 30-day expiration            │
+│                                     │
+│  3. Input Validation               │
+│     - Type checking                │
+│     - Schema validation            │
+│     - Error handling               │
+│                                     │
+│  4. CORS Configuration             │
+│     - Allowed origins              │
+│     - Credential handling          │
+│                                     │
+│  5. Rate Limiting                  │
+│     - API request limits           │
+│     - GitHub API limits            │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+## Technology Stack
+
+```
+┌─────────────────────────────────────┐
+│           Frontend                  │
+├─────────────────────────────────────┤
+│ - Next.js 15                        │
+│ - React 19                          │
+│ - TypeScript                        │
+│ - Monaco Editor                     │
+│ - JSZip                             │
+│ - Tailwind CSS                      │
+│ - Radix UI                          │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│           Backend                   │
+├─────────────────────────────────────┤
+│ - Python 3.11+                      │
+│ - FastAPI                           │
+│ - SQLAlchemy                        │
+│ - PostgreSQL                        │
+│ - Pydantic                          │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│        External Services            │
+├─────────────────────────────────────┤
+│ - Flow Blockchain                   │
+│ - Flow CLI                          │
+│ - GitHub API                        │
+│ - GitHub OAuth                      │
+└─────────────────────────────────────┘
+```
+
+## Deployment Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Production                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────┐      ┌──────────────┐              │
+│  │   Vercel     │      │   Railway    │              │
+│  │  (Frontend)  │◄────►│  (Backend)   │              │
+│  └──────┬───────┘      └──────┬───────┘              │
+│         │                     │                        │
+│         │                     ▼                        │
+│         │              ┌──────────────┐               │
+│         │              │  PostgreSQL  │               │
+│         │              │  (Database)  │               │
+│         │              └──────────────┘               │
+│         │                                              │
+│         ▼                                              │
+│  ┌──────────────┐                                     │
+│  │   GitHub     │                                     │
+│  │   (OAuth)    │                                     │
+│  └──────────────┘                                     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Performance Optimization
+
+```
+┌─────────────────────────────────────┐
+│      Optimization Strategies        │
+├─────────────────────────────────────┤
+│                                     │
+│  1. Code Splitting                 │
+│     - Dynamic Monaco import        │
+│     - Lazy component loading       │
+│                                     │
+│  2. Client-Side Processing         │
+│     - ZIP generation in browser    │
+│     - File tree building           │
+│                                     │
+│  3. Parallel Operations            │
+│     - GitHub file uploads          │
+│     - Multiple API calls           │
+│                                     │
+│  4. Caching                        │
+│     - File content caching         │
+│     - API response caching         │
+│                                     │
+│  5. Async Operations               │
+│     - Non-blocking UI updates      │
+│     - Background processing        │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+## Error Handling Flow
+
+```
+Error Occurs
+    │
+    ▼
+Catch in Try-Catch
+    │
+    ▼
+Log to Console
+    │
+    ▼
+Display in Terminal Tab
+    │
+    ▼
+Show User-Friendly Message
+    │
+    ▼
+Provide Recovery Options
+```
+
+## Monitoring Points
+
+```
+┌─────────────────────────────────────┐
+│         Monitoring Metrics          │
+├─────────────────────────────────────┤
+│                                     │
+│  - API Response Times              │
+│  - Error Rates                     │
+│  - User Actions                    │
+│  - File Generation Success         │
+│  - Compilation Success Rate        │
+│  - Deployment Success Rate         │
+│  - GitHub Integration Usage        │
+│  - Export Downloads                │
+│                                     │
+└─────────────────────────────────────┘
+```
