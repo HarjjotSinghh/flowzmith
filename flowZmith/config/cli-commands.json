@@ -21,17 +21,48 @@
       "method": "POST",
       "steps": [
         {
+          "id": "basic_info",
+          "title": "Basic Contract Information",
+          "description": "Provide basic information about your contract",
+          "fields": [
+            {
+              "name": "contract_name",
+              "label": "Contract Name",
+              "type": "text",
+              "required": true,
+              "placeholder": "e.g., UserProfiles, TokenContract, NFTMarketplace",
+              "helpText": "Choose a descriptive name for your contract"
+            },
+            {
+              "name": "contract_type",
+              "label": "Contract Type",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "label": "Custom", "value": "custom" },
+                { "label": "Token", "value": "token" },
+                { "label": "NFT", "value": "nft" },
+                { "label": "Marketplace", "value": "marketplace" },
+                { "label": "DAO", "value": "dao" },
+                { "label": "DeFi", "value": "defi" }
+              ],
+              "defaultValue": "custom",
+              "helpText": "Select the type that best describes your contract"
+            }
+          ]
+        },
+        {
           "id": "requirements",
           "title": "Contract Requirements",
           "description": "Describe what your contract should do",
           "fields": [
             {
-              "name": "requirements",
+              "name": "description",
               "label": "Contract Description",
               "type": "textarea",
               "required": true,
-              "placeholder": "Describe your smart contract requirements...",
-              "helpText": "Be specific about the functionality you need"
+              "placeholder": "Describe your smart contract requirements in detail...",
+              "helpText": "Be specific about the functionality, features, and behavior you need"
             },
             {
               "name": "network",
@@ -43,7 +74,51 @@
                 { "label": "Testnet", "value": "testnet" },
                 { "label": "Mainnet", "value": "mainnet" }
               ],
-              "defaultValue": "emulator"
+              "defaultValue": "testnet",
+              "helpText": "Choose the network where you plan to deploy"
+            }
+          ]
+        },
+        {
+          "id": "configuration",
+          "title": "Project Configuration",
+          "description": "Configure additional project settings",
+          "fields": [
+            {
+              "name": "account_setup",
+              "label": "Account Setup",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "label": "Single Account", "value": "single" },
+                { "label": "Multiple Accounts", "value": "multiple" }
+              ],
+              "defaultValue": "single",
+              "helpText": "Choose how many accounts your contract will use"
+            },
+            {
+              "name": "include_transactions",
+              "label": "Include Transaction Scripts",
+              "type": "checkbox",
+              "required": false,
+              "defaultValue": true,
+              "helpText": "Generate transaction scripts for interacting with your contract"
+            },
+            {
+              "name": "include_deployment",
+              "label": "Include Deployment Scripts",
+              "type": "checkbox",
+              "required": false,
+              "defaultValue": true,
+              "helpText": "Generate deployment scripts for easy contract deployment"
+            },
+            {
+              "name": "include_tests",
+              "label": "Include Test Cases",
+              "type": "checkbox",
+              "required": false,
+              "defaultValue": true,
+              "helpText": "Generate test cases to verify your contract functionality"
             }
           ]
         }
@@ -99,7 +174,7 @@
       "icon": "Sparkles",
       "category": "contract",
       "requiresInput": true,
-      "endpoint": "/api/context/generate/stream",
+      "endpoint": "/api/contract/generate/stream",
       "method": "POST",
       "streaming": true,
       "steps": [

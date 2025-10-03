@@ -911,9 +911,71 @@ async def submit_contract(
             "features": contract_data.get("features", ["transactions", "deployment_scripts", "test_cases"])
         }
         
-        # Get contract content
+        # Get contract content - if empty, generate using AI
         contract_content = contract_data.get("content", "")
         input_method = "api"
+        
+        # If no contract content provided, generate it using AI
+        if not contract_content.strip():
+            try:
+                # Use LLMService to generate contract content
+                llm_service = LLMService(db)
+                
+                # Build requirements text for AI generation
+                requirements_text = (
+                    f"Name: {requirements.get('name', '')}\n"
+                    f"Type: {requirements.get('type', '')}\n"
+                    f"Description: {requirements.get('description', '')}\n"
+                    f"Network: {requirements.get('network', '')}\n"
+                    f"Account Setup: {requirements.get('account_setup', '')}\n"
+                )
+                
+                # Include features
+                features = requirements.get("features", [])
+                if features:
+                    requirements_text += "Features:\n" + "\n".join([f"  - {f}" for f in features]) + "\n"
+                
+                # Generate contract using AI with system prompt from file
+                import os
+                system_prompt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+                                                 'prompts', 'cadence_generation_system_prompt.md')
+                
+                try:
+                    with open(system_prompt_path, 'r', encoding='utf-8') as f:
+                        system_prompt = f.read()
+                except FileNotFoundError:
+                    logger.warning(f"System prompt file not found at {system_prompt_path}, using fallback")
+                    system_prompt = "You are an expert Cadence smart contract developer. Generate complete, functional, and secure Cadence smart contracts based on the provided requirements."
+                
+                user_prompt = f"""Generate a Cadence smart contract with the following requirements:
+
+{requirements_text}
+
+Please generate a complete, functional Cadence smart contract that implements these requirements. Include proper access controls, initialization, and all necessary functions. Return ONLY the Cadence contract code without markdown formatting or explanations."""
+                
+                # Generate the contract content
+                response = await llm_service.generate_with_system_prompt(system_prompt, user_prompt)
+                contract_content = response.content
+                
+                if not contract_content or not contract_content.strip():
+                    raise Exception("AI generation returned empty content")
+                    
+            except Exception as e:
+                # If AI generation fails, use a basic template
+                contract_name = requirements.get('name', 'Contract')
+                contract_content = f"""// {contract_name}
+// Generated smart contract
+
+access(all) contract {contract_name} {{
+    
+    // Contract initialization
+    init() {{
+        // Initialize contract state
+    }}
+    
+    // Add your contract logic here
+    
+}}"""
         
         # Create a mock result object for file generation
         contract_id = str(uuid.uuid4())

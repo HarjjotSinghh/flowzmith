@@ -221,12 +221,12 @@ async def generate_contract_stream(
         {system_prompt}
         
         User Request: Generate a Cadence smart contract with the following requirements:
-        Name: {request.contract_data.get('name', 'Contract')}
-        Type: {request.contract_data.get('type', 'custom')}
-        Description: {request.contract_data.get('description', '')}
-        Network: {request.contract_data.get('network', 'testnet')}
+        Description: {request.description}
+        Network: {request.network}
+        Pre-conditions: {request.pre_conditions}
+        Post-conditions: {request.post_conditions}
         
-        Additional requirements: {request.contract_data.get('content', '')}
+        Please generate a complete Cadence smart contract based on these requirements.
         """
         
         return StreamingResponse(
