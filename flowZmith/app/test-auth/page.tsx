@@ -28,7 +28,13 @@ export default function TestAuthPage() {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Status:</span>
-                <span className={status === "authenticated" ? "text-green-500" : status === "loading" ? "text-yellow-500" : "text-red-500"}>
+                <span className={
+                  status === "authenticated" 
+                    ? "text-green-500" 
+                    : status === "unauthenticated" 
+                    ? "text-red-500" 
+                    : "text-yellow-500"
+                }>
                   {status}
                 </span>
               </div>

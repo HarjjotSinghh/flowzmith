@@ -77,7 +77,17 @@ export const chatRequestQueries = {
 
   // Get user request statistics
   async getUserStats(userId: string, startDate?: Date, endDate?: Date) {
-    let query = db
+    const conditions = [eq(chatRequests.userId, userId)]
+    
+    if (startDate) {
+      conditions.push(gte(chatRequests.createdAt, startDate))
+    }
+    
+    if (endDate) {
+      conditions.push(lte(chatRequests.createdAt, endDate))
+    }
+
+    const [stats] = await db
       .select({
         totalRequests: count(),
         totalTokens: sum(chatRequests.tokensUsed),
@@ -85,23 +95,8 @@ export const chatRequestQueries = {
         averageDuration: avg(chatRequests.duration)
       })
       .from(chatRequests)
-      .where(eq(chatRequests.userId, userId))
-
-    if (startDate) {
-      query = query.where(and(
-        eq(chatRequests.userId, userId),
-        gte(chatRequests.createdAt, startDate)
-      ))
-    }
-
-    if (endDate) {
-      query = query.where(and(
-        eq(chatRequests.userId, userId),
-        lte(chatRequests.createdAt, endDate)
-      ))
-    }
-
-    const [stats] = await query
+      .where(and(...conditions))
+    
     return stats
   },
 
@@ -135,7 +130,7 @@ export const userPlanQueries = {
     // Create new plan
     const [newPlan] = await db
       .insert(userPlans)
-      .values({ userId, ...plan })
+      .values({ ...plan, userId })
       .returning()
     return newPlan
   },
@@ -234,31 +229,26 @@ export const requestAnalyticsQueries = {
 
   // Get user performance metrics
   async getUserPerformance(userId: string, startDate?: Date, endDate?: Date) {
-    let query = db
+    const conditions = [eq(requestAnalytics.userId, userId)]
+    
+    if (startDate) {
+      conditions.push(gte(requestAnalytics.createdAt, startDate))
+    }
+    
+    if (endDate) {
+      conditions.push(lte(requestAnalytics.createdAt, endDate))
+    }
+
+    const [performance] = await db
       .select({
         averageResponseTime: avg(requestAnalytics.responseTime),
-        successRate: avg(requestAnalytics.wasSuccessful ? 1 : 0),
+        successRate: avg(requestAnalytics.userRating),
         averageRating: avg(requestAnalytics.userRating),
         totalRequests: count()
       })
       .from(requestAnalytics)
-      .where(eq(requestAnalytics.userId, userId))
-
-    if (startDate) {
-      query = query.where(and(
-        eq(requestAnalytics.userId, userId),
-        gte(requestAnalytics.createdAt, startDate)
-      ))
-    }
-
-    if (endDate) {
-      query = query.where(and(
-        eq(requestAnalytics.userId, userId),
-        lte(requestAnalytics.createdAt, endDate)
-      ))
-    }
-
-    const [performance] = await query
+      .where(and(...conditions))
+    
     return performance
   }
 }
@@ -350,9 +340,9 @@ export const dashboardDataQueries = {
     // Update dashboard data
     return await this.upsert(userId, {
       totalRequests: allTimeStats.totalRequests || 0,
-      totalTokensUsed: allTimeStats.totalTokens || 0,
-      totalCost: allTimeStats.totalCost || 0,
-      averageResponseTime: allTimeStats.averageResponseTime || 0,
+      totalTokensUsed: Number(allTimeStats.totalTokens) || 0,
+      totalCost: Number(allTimeStats.totalCost) || 0,
+      averageResponseTime: Number(allTimeStats.averageResponseTime) || 0,
       requestsByCategory,
       requestsThisMonth: monthlyStats.count || 0,
       requestsToday: dailyStats.count || 0,

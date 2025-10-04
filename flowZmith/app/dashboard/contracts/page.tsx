@@ -20,7 +20,8 @@ import {
   Clock,
   GitBranch,
   Zap,
-  Shield
+  Shield,
+  MoreHorizontal
 } from "lucide-react"
 
 interface Contract {

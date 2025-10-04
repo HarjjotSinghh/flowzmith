@@ -3,33 +3,37 @@
 import { useState, useEffect } from "react"
 
 export default function TestDashboard() {
-  const [stats, setStats] = useState(null)
+  const [stats, setStats] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const testAPI = async () => {
       try {
-        setLoading(true)
-        const response = await fetch('/api/dashboard/stats')
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-        }
-        
-        const data = await response.json()
-        setStats(data)
-        console.log('Dashboard stats:', data)
-      } catch (err) {
-        console.error('Error fetching stats:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
+        setLoading(true);
+        const response = await fetch("/api/dashboard/stats");
 
-    testAPI()
-  }, [])
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setStats(data);
+        console.log("Dashboard stats:", data);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+        setError(
+          err instanceof Error
+            ? err.message || "Unknown error"
+            : "Unknown error"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    testAPI();
+  }, []);
 
   if (loading) {
     return (
@@ -57,6 +61,25 @@ export default function TestDashboard() {
         </div>
       </div>
     )
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
+          <p className="text-muted-foreground mb-4">
+            No stats available. Please check the server logs.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

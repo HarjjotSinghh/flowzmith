@@ -116,7 +116,7 @@ export const dbHelpers = {
       if (!variable) return null
 
       // Convert value based on type
-      let value = variable.value
+      let value: any = variable.value
       if (variable.jsonValue) {
         value = variable.jsonValue
       } else {

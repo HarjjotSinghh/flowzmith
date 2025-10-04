@@ -52,7 +52,7 @@ export function OptimizedAnimatedSection({
 
   if (prefersReducedMotion) {
     return (
-      <div className={className} {...props}>
+      <div className={className} style={props.style}>
         {children}
       </div>
     )
@@ -71,7 +71,7 @@ export function OptimizedAnimatedSection({
         delay
       }}
       className={className}
-      {...props}
+      style={props.style}
     >
       {children}
     </motion.div>

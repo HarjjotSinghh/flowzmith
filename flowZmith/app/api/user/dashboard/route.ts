@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
     const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-    const [weeklyStats] = await chatRequestQueries.getUserStats(user.id, last7Days, now)
-    const [monthlyStats] = await chatRequestQueries.getUserStats(user.id, last30Days, now)
+    const weeklyStats = await chatRequestQueries.getUserStats(user.id, last7Days, now)
+    const monthlyStats = await chatRequestQueries.getUserStats(user.id, last30Days, now)
 
     return NextResponse.json({
       success: true,

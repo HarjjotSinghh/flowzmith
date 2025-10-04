@@ -48,7 +48,7 @@ export function AnimatedSection({
   ...props
 }: AnimatedSectionProps) {
   const selectedAnimation = animations[animation]
-
+  
   return (
     <motion.div
       initial={selectedAnimation.initial}
@@ -60,7 +60,7 @@ export function AnimatedSection({
         delay
       }}
       className={className}
-      {...props}
+      style={props.style}
     >
       {children}
     </motion.div>

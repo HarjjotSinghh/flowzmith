@@ -72,43 +72,33 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setWeb3Available(false)
       }
     }
-    
+
     checkWeb3()
   }, [])
 
   const connect = async () => {
     if (!web3Available) {
-      // Try to use the web3 modal if available
-      try {
-        const { wagmiAdapter } = await import('@/lib/web3/config')
-        if (wagmiAdapter && wagmiAdapter.openConnectModal) {
-          wagmiAdapter.openConnectModal()
-          return
-        }
-      } catch (error) {
-        console.warn('Failed to load web3 adapter:', error)
-      }
-      
       // Fallback: Show instructions
       alert('Please install a Web3 wallet like MetaMask to connect your wallet.')
       return
     }
 
     setIsConnecting(true)
-    
+
     try {
       // Use MetaMask or other injected wallet
       if (window.ethereum) {
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts' 
-        })
-        
+        const eth = window.ethereum as unknown as EthereumProvider
+        const accounts = await eth.request({
+          method: 'eth_requestAccounts'
+        }) as string[]
+
         if (accounts.length > 0) {
           const address = accounts[0]
-          const chainId = await window.ethereum.request({ 
-            method: 'eth_chainId' 
-          })
-          
+          const chainId = await eth.request({
+            method: 'eth_chainId'
+          }) as string
+
           setWallet({
             address,
             chainId: parseInt(chainId, 16),
@@ -139,15 +129,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       throw new Error('Web3 not available')
     }
 
+    const eth = window.ethereum as unknown as EthereumProvider
+
     try {
-      await window.ethereum.request({
+      await eth.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: '0x2EB' }], // 747 in hex
       })
     } catch (error) {
       // If the chain doesn't exist, try to add it
       try {
-        await window.ethereum.request({
+        await eth.request({
           method: 'wallet_addEthereumChain',
           params: [{
             chainId: '0x2EB',
@@ -177,6 +169,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       return { success: false, error: 'Web3 not available' }
     }
 
+    const eth = window.ethereum as unknown as EthereumProvider
+
     try {
       // Switch to Flow EVM if needed
       if (wallet.chainId !== 747) {
@@ -184,14 +178,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
 
       // Send transaction
-      const txHash = await window.ethereum.request({
+      const txHash = await eth.request({
         method: 'eth_sendTransaction',
         params: [{
           from: wallet.address,
           to: RECIPIENT_ADDRESS,
           value: `0x${(plan.price * 1e18).toString(16)}`, // Convert to hex
         }],
-      })
+      }) as string
 
       return { success: true, txHash }
     } catch (error) {
@@ -223,12 +217,8 @@ export function useWallet() {
 }
 
 // Extend Window interface for TypeScript
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>
-      on: (event: string, callback: (...args: any[]) => void) => void
-      removeListener: (event: string, callback: (...args: any[]) => void) => void
-    }
-  }
+interface EthereumProvider {
+  request: (args: { method: string; params?: any[] }) => Promise<unknown>
+  on: (event: string, callback: (...args: any[]) => void) => void
+  removeListener: (event: string, callback: (...args: any[]) => void) => void
 }
