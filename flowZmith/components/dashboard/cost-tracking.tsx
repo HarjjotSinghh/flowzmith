@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { DollarSign, CreditCard, TrendingUp, AlertCircle, Loader2 } from "lucide-react"
+import { DollarSign, CreditCard, TrendingUp, AlertCircle, Loader2, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface CostItemProps {
@@ -14,21 +14,21 @@ interface CostItemProps {
 
 function CostItem({ service, amount, usage, percentage, loading }: CostItemProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-card/70 rounded-2xl border border-border/70">
+    <div className="flex items-center justify-between p-4 bg-background border-2 border-foreground group hover:bg-accent transition-colors duration-200">
       <div className="flex-1">
-        <p className="font-medium text-foreground">{service}</p>
-        <p className="text-sm text-foreground/80">{loading ? "Loading..." : usage}</p>
+        <p className="font-black text-xs uppercase tracking-tighter group-hover:text-black">{service}</p>
+        <p className="text-[10px] font-bold text-foreground/60 uppercase group-hover:text-black/80">{loading ? "SYNCING..." : usage}</p>
       </div>
       <div className="text-right">
-        <p className="font-semibold text-foreground">{loading ? "..." : amount}</p>
-        <div className="flex items-center space-x-2 mt-1">
-          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+        <p className="text-lg font-black tracking-tighter group-hover:text-black">{loading ? "..." : amount}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <div className="w-20 h-1.5 bg-foreground/20 group-hover:bg-black/20 overflow-hidden">
             <div 
-              className="h-full bg-primary transition-all duration-300"
+              className="h-full bg-foreground group-hover:bg-black transition-all duration-300"
               style={{ width: `${Math.min(percentage, 100)}%` }}
             />
           </div>
-          <span className="text-xs text-foreground/80">{loading ? "..." : `${percentage}%`}</span>
+          <span className="text-[10px] font-black group-hover:text-black">{loading ? "..." : `${percentage}%`}</span>
         </div>
       </div>
     </div>
@@ -87,21 +87,21 @@ export function CostTracking() {
 
   const costItems = costData ? [
     {
-      service: "API Calls",
+      service: "API CALLS",
       amount: `$${costData.costBreakdown.apiCalls.cost.toFixed(4)}`,
-      usage: `${costData.costBreakdown.apiCalls.count} calls`,
+      usage: `${costData.costBreakdown.apiCalls.count} CALLS`,
       percentage: costData.costBreakdown.apiCalls.percentage
     },
     {
-      service: "Storage",
+      service: "AKAVE STORAGE",
       amount: `$${costData.costBreakdown.storage.cost.toFixed(4)}`,
       usage: `${costData.costBreakdown.storage.count} MB`,
       percentage: costData.costBreakdown.storage.percentage
     },
     {
-      service: "Processing",
+      service: "CORE PROCESSING",
       amount: `$${costData.costBreakdown.processing.cost.toFixed(4)}`,
-      usage: `${costData.costBreakdown.processing.count} units`,
+      usage: `${costData.costBreakdown.processing.count} UNITS`,
       percentage: costData.costBreakdown.processing.percentage
     }
   ] : []
@@ -110,86 +110,73 @@ export function CostTracking() {
     Math.round((parseFloat(costData.totalCost) / 200) * 100) : 0
 
   return (
-    <div className="bg-card/80 rounded-2xl border border-border/70 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground mb-1">Cost Tracking</h2>
-          <p className="text-foreground/80">Current month spending breakdown</p>
-        </div>
-        <Button variant="outline" size="sm" className="flex items-center space-x-2">
-          <CreditCard className="h-4 w-4" />
-          <span>Manage Billing</span>
-        </Button>
-      </div>
-
+    <div className="space-y-6">
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
-          <p className="text-destructive text-sm mb-2">Failed to load cost data: {error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="text-sm text-destructive hover:text-destructive/80 underline"
-          >
-            Retry
-          </button>
+        <div className="bg-red-500 text-white p-4 font-black text-[10px] uppercase border-2 border-foreground">
+          SYNC ERROR: {error.toUpperCase()}
         </div>
       )}
 
       {/* Budget Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-primary/10 rounded-2xl p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <DollarSign className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">Total Spent</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-accent text-black p-4 border-2 border-foreground">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="h-4 w-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest">TOTAL SPENT</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-black tracking-tighter">
             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `$${costData?.totalCost || "0.0000"}`}
           </p>
         </div>
         
-        <div className="bg-muted/60 rounded-2xl p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-foreground/80" />
-            <span className="text-sm font-medium text-foreground">Projected Monthly</span>
+        <div className="bg-black text-white p-4 border-2 border-foreground">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="h-4 w-4 text-accent" />
+            <span className="text-[10px] font-black uppercase tracking-widest">PROJECTED</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-black tracking-tighter">
             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `$${costData?.projectedMonthlyCost || "0.0000"}`}
           </p>
         </div>
         
-        <div className="bg-muted/60 rounded-2xl p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">Remaining Credits</span>
+        <div className="bg-background text-foreground p-4 border-2 border-foreground">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="h-4 w-4 text-accent" />
+            <span className="text-[10px] font-black uppercase tracking-widest">REMAINING</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-black tracking-tighter">
             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : costData?.remainingCredits || 0}
           </p>
         </div>
       </div>
 
       {/* Cost Breakdown */}
-      <div className="space-y-3">
-        <h3 className="font-medium text-foreground mb-3">Cost Breakdown</h3>
+      <div className="space-y-2">
+        <div className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2">BREAKDOWN // SERVICES</div>
         {costItems.map((item, index) => (
           <CostItem key={index} {...item} loading={loading} />
         ))}
       </div>
 
       {/* Budget Progress Bar */}
-      <div className="mt-6">
+      <div className="pt-4 border-t-2 border-foreground/10">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-foreground">Budget Usage</span>
-          <span className="text-sm text-foreground/80">
-            {loading ? "..." : `${budgetUsage}% used`}
+          <span className="text-[10px] font-black uppercase tracking-widest">QUOTA UTILIZATION</span>
+          <span className="text-[10px] font-black">
+            {loading ? "ANALYZING..." : `${budgetUsage}% USED`}
           </span>
         </div>
-        <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+        <div className="w-full h-4 bg-muted/20 border-2 border-foreground overflow-hidden">
           <div 
-            className="h-full bg-primary transition-all duration-500" 
+            className="h-full bg-accent transition-all duration-500" 
             style={{ width: `${budgetUsage}%` }} 
           />
         </div>
       </div>
+
+      <Button variant="terminal" className="w-full h-12 text-xs font-black">
+        MANAGE BILLING & SUBSCRIPTION
+      </Button>
     </div>
   )
 }

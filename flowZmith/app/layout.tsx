@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { JetBrains_Mono } from 'next/font/google'
+import { Kode_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SessionProvider } from 'next-auth/react'
 import AppKitProvider from '@/contexts/AppKitProvider'
@@ -10,10 +10,10 @@ import './globals.css'
 import ContextProvider from '@/context'
 import { ThemeProvider } from '@/components/theme-provider'
 
-const mono = JetBrains_Mono({
+const mono = Kode_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {

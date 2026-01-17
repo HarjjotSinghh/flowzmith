@@ -10,6 +10,7 @@ import { RequestTimeline } from "@/components/dashboard/request-timeline"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
 import { CreditsDisplay } from "@/components/dashboard/credits-display"
+import { AnimatedSection } from "@/components/animated-section"
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -50,84 +51,98 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background font-mono text-foreground border-x-4 border-foreground mx-auto max-w-[1600px]">
+    <div className="min-h-screen bg-background font-mono text-foreground border-x-2 border-foreground mx-auto max-w-[1440px]">
       <DashboardHeader user={session.user} />
       
       <div className="px-6 py-8">
-        <div className="mb-12 border-b-4 border-foreground pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="inline-block bg-accent text-black font-black px-2 py-0.5 text-xs mb-4">
-              SESSION ACTIVE // {session.user?.email}
+        <AnimatedSection delay={0.1}>
+          <div className="mb-12 border-b-2 border-foreground pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div className="inline-block bg-accent text-black font-black px-2 py-0.5 text-xs mb-4">
+                SESSION ACTIVE // {session.user?.email}
+              </div>
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none">
+                WELCOME BACK.
+              </h1>
+              <p className="text-xl font-bold text-foreground/80 mt-4 border-l-4 border-accent pl-6">
+                AI DEVELOPMENT DASHBOARD // USAGE INSIGHTS AND ANALYTICS V4.2
+              </p>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none">
-              WELCOME BACK.
-            </h1>
-            <p className="text-xl font-bold text-foreground/80 mt-4 border-l-4 border-accent pl-6">
-              AI DEVELOPMENT DASHBOARD // USAGE INSIGHTS AND ANALYTICS V4.2
-            </p>
+            <div className="text-right hidden md:block">
+              <div className="text-[10px] font-black opacity-50 uppercase tracking-widest">SERVER TIME</div>
+              <div className="text-2xl font-black">{new Date().toLocaleTimeString()}</div>
+            </div>
           </div>
-          <div className="text-right hidden md:block">
-            <div className="text-[10px] font-black opacity-50 uppercase tracking-widest">SERVER TIME</div>
-            <div className="text-2xl font-black">{new Date().toLocaleTimeString()}</div>
-          </div>
-        </div>
+        </AnimatedSection>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column - Stats and Cost */}
           <div className="lg:col-span-8 space-y-8">
-            <div className="border-4 border-foreground p-1">
-              <div className="bg-foreground text-background px-4 py-1 text-xs font-black">USAGE METRICS REALTIME</div>
-              <div className="p-4 bg-muted/5">
-                <UsageStats />
+            <AnimatedSection delay={0.2}>
+              <div className="border-2 border-foreground p-1">
+                <div className="bg-foreground text-background px-4 py-1 text-xs font-black">USAGE METRICS REALTIME</div>
+                <div className="p-4 bg-muted/5">
+                  <UsageStats />
+                </div>
               </div>
-            </div>
+            </AnimatedSection>
             
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="border-4 border-foreground p-1">
-                <div className="bg-foreground text-background px-4 py-1 text-xs font-black">COST TRACKING</div>
-                <div className="p-4 bg-muted/5">
-                  <CostTracking />
+              <AnimatedSection delay={0.3}>
+                <div className="border-2 border-foreground p-1 h-full">
+                  <div className="bg-foreground text-background px-4 py-1 text-xs font-black">COST TRACKING</div>
+                  <div className="p-4 bg-muted/5">
+                    <CostTracking />
+                  </div>
                 </div>
-              </div>
-              <div className="border-4 border-foreground p-1">
-                <div className="bg-foreground text-background px-4 py-1 text-xs font-black">QUICK ACTIONS</div>
-                <div className="p-4 bg-muted/5">
-                  <QuickActions />
+              </AnimatedSection>
+              <AnimatedSection delay={0.4}>
+                <div className="border-2 border-foreground p-1 h-full">
+                  <div className="bg-foreground text-background px-4 py-1 text-xs font-black">QUICK ACTIONS</div>
+                  <div className="p-4 bg-muted/5">
+                    <QuickActions />
+                  </div>
                 </div>
-              </div>
+              </AnimatedSection>
             </div>
             
-            <div className="border-4 border-foreground p-1">
-              <div className="bg-foreground text-background px-4 py-1 text-xs font-black">REQUEST TIMELINE LATENCY</div>
-              <div className="p-4 bg-muted/5">
-                <RequestTimeline />
+            <AnimatedSection delay={0.5}>
+              <div className="border-2 border-foreground p-1">
+                <div className="bg-foreground text-background px-4 py-1 text-xs font-black">REQUEST TIMELINE LATENCY</div>
+                <div className="p-4 bg-muted/5">
+                  <RequestTimeline />
+                </div>
               </div>
-            </div>
+            </AnimatedSection>
           </div>
 
           {/* Right Column - Activity and Actions */}
           <div className="lg:col-span-4 space-y-8">
-            <div className="border-4 border-foreground p-1">
-              <div className="bg-accent text-black px-4 py-1 text-xs font-black">CREDITS REMAINING</div>
-              <div className="p-4 bg-muted/5">
-                <CreditsDisplay user={{
-                  email: session.user.email,
-                  name: session.user.name || undefined
-                }} />
+            <AnimatedSection delay={0.2}>
+              <div className="border-2 border-foreground p-1">
+                <div className="bg-accent text-black px-4 py-1 text-xs font-black">CREDITS REMAINING</div>
+                <div className="p-4 bg-muted/5">
+                  <CreditsDisplay user={{
+                    email: session.user.email,
+                    name: session.user.name || undefined
+                  }} />
+                </div>
               </div>
-            </div>
+            </AnimatedSection>
             
-            <div className="border-4 border-foreground p-1">
-              <div className="bg-foreground text-background px-4 py-1 text-xs font-black">RECENT ACTIVITY LOG</div>
-              <div className="p-4 bg-muted/5 h-[600px] overflow-auto custom-scrollbar">
-                <RecentActivity />
+            <AnimatedSection delay={0.3}>
+              <div className="border-2 border-foreground p-1">
+                <div className="bg-foreground text-background px-4 py-1 text-xs font-black">RECENT ACTIVITY LOG</div>
+                <div className="p-4 bg-muted/5 h-[600px] overflow-auto custom-scrollbar">
+                  <RecentActivity />
+                </div>
               </div>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </div>
 
-      <div className="border-t-4 border-foreground p-4 text-[10px] font-black flex justify-between uppercase opacity-50">
+      <div className="border-t-2 border-foreground p-4 text-[10px] font-black flex justify-between uppercase opacity-50">
         <span>ENCRYPTED CONNECTION: AES-256</span>
         <span>FLOWZMITH CORE DASHBOARD V4</span>
       </div>

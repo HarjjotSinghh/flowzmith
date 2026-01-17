@@ -25,7 +25,7 @@ export function HeroSection() {
   const [text, setText] = useState("")
   const [logs, setLogs] = useState<typeof TERMINAL_LOGS>([])
   const [logIndex, setLogIndex] = useState(0)
-  const fullText = "BUILD THE FUTURE OF FLOW."
+  const fullText = "build the future of flow."
 
   useEffect(() => {
     let i = 0

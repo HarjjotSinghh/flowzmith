@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus, FileText, Zap, Settings, Play, Upload, FolderOpen, Code, BarChart3, MessageSquare } from "lucide-react"
+import { Plus, FileText, Zap, Settings, Play, Upload, FolderOpen, Code, BarChart3, MessageSquare, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -13,23 +13,23 @@ interface ActionCardProps {
 }
 
 function ActionCard({ title, description, icon, href, variant = "default" }: ActionCardProps) {
-  const baseClasses = "w-full p-4 rounded-2xl border transition-all duration-200 cursor-pointer"
-  const variantClasses = variant === "default" 
-    ? "bg-card/80 border-border/70 hover:shadow-md"
-    : "bg-card/80 border-primary/30 hover:border-primary/50"
-  
   return (
     <Link href={href}>
-      <div className={`${baseClasses} ${variantClasses}`}>
-        <div className="flex items-start space-x-3">
-          <div className="p-2 bg-muted/70 rounded-xl">
+      <div className={`w-full p-4 border-2 border-foreground transition-all duration-200 cursor-pointer group flex items-start space-x-4 ${
+        variant === "default" 
+          ? "bg-background hover:bg-accent" 
+          : "bg-accent/5 hover:bg-accent"
+      }`}>
+        <div className="p-2 bg-black border border-foreground flex-shrink-0 group-hover:bg-black group-hover:border-black transition-colors">
+          <div className="text-accent group-hover:text-accent group-hover:scale-110 transition-transform">
             {icon}
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-foreground mb-1">{title}</h3>
-            <p className="text-sm text-foreground/80">{description}</p>
-          </div>
         </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-black text-xs uppercase tracking-tighter group-hover:text-black">{`[ ${title} ]`}</h3>
+          <p className="text-[10px] font-bold text-foreground/60 uppercase leading-snug group-hover:text-black/80">{description}</p>
+        </div>
+        <ArrowRight className="h-4 w-4 self-center opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all group-hover:text-black" />
       </div>
     </Link>
   )
@@ -38,84 +38,81 @@ function ActionCard({ title, description, icon, href, variant = "default" }: Act
 export function QuickActions() {
   const actions = [
     {
-      title: "New Contract",
-      description: "Generate a smart contract from scratch",
-      icon: <Plus className="h-5 w-5 text-primary" />,
+      title: "NEW CONTRACT",
+      description: "GENERATE A SMART CONTRACT FROM SCRATCH",
+      icon: <Plus className="h-5 w-5" />,
       href: "/chat",
       variant: "secondary" as const
     },
     {
-      title: "Import Contract",
-      description: "Upload and analyze existing code",
-      icon: <Upload className="h-5 w-5 text-primary" />,
+      title: "IMPORT ASSETS",
+      description: "UPLOAD AND ANALYZE EXISTING CADENCE CODE",
+      icon: <Upload className="h-5 w-5" />,
       href: "/chat"
     },
     {
-      title: "Deploy Contract",
-      description: "Deploy to Flow testnet or mainnet",
-      icon: <Play className="h-5 w-5 text-primary" />,
+      title: "DEPLOY CORE",
+      description: "DEPLOY TO FLOW TESTNET OR MAINNET NODES",
+      icon: <Play className="h-5 w-5" />,
       href: "/chat"
     },
     {
-      title: "AI Optimization",
-      description: "Optimize existing contracts with AI",
-      icon: <Zap className="h-5 w-5 text-primary" />,
+      title: "AI OPTIMIZE",
+      description: "REFACTOR EXISTING CONTRACTS WITH AI CORE V4",
+      icon: <Zap className="h-5 w-5" />,
       href: "/chat"
     }
   ]
 
   const navigationActions = [
     {
-      title: "Chat with AI",
-      description: "Start a conversation with AI assistant",
-      icon: <MessageSquare className="h-5 w-5 text-primary" />,
+      title: "AI COMMAND CHAT",
+      description: "CONVERSE WITH THE CORE AI AGENT",
+      icon: <MessageSquare className="h-4 w-4" />,
       href: "/chat"
     },
     {
-      title: "Projects",
-      description: "Manage your smart contract projects",
-      icon: <FolderOpen className="h-5 w-5 text-primary" />,
+      title: "PROJECT REPOSITORY",
+      description: "MANAGE YOUR SMART CONTRACT WORKSPACES",
+      icon: <FolderOpen className="h-4 w-4" />,
       href: "/dashboard/projects"
     },
     {
-      title: "Contracts",
-      description: "View and manage smart contracts",
-      icon: <Code className="h-5 w-5 text-primary" />,
+      title: "CONTRACT REGISTRY",
+      description: "VIEW AND MANAGE COMPILED CONTRACTS",
+      icon: <Code className="h-4 w-4" />,
       href: "/dashboard/contracts"
     },
     {
-      title: "Analytics",
-      description: "Track performance and usage metrics",
-      icon: <BarChart3 className="h-5 w-5 text-primary" />,
+      title: "SYSTEM ANALYTICS",
+      description: "TRACK PERFORMANCE AND USAGE METRICS",
+      icon: <BarChart3 className="h-4 w-4" />,
       href: "/dashboard/analytics"
     }
   ]
 
   return (
-    <div className="bg-card/80 rounded-2xl border border-border/70 p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-foreground mb-1">Quick Actions</h2>
-        <p className="text-foreground/80">Start building with AI assistance</p>
-      </div>
-      
-      <div className="space-y-3">
+    <div className="space-y-6">
+      <div className="space-y-2">
         {actions.map((action, index) => (
           <ActionCard key={index} {...action} />
         ))}
       </div>
       
-      <div className="mt-6 pt-4 border-t border-border">
-        <h3 className="text-sm font-medium text-foreground mb-3">Navigate</h3>
-        <div className="space-y-2">
+      <div className="pt-6 border-t-2 border-foreground/10">
+        <div className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-4">SYSTEM NAVIGATION</div>
+        <div className="grid grid-cols-1 gap-2">
           {navigationActions.map((action, index) => (
             <Link key={index} href={action.href}>
-              <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="p-1 bg-muted/70 rounded">
-                  {action.icon}
+              <div className="flex items-center space-x-3 p-3 border-2 border-transparent hover:border-foreground hover:bg-muted/10 transition-all cursor-pointer group">
+                <div className="p-2 bg-black border border-foreground group-hover:bg-accent transition-colors">
+                  <div className="text-accent group-hover:text-black">
+                    {action.icon}
+                  </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{action.title}</p>
-                  <p className="text-xs text-foreground/80">{action.description}</p>
+                  <p className="text-[10px] font-black uppercase tracking-tighter">{action.title}</p>
+                  <p className="text-[9px] font-bold text-foreground/50 uppercase">{action.description}</p>
                 </div>
               </div>
             </Link>
@@ -123,11 +120,11 @@ export function QuickActions() {
         </div>
       </div>
       
-      <div className="mt-6 pt-4 border-t border-border">
+      <div className="pt-4">
         <Link href="/chat">
-          <Button className="w-full" size="sm">
+          <Button variant="terminal" className="w-full h-12 text-xs font-black">
             <MessageSquare className="h-4 w-4 mr-2" />
-            Chat with AI Assistant
+            INITIALIZE AI AGENT CHAT
           </Button>
         </Link>
       </div>

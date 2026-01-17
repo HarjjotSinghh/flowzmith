@@ -7,10 +7,10 @@ import SignIn from "@/components/sign-in"
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-mono selection:bg-accent selection:text-black">
-      <div className="grid min-h-screen lg:grid-cols-2 border-4 border-foreground m-4">
+    <div className="min-h-screen bg-background text-foreground font-mono selection:bg-accent selection:text-black border-x-2 border-foreground mx-auto max-w-[1440px]">
+      <div className="grid min-h-screen lg:grid-cols-2">
         {/* Left Side: Terminal Info */}
-        <div className="hidden lg:flex flex-col justify-between border-r-4 border-foreground bg-black p-12 relative overflow-hidden">
+        <div className="hidden lg:flex flex-col justify-between border-r-2 border-foreground bg-black p-12 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
 
           <div className="relative z-10 space-y-8">
@@ -64,7 +64,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-8">
-              <div className="border-4 border-foreground p-8 bg-muted/5 relative">
+              <div className="border-2 border-foreground p-8 bg-muted/5 relative">
                 <div className="absolute -top-3 -left-3 bg-background border-2 border-foreground p-1">
                   <UserPlus className="h-4 w-4" />
                 </div>
@@ -81,7 +81,7 @@ export default function SignupPage() {
               </div>
 
               <Link href="/login" className="block">
-                <Button variant="outline" className="w-full h-16 text-xl border-4 hover:bg-accent hover:text-black hover:border-foreground transition-all">
+                <Button variant="outline" className="w-full h-16 text-xl border-2 hover:bg-accent hover:text-black hover:border-foreground transition-all">
                   SIGN IN INSTEAD
                 </Button>
               </Link>

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2, CheckCircle2, XCircle } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, ArrowRight, ArrowLeft, Terminal } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -94,9 +94,9 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
       case "textarea":
         return (
           <div key={field.name} className="space-y-2">
-            <Label htmlFor={field.name}>
+            <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-widest">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <Textarea
               id={field.name}
@@ -104,9 +104,10 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               value={value}
               onChange={(e) => handleFieldChange(field.name, e.target.value)}
               rows={4}
+              className="rounded-none border-2 border-foreground bg-background font-bold text-xs uppercase"
             />
             {field.helpText && (
-              <p className="text-xs text-foreground/80">{field.helpText}</p>
+              <p className="text-[10px] font-bold text-foreground/50 uppercase italic">{`// ${field.helpText}`}</p>
             )}
           </div>
         )
@@ -114,40 +115,41 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
       case "select":
         return (
           <div key={field.name} className="space-y-2">
-            <Label htmlFor={field.name}>
+            <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-widest">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <Select
               value={value}
               onValueChange={(val) => handleFieldChange(field.name, val)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="rounded-none border-2 border-foreground bg-background font-bold text-xs uppercase h-12">
                 <SelectValue placeholder={field.placeholder} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-none border-2 border-foreground bg-background">
                 {field.options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem key={option.value} value={option.value} className="font-bold text-xs uppercase">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {field.helpText && (
-              <p className="text-xs text-foreground/80">{field.helpText}</p>
+              <p className="text-[10px] font-bold text-foreground/50 uppercase italic">{`// ${field.helpText}`}</p>
             )}
           </div>
         )
 
       case "checkbox":
         return (
-          <div key={field.name} className="flex items-center space-x-2">
+          <div key={field.name} className="flex items-center space-x-3 p-3 border-2 border-foreground bg-muted/5 group hover:bg-accent transition-colors">
             <Checkbox
               id={field.name}
               checked={value}
               onCheckedChange={(checked) => handleFieldChange(field.name, checked)}
+              className="border-2 border-foreground rounded-none data-[state=checked]:bg-foreground data-[state=checked]:text-background"
             />
-            <Label htmlFor={field.name} className="cursor-pointer">
+            <Label htmlFor={field.name} className="cursor-pointer text-[10px] font-black uppercase tracking-widest group-hover:text-black">
               {field.label}
             </Label>
           </div>
@@ -156,9 +158,9 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
       case "number":
         return (
           <div key={field.name} className="space-y-2">
-            <Label htmlFor={field.name}>
+            <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-widest">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <Input
               id={field.name}
@@ -166,9 +168,10 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               placeholder={field.placeholder}
               value={value}
               onChange={(e) => handleFieldChange(field.name, parseInt(e.target.value))}
+              className="h-12"
             />
             {field.helpText && (
-              <p className="text-xs text-foreground/80">{field.helpText}</p>
+              <p className="text-[10px] font-bold text-foreground/50 uppercase italic">{`// ${field.helpText}`}</p>
             )}
           </div>
         )
@@ -176,9 +179,9 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
       default:
         return (
           <div key={field.name} className="space-y-2">
-            <Label htmlFor={field.name}>
+            <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-widest">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <Input
               id={field.name}
@@ -186,9 +189,10 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               placeholder={field.placeholder}
               value={value}
               onChange={(e) => handleFieldChange(field.name, e.target.value)}
+              className="h-12"
             />
             {field.helpText && (
-              <p className="text-xs text-foreground/80">{field.helpText}</p>
+              <p className="text-[10px] font-bold text-foreground/50 uppercase italic">{`// ${field.helpText}`}</p>
             )}
           </div>
         )
@@ -198,9 +202,10 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
   const renderStepContent = () => {
     if (!command.steps || command.steps.length === 0) {
       return (
-        <div className="py-8 text-center text-foreground/80">
-          <p>This command doesn't require any input.</p>
-          <p className="text-sm mt-2">Click Execute to run the command.</p>
+        <div className="py-12 text-center">
+          <Terminal className="h-12 w-12 mx-auto mb-4 text-accent" />
+          <p className="font-black uppercase text-xs tracking-widest">NO_INPUT_REQUIRED</p>
+          <p className="text-[10px] font-bold text-foreground/50 mt-2 uppercase tracking-tight">EXECUTE TO COMMENCE PROTOCOL</p>
         </div>
       )
     }
@@ -208,11 +213,17 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
     const step = command.steps[currentStep]
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {step.description && (
-          <p className="text-sm text-foreground/80">{step.description}</p>
+          <div className="bg-accent/10 border-l-4 border-accent p-4">
+            <p className="text-[10px] font-bold text-foreground uppercase leading-snug tracking-tight">
+              {step.description.toUpperCase()}
+            </p>
+          </div>
         )}
-        {step.fields.map(renderField)}
+        <div className="space-y-4">
+          {step.fields.map(renderField)}
+        </div>
       </div>
     )
   }
@@ -224,118 +235,161 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
     const Icon = isSuccess ? CheckCircle2 : XCircle
 
     return (
-      <div className="space-y-4">
-        <div className={`flex items-center gap-2 ${isSuccess ? "text-primary" : "text-destructive"}`}>
-          <Icon className="h-5 w-5" />
-          <span className="font-medium">
-            {isSuccess ? "Command executed successfully!" : "Command failed"}
+      <div className="space-y-6">
+        <div className={`flex items-center gap-3 p-4 border-2 ${isSuccess ? "bg-accent/20 border-accent text-accent" : "bg-red-500/20 border-red-500 text-red-500"}`}>
+          <Icon className="h-6 w-6 shrink-0" />
+          <span className="font-black text-xs uppercase tracking-widest">
+            {isSuccess ? "PROTOCOL_EXECUTION_SUCCESSFUL" : "PROTOCOL_EXECUTION_FAILED"}
           </span>
         </div>
 
         {executionResult.error && (
-          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-            <p className="text-sm text-destructive">{executionResult.error}</p>
+          <div className="p-4 bg-red-500/10 border-2 border-red-500">
+            <p className="text-[10px] font-bold text-red-500 uppercase tracking-tighter italic">{`>> ERROR: ${executionResult.error.toUpperCase()}`}</p>
           </div>
         )}
 
         {executionResult.generated_contract_code && (
           <div className="space-y-2">
-            <Label>Generated Contract</Label>
-            <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-              <pre className="text-xs">
+            <Label className="text-[10px] font-black uppercase">GENERATED_OUTPUT_LOG</Label>
+            <ScrollArea className="h-[300px] w-full border-2 border-foreground bg-black p-4">
+              <pre className="text-[10px] font-mono text-accent whitespace-pre-wrap">
                 <code>{executionResult.generated_contract_code}</code>
               </pre>
             </ScrollArea>
           </div>
         )}
 
-        {executionResult.project_dir && (
-          <div className="p-3 bg-muted/60 border border-border rounded-md">
-            <p className="text-sm text-foreground">
-              <strong>Project Directory:</strong> {executionResult.project_dir}
-            </p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-2">
+          {executionResult.project_dir && (
+            <div className="p-3 border-2 border-foreground bg-muted/10">
+              <p className="text-[10px] font-black uppercase flex justify-between">
+                <span className="opacity-50 tracking-widest">WORKSPACE_PATH</span>
+                <span>{executionResult.project_dir}</span>
+              </p>
+            </div>
+          )}
 
-        {executionResult.transaction_id && (
-          <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
-            <p className="text-sm text-primary">
-              <strong>Transaction ID:</strong> {executionResult.transaction_id}
-            </p>
-          </div>
-        )}
+          {executionResult.transaction_id && (
+            <div className="p-3 border-2 border-foreground bg-muted/10">
+              <p className="text-[10px] font-black uppercase flex justify-between">
+                <span className="opacity-50 tracking-widest">TX_ID</span>
+                <span className="text-accent truncate ml-4">{executionResult.transaction_id}</span>
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
 
   const content = (
-    <>
+    <div className="py-4">
       {isExecuting ? (
-        <div className="py-8 space-y-4">
+        <div className="py-12 space-y-6">
           <div className="flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="relative">
+              <Loader2 className="h-12 w-12 animate-spin text-accent" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-4 h-4 bg-accent animate-pulse" />
+              </div>
+            </div>
           </div>
-          <p className="text-center text-sm text-foreground/80">
-            Executing command...
-          </p>
-          <Progress value={undefined} className="w-full" />
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">
+              EXECUTING_COMMAND_LOGS
+            </p>
+            <p className="text-[8px] font-bold text-foreground/50 uppercase italic tracking-widest">
+              INITIALIZING_FLOW_PROTOCOL_V2...
+            </p>
+          </div>
+          <div className="h-1 bg-muted/20 border border-foreground/10 overflow-hidden max-w-xs mx-auto">
+            <div className="h-full bg-accent animate-[loading_2s_ease-in-out_infinite]" style={{ width: '30%' }} />
+          </div>
         </div>
       ) : executionResult ? (
         renderResult()
       ) : (
         renderStepContent()
       )}
-    </>
+    </div>
   )
 
   const footer = !executionResult && (
-    <DialogFooter>
+    <div className="flex gap-4 pt-6 border-t-2 border-foreground">
       {command.steps && command.steps.length > 1 && currentStep > 0 && (
-        <Button variant="outline" onClick={handleBack} disabled={isExecuting}>
-          Back
+        <Button 
+          variant="outline" 
+          onClick={handleBack} 
+          disabled={isExecuting}
+          className="flex-1 h-14 border-2 font-black uppercase text-xs"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          BACK_STEP
         </Button>
       )}
       {command.steps && currentStep < command.steps.length - 1 ? (
-        <Button onClick={handleNext} disabled={isExecuting}>
-          Next
+        <Button 
+          onClick={handleNext} 
+          disabled={isExecuting}
+          className="flex-1 h-14 border-2 font-black uppercase text-xs"
+        >
+          NEXT_STEP
+          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       ) : (
-        <Button onClick={handleExecute} disabled={isExecuting}>
+        <Button 
+          onClick={handleExecute} 
+          disabled={isExecuting}
+          className="flex-1 h-14 border-2 font-black uppercase text-xs bg-foreground text-background hover:bg-accent hover:text-black"
+        >
           {isExecuting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Executing...
+              EXECUTING_CMD
             </>
           ) : (
-            "Execute"
+            <>
+              COMMENCE_EXECUTION
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
           )}
         </Button>
       )}
-    </DialogFooter>
+    </div>
   )
 
   if (useSheetLayout) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl">
-          <SheetHeader>
-            <SheetTitle>{command.name}</SheetTitle>
-            <SheetDescription>{command.description}</SheetDescription>
-            {command.steps && command.steps.length > 1 && (
-              <div className="flex items-center gap-2 pt-2">
-                {command.steps.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-2 flex-1 rounded-full ${
-                      idx <= currentStep ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                ))}
+        <SheetContent side="right" className="w-full sm:max-w-2xl bg-background border-l-4 border-foreground p-0 rounded-none overflow-y-auto">
+          <div className="p-8">
+            <SheetHeader className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-10 w-10 bg-accent border-2 border-foreground flex items-center justify-center">
+                  <Terminal className="h-6 w-6 text-black" />
+                </div>
+                <SheetTitle className="text-3xl font-black tracking-tighter uppercase leading-none">{command.name}</SheetTitle>
               </div>
-            )}
-          </SheetHeader>
-          <div className="mt-6">{content}</div>
-          {footer && <div className="mt-6">{footer}</div>}
+              <SheetDescription className="text-xs font-bold text-foreground/80 uppercase tracking-tight border-l-4 border-accent pl-4">
+                {command.description.toUpperCase()}
+              </SheetDescription>
+              {command.steps && command.steps.length > 1 && (
+                <div className="flex items-center gap-2 pt-6">
+                  {command.steps.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`h-2 flex-1 border border-foreground ${
+                        idx <= currentStep ? "bg-accent" : "bg-muted/20"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </SheetHeader>
+            {content}
+            {footer && <div className="mt-6">{footer}</div>}
+          </div>
         </SheetContent>
       </Sheet>
     )
@@ -343,13 +397,26 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>{command.name}</DialogTitle>
-          <DialogDescription>{command.description}</DialogDescription>
+      <DialogContent className="sm:max-w-[600px] bg-background border-4 border-foreground p-8 rounded-none gap-0 overflow-hidden">
+        <DialogHeader className="mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-8 w-8 bg-accent border-2 border-foreground flex items-center justify-center shrink-0">
+              <Terminal className="h-5 w-5 text-black" />
+            </div>
+            <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-none">{command.name}</DialogTitle>
+          </div>
+          <DialogDescription className="text-[10px] font-bold text-foreground/80 uppercase tracking-tight border-l-4 border-accent pl-4">
+            {command.description.toUpperCase()}
+          </DialogDescription>
         </DialogHeader>
         {content}
         {footer}
+        <style jsx global>{`
+          @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+          }
+        `}</style>
       </DialogContent>
     </Dialog>
   )

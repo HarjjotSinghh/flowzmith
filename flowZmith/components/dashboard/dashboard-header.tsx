@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Terminal, Settings, Bell, LogOut, Wallet, ExternalLink, Shield } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useAccount, useDisconnect } from "wagmi"
+import Link from "next/link"
 
 interface DashboardHeaderProps {
   user: any
@@ -22,26 +23,26 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   ]
 
   return (
-    <header className="border-b-4 border-foreground bg-background">
+    <header className="border-b-2 border-foreground bg-background">
       <div className="mx-auto px-6 py-4">
         <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center gap-3 group">
-              <div className="h-10 w-10 bg-accent flex items-center justify-center border-2 border-foreground group-hover:bg-foreground transition-colors">
+          <div className="flex items-center space-x-8">
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
+              <div className="flex h-10 w-10 items-center justify-center border-2 border-foreground bg-accent group-hover:bg-foreground transition-colors">
                 <Terminal className="h-6 w-6 text-black group-hover:text-accent" />
               </div>
-              <div className="hidden sm:block">
-                <div className="text-xl font-black tracking-tighter text-foreground leading-none uppercase">FLOWZMITH</div>
-                <div className="text-[10px] font-bold text-accent bg-black px-1 mt-1">WS LOCKED</div>
+              <div className="flex flex-col leading-none hidden sm:flex">
+                <span className="text-xl font-black tracking-tighter text-foreground uppercase">FLOWZMITH</span>
+                <span className="text-[10px] font-bold text-accent bg-black px-1 self-start mt-0.5">WS_LOCKED</span>
               </div>
-            </div>
+            </Link>
 
             <nav className="hidden xl:flex items-center gap-1">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className="px-4 py-2 text-[10px] font-black hover:bg-accent hover:text-black transition-all border-2 border-transparent hover:border-foreground"
+                  className="px-4 py-2 text-[10px] font-black tracking-[0.2em] hover:bg-accent hover:text-black transition-all border-2 border-transparent hover:border-foreground uppercase"
                 >
                   {`> ${item.name}`}
                 </a>

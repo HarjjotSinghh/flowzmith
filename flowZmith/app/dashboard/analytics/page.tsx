@@ -107,26 +107,26 @@ export default function AnalyticsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-mono text-foreground border-x-2 border-foreground mx-auto max-w-[1440px]">
       <DashboardHeader user={session?.user} />
       
-      <div className="max-w-[1320px] mx-auto px-6 py-8">
+      <div className="px-6 py-8">
         <AnimatedSection delay={0.1}>
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 border-b-2 border-foreground pb-6">
             <div>
-              <h1 className="text-3xl font-semibold text-foreground mb-2">Analytics</h1>
-              <p className="text-foreground/80">
-                Track your platform performance and usage metrics
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">ANALYTICS.</h1>
+              <p className="text-lg font-bold text-foreground/80 mt-2 border-l-4 border-accent pl-4">
+                TRACK YOUR PLATFORM PERFORMANCE AND USAGE METRICS V4.2
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="flex items-center gap-2 font-black text-xs h-10">
                 <Filter className="h-4 w-4" />
-                Filter
+                FILTER
               </Button>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="flex items-center gap-2 font-black text-xs h-10">
                 <Download className="h-4 w-4" />
-                Export
+                EXPORT
               </Button>
             </div>
           </div>
@@ -134,20 +134,20 @@ export default function AnalyticsPage() {
 
         {/* Time Range Selector */}
         <AnimatedSection delay={0.2}>
-          <div className="flex space-x-1 mb-6">
+          <div className="flex flex-wrap gap-2 mb-8">
             {[
-              { key: "7d", label: "Last 7 days" },
-              { key: "30d", label: "Last 30 days" },
-              { key: "90d", label: "Last 90 days" },
-              { key: "1y", label: "Last year" }
+              { key: "7d", label: "LAST 7 DAYS" },
+              { key: "30d", label: "LAST 30 DAYS" },
+              { key: "90d", label: "LAST 90 DAYS" },
+              { key: "1y", label: "LAST YEAR" }
             ].map((range) => (
               <button
                 key={range.key}
                 onClick={() => setTimeRange(range.key as any)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 border-2 border-foreground text-[10px] font-black tracking-widest transition-all ${
                   timeRange === range.key
-                    ? "bg-primary text-primary-foreground"
-                  : "text-foreground/80 hover:text-foreground hover:bg-muted"
+                    ? "bg-accent text-black"
+                  : "bg-background text-foreground hover:bg-muted"
                 }`}
               >
                 {range.label}
@@ -158,36 +158,38 @@ export default function AnalyticsPage() {
 
         {/* Metrics Grid */}
         <AnimatedSection delay={0.3}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {metrics.map((metric, index) => (
-              <Card key={metric.title} className="hover:shadow-lg transition-all duration-200">
+              <Card key={metric.title} className="hover:translate-y-[-4px] transition-transform duration-200 group">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-foreground/80 mb-1">
+                      <p className="text-[10px] font-black text-foreground/80 mb-1 uppercase tracking-widest">
                         {metric.title}
                       </p>
-                      <p className="text-2xl font-bold text-foreground mb-1">
+                      <p className="text-3xl font-black text-foreground mb-1 tracking-tighter uppercase">
                         {metric.value}
                       </p>
                       <div className="flex items-center gap-1">
                         {metric.changeType === "increase" ? (
-                          <ArrowUpRight className="h-4 w-4 text-primary" />
+                          <ArrowUpRight className="h-4 w-4 text-accent" />
                         ) : (
                             <ArrowDownRight className="h-4 w-4 text-foreground/80" />
                         )}
-                        <span className={`text-sm font-medium ${
-                          metric.changeType === "increase" ? "text-primary" : "text-foreground/80"
+                        <span className={`text-[10px] font-black px-1 ${
+                          metric.changeType === "increase" ? "bg-accent text-black" : "bg-black text-white"
                         }`}>
                           {metric.change > 0 ? "+" : ""}{metric.change}%
                         </span>
                       </div>
                     </div>
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      {metric.icon}
+                    <div className="p-3 bg-black border border-foreground group-hover:bg-accent transition-colors">
+                      <div className="text-accent group-hover:text-black">
+                        {metric.icon}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xs text-foreground/80 mt-2">
+                  <p className="text-[10px] font-bold text-foreground/60 mt-4 uppercase">
                     {metric.description}
                   </p>
                 </CardContent>
@@ -198,20 +200,20 @@ export default function AnalyticsPage() {
 
         {/* Tab Navigation */}
         <AnimatedSection delay={0.4}>
-          <div className="flex space-x-1 mb-6">
+          <div className="flex flex-wrap gap-2 mb-8 border-b-2 border-foreground pb-4">
             {[
-              { key: "overview", label: "Overview", icon: <BarChart3 className="h-4 w-4" /> },
-              { key: "contracts", label: "Contracts", icon: <Code className="h-4 w-4" /> },
-              { key: "usage", label: "Usage", icon: <Activity className="h-4 w-4" /> },
-              { key: "performance", label: "Performance", icon: <Shield className="h-4 w-4" /> }
+              { key: "overview", label: "OVERVIEW", icon: <BarChart3 className="h-4 w-4" /> },
+              { key: "contracts", label: "CONTRACTS", icon: <Code className="h-4 w-4" /> },
+              { key: "usage", label: "USAGE", icon: <Activity className="h-4 w-4" /> },
+              { key: "performance", label: "PERFORMANCE", icon: <Shield className="h-4 w-4" /> }
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-6 py-3 border-2 border-foreground text-xs font-black tracking-tighter transition-all ${
                   activeTab === tab.key
-                    ? "bg-primary text-primary-foreground"
-                  : "text-foreground/80 hover:text-foreground hover:bg-muted"
+                    ? "bg-foreground text-background"
+                  : "bg-background text-foreground hover:bg-muted"
                 }`}
               >
                 {tab.icon}

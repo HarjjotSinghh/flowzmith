@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { Terminal, X } from "lucide-react"
+import { Terminal, X, ChevronRight, Activity } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface LogEntry {
@@ -42,106 +42,118 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
   const getLogColor = (type: LogEntry["type"]) => {
     switch (type) {
       case "error":
-        return "text-destructive"
+        return "text-red-500"
       case "success":
-        return "text-primary"
+        return "text-accent"
       case "warning":
-        return "text-foreground/80"
+        return "text-accent/70"
       case "command":
-        return "text-foreground/80"
+        return "text-white"
       default:
-        return "text-foreground"
+        return "text-foreground/80"
     }
   }
 
   const getLogPrefix = (type: LogEntry["type"]) => {
     switch (type) {
       case "error":
-        return "❌"
+        return "[ERR]"
       case "success":
-        return "✅"
+        return "[OK ]"
       case "warning":
-        return "⚠️"
+        return "[WRN]"
       case "command":
-        return "▶"
+        return "[CMD]"
       default:
-        return "ℹ️"
+        return "[INF]"
     }
   }
 
   return (
-    <div className={cn("flex flex-col h-full max-h-[500px] bg-card/90 rounded-lg border border-border", className)}>
+    <div className={cn("flex flex-col h-full bg-black border-2 border-foreground relative overflow-hidden", className)}>
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-card/95 border-b border-border rounded-t-lg">
-        <div className="flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-primary" />
-          <span className="text-sm font-mono text-foreground">Terminal Output</span>
+      <div className="flex items-center justify-between px-4 py-3 bg-accent border-b-2 border-foreground">
+        <div className="flex items-center gap-3">
+          <Terminal className="h-5 w-5 text-black" />
+          <span className="text-xs font-black text-black uppercase tracking-widest">TERMINAL_OUTPUT_V1.2</span>
           {isStreaming && (
-            <span className="flex items-center gap-1 text-xs text-primary">
-              <span className="animate-pulse">●</span>
-              Streaming...
-            </span>
+            <div className="flex items-center gap-2 px-2 py-0.5 bg-black text-accent text-[8px] font-black uppercase animate-pulse">
+              <Activity className="h-3 w-3" />
+              STREAMING_DATA
+            </div>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => setAutoScroll(!autoScroll)}
-            className="h-6 px-2 text-xs"
+            className={`h-8 px-3 text-[10px] font-black uppercase border-2 border-black bg-transparent hover:bg-black hover:text-accent transition-colors ${autoScroll ? 'text-black' : 'text-black/40'}`}
           >
-            {autoScroll ? "Auto-scroll: ON" : "Auto-scroll: OFF"}
+            SCROLL_{autoScroll ? "ON" : "OFF"}
           </Button>
           {onClear && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={onClear}
-              className="h-6 px-2"
+              className="h-8 px-2 border-2 border-black bg-transparent text-black hover:bg-black hover:text-accent"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
 
       {/* Terminal Content */}
-      <div className="flex-1 p-4 overflow-y-auto" ref={scrollRef}>
+      <div className="flex-1 p-6 overflow-y-auto font-mono custom-scrollbar" ref={scrollRef}>
         {logs.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-foreground/80">
-            <div className="text-center">
-              <Terminal className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No output yet</p>
-              <p className="text-xs mt-1">Execute a command to see output</p>
+          <div className="flex flex-col items-center justify-center h-full gap-4 opacity-30">
+            <Terminal className="h-16 w-16 text-accent" />
+            <div className="text-center space-y-1">
+              <p className="font-black uppercase text-xs tracking-[0.3em]">WAITING_FOR_COMMAND</p>
+              <p className="text-[10px] font-bold uppercase">EXECUTION_QUEUE_EMPTY</p>
             </div>
           </div>
         ) : (
-          <div className="font-mono text-sm space-y-1 oveflow-y-auto">
+          <div className="space-y-2">
             {logs.map((log, idx) => (
-              <div key={idx} className="flex gap-3 hover:bg-card/95/50 px-2 py-1 rounded">
-                <span className="text-foreground/80 text-xs flex-shrink-0 select-none">
+              <div key={idx} className="flex gap-4 group transition-colors px-2 py-1 hover:bg-white/5">
+                <span className="text-foreground/30 text-[10px] font-bold flex-shrink-0 select-none pt-0.5">
                   {formatTime(log.timestamp)}
                 </span>
-                <span className="flex-shrink-0 select-none">
+                <span className={cn("flex-shrink-0 select-none text-[10px] font-black", getLogColor(log.type))}>
                   {getLogPrefix(log.type)}
                 </span>
-                <span className={cn("flex-1 break-all", getLogColor(log.type))}>
+                <span className={cn("flex-1 text-[11px] font-bold leading-relaxed uppercase tracking-tight", getLogColor(log.type))}>
                   {log.message}
                 </span>
               </div>
             ))}
+            {isStreaming && (
+              <div className="flex gap-4 px-2 py-1">
+                <span className="text-foreground/30 text-[10px] font-bold flex-shrink-0">
+                  {formatTime(new Date())}
+                </span>
+                <span className="text-accent text-[10px] font-black select-none">
+                  [CMD]
+                </span>
+                <span className="text-accent text-[11px] font-bold animate-pulse">
+                  _
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Terminal Footer */}
-      <div className="px-4 py-2 bg-card/95 border-t border-border rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-foreground/80">
-          <span>{logs.length} lines</span>
-          {isStreaming && (
-            <span className="text-primary">Receiving data...</span>
-          )}
+      <div className="px-4 py-2 border-t-2 border-foreground bg-black/50 text-[10px] font-black uppercase tracking-widest flex justify-between">
+        <div className="flex gap-4">
+          <span>LINES: {logs.length.toString().padStart(4, '0')}</span>
+          <span>BUFFER: 100%</span>
         </div>
+        <span className="text-accent">ENCRYPTED_VT100</span>
       </div>
     </div>
   )

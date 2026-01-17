@@ -587,114 +587,79 @@ export default function ChatPage() {
   const editorTheme = resolvedTheme === "dark" ? "vs-dark" : "vs"
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-mono text-foreground border-x-2 border-foreground mx-auto max-w-[1440px]">
       <div className="h-screen flex flex-col">
         {/* Header */}
-        <div className="border-b border-border bg-card/80 p-4">
+        <div className="border-b-2 border-foreground bg-background p-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-muted/60 rounded-full flex items-center justify-center border border-border">
-                <Image
-                  src="/images/flowZmithsLogo.svg"
-                  alt="Flowzmith"
-                  width={32}
-                  height={32}
-                />
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-accent border-2 border-foreground flex items-center justify-center group-hover:bg-foreground transition-colors">
+                <Terminal className="h-6 w-6 text-black group-hover:text-accent" />
               </div>
               <div>
                 <div className="flex items-center space-x-3">
-                  <span className="text-xl font-semibold text-foreground">
-                    Flowzmith
+                  <span className="text-xl font-black tracking-tighter uppercase leading-none">
+                    FLOWZMITH // AI_CHAT
                   </span>
                 </div>
-                <p className="text-sm text-foreground/80">
-                  Generate and edit code with AI assistance
+                <p className="text-[10px] font-bold text-accent bg-black px-1 mt-1 inline-block uppercase tracking-widest">
+                  RESOURCE_SYNC_ACTIVE
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <ThemeSwitcher />
-              {/* Akave Status Indicator */}
-              <div className="flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1 border-2 border-foreground text-[10px] font-black uppercase">
                 <div
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-2 h-2 ${
                     akaveStatus === "available"
-                      ? "bg-primary"
-                      : akaveStatus === "checking"
-                        ? "bg-muted-foreground"
-                        : "bg-destructive"
+                      ? "bg-accent animate-pulse"
+                      : "bg-red-500"
                   }`}
                 ></div>
-                <span className="text-xs text-foreground/80">
+                <span>
                   {akaveStatus === "available"
-                    ? "Akave"
-                    : akaveStatus === "checking"
-                      ? "Checking..."
-                      : "Akave Offline"}
+                    ? "AKAVE_ONLINE"
+                    : "STORAGE_LOCAL"}
                 </span>
               </div>
+              
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  // Test adding a file to the store
-                  const testFile = {
-                    id: `test_${Date.now()}`,
-                    path: "test/TestFile.cdc",
-                    content: "pub contract Test { }",
-                    language: "cadence",
-                    isModified: true,
-                  };
-                  addFile(testFile);
-                  console.log("Added test file to store");
-                }}
-              >
-                Test File
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+                className="h-10 border-2 font-black text-[10px]"
                 onClick={() => setIsTerminalOpen(!isTerminalOpen)}
               >
                 <Terminal className="w-4 h-4 mr-2" />
-                Terminal
+                TERMINAL
               </Button>
               {files.length > 0 && (
                 <>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="h-10 border-2 font-black text-[10px]"
                     onClick={handleDownloadAll}
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download All
+                    EXPORT_ZIP
                   </Button>
-                  {isAkaveEnabled && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleSaveToAkave}
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save to Akave
-                    </Button>
-                  )}
-                  <Button variant="outline" size="sm" onClick={handleClearAll}>
+                  <Button variant="outline" size="sm" className="h-10 border-2 font-black text-[10px] hover:bg-red-500 hover:text-white" onClick={handleClearAll}>
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Clear All
+                    WIPE_DATA
                   </Button>
                 </>
               )}
+              <ThemeSwitcher />
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden border-t-2 border-foreground">
           <PanelGroup direction="horizontal">
             {/* Chat Panel */}
             <Panel defaultSize={30} minSize={20}>
-              <div className="h-full flex flex-col">
+              <div className="h-full flex flex-col border-r-2 border-foreground">
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                   {streamingMessages.length === 0 ? (
                     <div className="text-center text-foreground/80">
@@ -725,28 +690,32 @@ export default function ChatPage() {
                           }`}
                         >
                           <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            className={`w-10 h-10 border-2 border-foreground flex items-center justify-center flex-shrink-0 ${
                               message.role === "assistant"
-                                ? "bg-primary/10"
-                                : "bg-muted/60"
+                                ? "bg-accent"
+                                : "bg-foreground"
                             }`}
                           >
                             {message.role === "assistant" ? (
-                              <Bot className="w-4 h-4 text-primary" />
+                              <Bot className="w-5 h-5 text-black" />
                             ) : (
-                              <User className="w-4 h-4 text-foreground" />
+                              <User className="w-5 h-5 text-background" />
                             )}
                           </div>
                           <div
-                            className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                            className={`max-w-[85%] border-2 border-foreground px-4 py-3 relative ${
                               message.role === "assistant"
-                                ? "bg-card/80 border border-border/70 text-foreground"
+                                ? "bg-background text-foreground"
                                 : "bg-foreground text-background"
                             }`}
                           >
-                            <div className="text-sm whitespace-pre-wrap">
+                            <div className="text-[10px] font-black uppercase mb-1 opacity-50 tracking-widest">
+                              {message.role === "assistant" ? "AGENT_CORE_V4" : "USER_PROTOCOL"}
+                            </div>
+                            <div className="text-xs font-bold leading-snug whitespace-pre-wrap uppercase">
                               {message.content}
                             </div>
+                            <div className={`absolute top-0 ${message.role === "assistant" ? "right-0" : "left-0"} w-2 h-2 bg-accent`} />
                           </div>
                         </div>
                       ))}
@@ -754,18 +723,18 @@ export default function ChatPage() {
                   )}
                   {isLoading && (
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10">
-                        <Bot className="w-4 h-4 text-primary" />
+                      <div className="w-10 h-10 border-2 border-foreground bg-accent flex items-center justify-center">
+                        <Bot className="w-5 h-5 text-black" />
                       </div>
-                      <div className="bg-muted rounded-2xl px-4 py-3">
+                      <div className="border-2 border-foreground bg-muted/20 px-4 py-3">
                         <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                          <div className="w-2 h-2 bg-accent animate-bounce" />
                           <div
-                            className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                            className="w-2 h-2 bg-accent animate-bounce"
                             style={{ animationDelay: "0.1s" }}
                           />
                           <div
-                            className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                            className="w-2 h-2 bg-accent animate-bounce"
                             style={{ animationDelay: "0.2s" }}
                           />
                         </div>
@@ -776,19 +745,19 @@ export default function ChatPage() {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-border bg-card/80">
+                <div className="p-4 border-t-2 border-foreground bg-background">
                   <form onSubmit={handleSubmit} className="flex gap-2">
                     <input
                       value={input}
                       onChange={handleInputChange}
-                      placeholder="Describe what you want to build..."
-                      className="flex-1 bg-background border border-border rounded-2xl px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
+                      placeholder="ENTER COMMAND OR ARCHITECTURE PROMPT..."
+                      className="flex-1 bg-background border-2 border-foreground rounded-none px-4 py-3 text-xs font-bold tracking-tighter text-foreground placeholder-foreground/30 focus:outline-none focus:border-accent uppercase"
                       disabled={isLoading}
                     />
                     <Button
                       type="submit"
                       disabled={isLoading || !input.trim()}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-2xl"
+                      className="bg-foreground text-background hover:bg-accent hover:text-black px-6 py-3 border-2 border-foreground transition-colors font-black text-xs"
                     >
                       <Send className="w-4 h-4" />
                     </Button>
@@ -797,13 +766,13 @@ export default function ChatPage() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="w-2 bg-border hover:bg-muted-foreground/30 transition-colors" />
+            <PanelResizeHandle className="w-1 bg-foreground hover:bg-accent transition-colors" />
 
             {/* Editor Panel */}
             <Panel minSize={30}>
               <div className="h-full flex">
                 {/* File Tree */}
-                <div className="overflow-y-auto w-64 border-r border-border bg-card/80 custom-scrollbar">
+                <div className="overflow-y-auto w-64 border-r-2 border-foreground bg-background custom-scrollbar hidden lg:block">
                   <FileTree
                     files={files}
                     selectedFileId={selectedFileId}
@@ -815,16 +784,18 @@ export default function ChatPage() {
 
                 {/* Editor */}
                 <div className="flex-1 flex flex-col">
-                  <div className="border-b border-border bg-card/80 p-3">
+                  <div className="border-b-2 border-foreground bg-muted/5 p-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-foreground/80" />
-                        <span className="text-sm font-medium">
-                          {selectedFile?.path || "No file selected"}
+                      <div className="flex items-center gap-3">
+                        <div className="bg-black p-1 border border-foreground">
+                          <FileText className="w-4 h-4 text-accent" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest">
+                          {selectedFile?.path || "READY_FOR_INPUT.cdc"}
                         </span>
                         {selectedFile?.isModified && (
-                          <span className="text-xs text-orange-600">
-                            • Modified
+                          <span className="text-[10px] bg-accent text-black px-1 font-black">
+                            MODIFIED
                           </span>
                         )}
                       </div>

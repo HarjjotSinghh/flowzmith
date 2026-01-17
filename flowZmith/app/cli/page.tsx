@@ -731,9 +731,9 @@ export default function CLIWorkspacePage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background font-mono text-foreground border-x-2 border-foreground mx-auto max-w-[1440px]">
       {/* Sidebar */}
-      <div className="w-64 flex-shrink-0">
+      <div className="w-64 flex-shrink-0 border-r-2 border-foreground">
         <CLISidebar
           onCommandSelect={handleCommandSelect}
           selectedCommand={selectedCommand}
@@ -741,17 +741,24 @@ export default function CLIWorkspacePage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="border-b border-border bg-card/80 p-4">
+        <div className="border-b-2 border-foreground bg-background p-4">
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-display font-semibold text-foreground">CLI Workspace</h1>
-              <p className="text-sm text-foreground/80">
-                Execute CLI commands and view results in real-time
-              </p>
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-accent border-2 border-foreground flex items-center justify-center group-hover:bg-foreground transition-colors">
+                <Terminal className="h-6 w-6 text-black group-hover:text-accent" />
+              </div>
+              <div>
+                <h1 className="text-xl font-black tracking-tighter uppercase leading-none">CLI_WORKSPACE_V1.2</h1>
+                <p className="text-[10px] font-bold text-accent bg-black px-1 mt-1 inline-block uppercase tracking-widest">
+                  EXECUTION_ENV_READY
+                </p>
+              </div>
             </div>
-            <ThemeSwitcher />
+            <div className="flex items-center gap-2">
+              <ThemeSwitcher />
+            </div>
           </div>
         </div>
 
@@ -759,9 +766,9 @@ export default function CLIWorkspacePage() {
         <div className="flex-1 flex overflow-hidden">
           {/* File Explorer */}
           {files.length > 0 && (
-            <div className="w-64 border-r border-border bg-card/80 flex flex-col">
-              <div className="p-4 border-b border-border">
-                <h3 className="font-semibold text-sm">Generated Files</h3>
+            <div className="w-64 border-r-2 border-foreground bg-background flex flex-col">
+              <div className="p-4 border-b-2 border-foreground bg-muted/5">
+                <h3 className="text-[10px] font-black uppercase tracking-widest">PROJECT_FILES</h3>
               </div>
               <ScrollArea className="flex-1">
                 <div className="p-2">{renderFileTree(files)}</div>
@@ -770,40 +777,41 @@ export default function CLIWorkspacePage() {
           )}
 
           {/* Editor/Output Area */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             <Tabs defaultValue="editor" className="flex-1 flex flex-col">
-              <div className="border-b pr-4">
-                <TabsList>
-                  <TabsTrigger value="editor">
+              <div className="border-b-2 border-foreground bg-muted/5 pr-4">
+                <TabsList className="bg-transparent h-12">
+                  <TabsTrigger value="editor" className="rounded-none border-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-background font-black text-[10px] uppercase tracking-widest">
                     <FileCode className="h-4 w-4 mr-2" />
-                    Editor
+                    EDITOR
                   </TabsTrigger>
-                  <TabsTrigger value="terminal">
+                  <TabsTrigger value="terminal" className="rounded-none border-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-background font-black text-[10px] uppercase tracking-widest">
                     <Terminal className="h-4 w-4 mr-2" />
-                    Terminal
+                    TERMINAL
                     {isStreaming && (
                       <span className="ml-2 flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-accent opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
                       </span>
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="history">
+                  <TabsTrigger value="history" className="rounded-none border-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-background font-black text-[10px] uppercase tracking-widest">
                     <Activity className="h-4 w-4 mr-2" />
-                    History
+                    HISTORY
                   </TabsTrigger>
                 </TabsList>
               </div>
 
-              <TabsContent value="editor" className="flex-1 m-0 flex flex-col">
+              <TabsContent value="editor" className="flex-1 m-0 flex flex-col bg-background">
                 {/* Action Toolbar */}
                 {files.length > 0 && (
-                  <div className="border-b p-2 flex items-center gap-2 bg-muted/30">
+                  <div className="border-b-2 border-foreground p-2 flex items-center gap-2 bg-muted/5">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
+                          className="h-10 border-2 font-black text-[10px] uppercase"
                           disabled={isExporting}
                         >
                           {isExporting ? (
@@ -811,18 +819,18 @@ export default function CLIWorkspacePage() {
                           ) : (
                             <Download className="h-4 w-4 mr-2" />
                           )}
-                          Export
+                          EXPORT_AS
                           <ChevronDown className="h-4 w-4 ml-2" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={handleExportZip}>
+                      <DropdownMenuContent className="rounded-none border-2 border-foreground">
+                        <DropdownMenuItem onClick={handleExportZip} className="text-[10px] font-black uppercase">
                           <Download className="h-4 w-4 mr-2" />
-                          Export as .zip
+                          EXPORT_ZIP
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleExportTar}>
+                        <DropdownMenuItem onClick={handleExportTar} className="text-[10px] font-black uppercase">
                           <Download className="h-4 w-4 mr-2" />
-                          Export as .tar
+                          EXPORT_TAR
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -830,10 +838,11 @@ export default function CLIWorkspacePage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-10 border-2 font-black text-[10px] uppercase"
                       onClick={handleGitHubExport}
                     >
                       <Github className="h-4 w-4 mr-2" />
-                      Push to GitHub
+                      SYNC_GITHUB
                     </Button>
 
                     <div className="flex-1" />
@@ -843,6 +852,7 @@ export default function CLIWorkspacePage() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="h-10 border-2 font-black text-[10px] uppercase"
                           onClick={handleCompile}
                           disabled={isCompiling}
                         >
@@ -851,11 +861,12 @@ export default function CLIWorkspacePage() {
                           ) : (
                             <Play className="h-4 w-4 mr-2" />
                           )}
-                          Compile
+                          COMPILE
                         </Button>
 
                         <Button
                           size="sm"
+                          className="h-10 border-2 font-black text-[10px] uppercase bg-foreground text-background hover:bg-accent hover:text-black"
                           onClick={handleDeploy}
                           disabled={isDeploying}
                         >
@@ -864,7 +875,7 @@ export default function CLIWorkspacePage() {
                           ) : (
                             <Rocket className="h-4 w-4 mr-2" />
                           )}
-                          Deploy On-Chain
+                          DEPLOY_ON_CHAIN
                         </Button>
                       </>
                     )}
