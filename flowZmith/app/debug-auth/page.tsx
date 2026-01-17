@@ -46,11 +46,11 @@ export default function DebugAuthPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="font-medium">NextAuth URL:</span>
-                  <span className="text-muted-foreground">{envCheck.environment?.nextAuthUrl || "Not Set"}</span>
+                  <span className="text-foreground/80">{envCheck.environment?.nextAuthUrl || "Not Set"}</span>
                 </div>
               </div>
             ) : (
-              <p className="text-muted-foreground">Loading environment check...</p>
+                <p className="text-foreground/80">Loading environment check...</p>
             )}
           </div>
 
@@ -60,7 +60,7 @@ export default function DebugAuthPage() {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Status:</span>
-                <span className={status === "authenticated" ? "text-primary" : status === "loading" ? "text-muted-foreground" : "text-destructive"}>
+                <span className={status === "authenticated" ? "text-primary" : status === "loading" ? "text-foreground/80" : "text-destructive"}>
                   {status}
                 </span>
               </div>

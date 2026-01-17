@@ -12,7 +12,6 @@
     "@ai-sdk/groq": "^2.0.22",
     "@ai-sdk/openai": "^2.0.38",
     "@auth/prisma-adapter": "^2.10.0",
-    "@clerk/nextjs": "^6.33.1",
     "@emotion/is-prop-valid": "latest",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",

@@ -206,7 +206,7 @@ All components show loading indicators while fetching data:
 
 ```jsx
 {loading ? (
-  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  <Loader2 className="h-6 w-6 animate-spin text-foreground/80" />
 ) : (
   // Component content
 )}

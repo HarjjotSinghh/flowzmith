@@ -80,7 +80,7 @@ function RequestItemComponent({ request }: { request: RequestItem }) {
   const statusConfig = {
     success: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/10" },
     error: { icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
-    warning: { icon: AlertTriangle, color: "text-muted-foreground", bg: "bg-muted/50" }
+    warning: { icon: AlertTriangle, color: "text-foreground/80", bg: "bg-muted/50" }
   }
   
   const config = statusConfig[request.status]
@@ -93,11 +93,11 @@ function RequestItemComponent({ request }: { request: RequestItem }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground truncate">{request.endpoint}</p>
-        <p className="text-xs text-muted-foreground">{request.timestamp}</p>
+        <p className="text-xs text-foreground/80">{request.timestamp}</p>
       </div>
       <div className="text-right">
         <p className="text-sm font-medium text-foreground">{request.duration}</p>
-        <p className="text-xs text-muted-foreground">{request.tokens} tokens</p>
+        <p className="text-xs text-foreground/80">{request.tokens} tokens</p>
       </div>
     </div>
   )
@@ -164,7 +164,7 @@ export function RequestTimeline() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-1">Request Timeline</h2>
-          <p className="text-muted-foreground">API usage patterns and performance</p>
+          <p className="text-foreground/80">API usage patterns and performance</p>
         </div>
         <div className="flex space-x-2">
           {["1h", "24h", "7d", "30d"].map((range) => (
@@ -193,7 +193,7 @@ export function RequestTimeline() {
               <span className="text-sm text-foreground">Errors</span>
             </div>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-2 text-sm text-foreground/80">
             <Activity className="h-4 w-4" />
             <span>Total: {timelineData.reduce((sum, d) => sum + d.requests, 0)} requests</span>
           </div>

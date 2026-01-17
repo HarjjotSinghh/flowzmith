@@ -2,7 +2,9 @@
 
 import type React from "react"
 import { useState } from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Plus, Minus } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Button } from "@/components/ui/button"
 
 const faqData = [
   {
@@ -42,66 +44,104 @@ interface FAQItemProps {
   answer: string
   isOpen: boolean
   onToggle: () => void
+  index: number
 }
 
-const FAQItem = ({ question, answer, isOpen, onToggle }: FAQItemProps) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    onToggle()
-  }
-
+const FAQItem = ({ question, answer, isOpen, onToggle, index }: FAQItemProps) => {
   return (
-    <div
-      className="w-full overflow-hidden rounded-2xl border border-border/70 bg-card/80 transition-all duration-300"
-      onClick={handleClick}
-    >
-      <div className="flex w-full items-center justify-between gap-5 px-6 py-4 text-left">
-        <div className="flex-1 text-base font-medium text-foreground">{question}</div>
-        <ChevronDown
-          className={`h-5 w-5 text-muted-foreground transition-transform ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}
-        />
-      </div>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className={`w-full overflow-hidden border-2 border-foreground bg-background transition-all duration-300 ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(204,255,0,1)]" : "hover:bg-muted/5"
         }`}
+    >
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-5 px-6 py-5 text-left group"
       >
-        <div className="px-6 pb-5 text-sm text-muted-foreground">{answer}</div>
-      </div>
-    </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs font-black text-accent bg-black px-2 py-0.5">
+            {index < 9 ? `0${index + 1}` : index + 1}
+          </span>
+          <div className="flex-1 text-base font-black text-foreground uppercase tracking-tight group-hover:text-accent transition-colors">
+            {question}
+          </div>
+        </div>
+        <div className={`transition-all duration-300 ${isOpen ? "rotate-180 text-accent" : "text-foreground"}`}>
+          {isOpen ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <div className="px-16 pb-6 text-sm font-bold text-foreground/80 uppercase leading-relaxed border-t-2 border-foreground/5 pt-4 italic">
+              <span className="text-accent mr-2 font-black">{">"}</span>
+              {answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
 
 export function FAQSection() {
-  const [openItems, setOpenItems] = useState<Set<number>>(new Set())
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
   const toggleItem = (index: number) => {
-    const newOpenItems = new Set(openItems)
-    if (newOpenItems.has(index)) {
-      newOpenItems.delete(index)
-    } else {
-      newOpenItems.add(index)
-    }
-    setOpenItems(newOpenItems)
+    setOpenIndex(openIndex === index ? null : index)
   }
 
   return (
-    <section className="py-16">
-      <div className="mx-auto w-full max-w-6xl px-6">
-        <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-display font-semibold text-foreground">
-            Frequently asked questions
+    <section className="py-24 bg-background border-t-2 border-foreground border-x-2 border-foreground mx-auto max-w-[1400px] lg:px-16">
+      <div className="mx-auto w-full max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col items-center text-center gap-6 mb-16"
+        >
+          <div className="bg-accent text-black font-black px-4 py-1 text-xs tracking-[0.3em]">
+            KNOWLEDGE BASE
+          </div>
+          <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">
+            FREQUENTLY ASKED QUESTIONS.
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about Flowzmith and how it supports your Flow development workflow.
+          <p className="text-lg md:text-xl font-bold text-foreground/80 max-w-2xl">
+            EVERYTHING YOU NEED TO KNOW ABOUT FLOWZMITH AND HOW IT SUPPORTS YOUR FLOW DEVELOPMENT WORKFLOW.
           </p>
-        </div>
-        <div className="mt-10 mx-auto max-w-3xl space-y-4">
+        </motion.div>
+
+        <div className="space-y-4">
           {faqData.map((faq, index) => (
-            <FAQItem key={index} {...faq} isOpen={openItems.has(index)} onToggle={() => toggleItem(index)} />
+            <FAQItem
+              key={index}
+              {...faq}
+              index={index}
+              isOpen={openIndex === index}
+              onToggle={() => toggleItem(index)}
+            />
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="mt-16 p-8 border-4 border-dashed border-foreground/20 text-center"
+        >
+          <p className="text-xs font-black text-foreground/80 uppercase tracking-widest mb-4">STILL HAVE QUESTIONS?</p>
+          <Button variant="terminal" size="lg">OPEN SUPPORT TICKET</Button>
+        </motion.div>
       </div>
     </section>
   )

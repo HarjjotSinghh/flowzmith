@@ -46,9 +46,9 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
       case "success":
         return "text-primary"
       case "warning":
-        return "text-muted-foreground"
+        return "text-foreground/80"
       case "command":
-        return "text-muted-foreground"
+        return "text-foreground/80"
       default:
         return "text-foreground"
     }
@@ -108,7 +108,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
       {/* Terminal Content */}
       <div className="flex-1 p-4 overflow-y-auto" ref={scrollRef}>
         {logs.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-full text-foreground/80">
             <div className="text-center">
               <Terminal className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No output yet</p>
@@ -119,7 +119,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
           <div className="font-mono text-sm space-y-1 oveflow-y-auto">
             {logs.map((log, idx) => (
               <div key={idx} className="flex gap-3 hover:bg-card/95/50 px-2 py-1 rounded">
-                <span className="text-muted-foreground text-xs flex-shrink-0 select-none">
+                <span className="text-foreground/80 text-xs flex-shrink-0 select-none">
                   {formatTime(log.timestamp)}
                 </span>
                 <span className="flex-shrink-0 select-none">
@@ -136,7 +136,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
 
       {/* Terminal Footer */}
       <div className="px-4 py-2 bg-card/95 border-t border-border rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center justify-between text-xs text-foreground/80">
           <span>{logs.length} lines</span>
           {isStreaming && (
             <span className="text-primary">Receiving data...</span>

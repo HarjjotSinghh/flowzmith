@@ -18,3 +18,4 @@ specs/
 prompts/
 test_vector_db/
 vector_db/
+.playwright/

@@ -24,7 +24,7 @@ export const ContactForm = ({ dictionary }: ContactFormProps) => {
 
   return (
     <div className="w-full py-20 lg:py-40">
-      <div className="container mx-auto max-w-6xl">
+      <div className="container mx-auto max-w-[1440px]">
         <div className="grid gap-10 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">

@@ -16,8 +16,8 @@ function ActivityItemComponent({ activity }: { activity: ActivityItem }) {
   const typeConfig = {
     success: { color: "text-primary", bg: "bg-primary/10" },
     error: { color: "text-destructive", bg: "bg-destructive/10" },
-    warning: { color: "text-muted-foreground", bg: "bg-muted/50" },
-    info: { color: "text-muted-foreground", bg: "bg-muted/50" }
+    warning: { color: "text-foreground/80", bg: "bg-muted/50" },
+    info: { color: "text-foreground/80", bg: "bg-muted/50" }
   }
   
   const config = typeConfig[activity.type]
@@ -31,8 +31,8 @@ function ActivityItemComponent({ activity }: { activity: ActivityItem }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground mb-1">{activity.title}</p>
-        <p className="text-xs text-muted-foreground mb-2">{activity.description}</p>
-        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+        <p className="text-xs text-foreground/80 mb-2">{activity.description}</p>
+        <div className="flex items-center space-x-1 text-xs text-foreground/80">
           <Clock className="h-3 w-3" />
           <span>{activity.timestamp}</span>
         </div>
@@ -141,7 +141,7 @@ export function RecentActivity() {
     <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-foreground mb-1">Recent Activity</h2>
-        <p className="text-muted-foreground">Your latest AI development activity</p>
+        <p className="text-foreground/80">Your latest AI development activity</p>
       </div>
       
       {error && (
@@ -158,7 +158,7 @@ export function RecentActivity() {
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="h-6 w-6 animate-spin text-foreground/80" />
         </div>
       ) : (
         <div className="space-y-1 max-h-80 overflow-y-auto custom-scrollbar">
@@ -168,7 +168,7 @@ export function RecentActivity() {
             ))
           ) : (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No recent activity</p>
+                  <p className="text-foreground/80">No recent activity</p>
             </div>
           )}
         </div>

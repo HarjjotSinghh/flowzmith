@@ -106,7 +106,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               rows={4}
             />
             {field.helpText && (
-              <p className="text-xs text-muted-foreground">{field.helpText}</p>
+              <p className="text-xs text-foreground/80">{field.helpText}</p>
             )}
           </div>
         )
@@ -134,7 +134,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               </SelectContent>
             </Select>
             {field.helpText && (
-              <p className="text-xs text-muted-foreground">{field.helpText}</p>
+              <p className="text-xs text-foreground/80">{field.helpText}</p>
             )}
           </div>
         )
@@ -168,7 +168,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               onChange={(e) => handleFieldChange(field.name, parseInt(e.target.value))}
             />
             {field.helpText && (
-              <p className="text-xs text-muted-foreground">{field.helpText}</p>
+              <p className="text-xs text-foreground/80">{field.helpText}</p>
             )}
           </div>
         )
@@ -188,7 +188,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
               onChange={(e) => handleFieldChange(field.name, e.target.value)}
             />
             {field.helpText && (
-              <p className="text-xs text-muted-foreground">{field.helpText}</p>
+              <p className="text-xs text-foreground/80">{field.helpText}</p>
             )}
           </div>
         )
@@ -198,7 +198,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
   const renderStepContent = () => {
     if (!command.steps || command.steps.length === 0) {
       return (
-        <div className="py-8 text-center text-muted-foreground">
+        <div className="py-8 text-center text-foreground/80">
           <p>This command doesn't require any input.</p>
           <p className="text-sm mt-2">Click Execute to run the command.</p>
         </div>
@@ -210,7 +210,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
     return (
       <div className="space-y-4">
         {step.description && (
-          <p className="text-sm text-muted-foreground">{step.description}</p>
+          <p className="text-sm text-foreground/80">{step.description}</p>
         )}
         {step.fields.map(renderField)}
       </div>
@@ -275,7 +275,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
           <div className="flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-foreground/80">
             Executing command...
           </p>
           <Progress value={undefined} className="w-full" />

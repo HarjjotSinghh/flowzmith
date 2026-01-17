@@ -69,7 +69,7 @@ function AnimatedStatCard({
     }
   }, [value, loading])
 
-  const trendColor = trend === "up" ? "text-primary" : "text-muted-foreground"
+  const trendColor = trend === "up" ? "text-primary" : "text-foreground/80"
   const trendBg = trend === "up" ? "bg-primary/10" : "bg-muted/10"
   const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Activity
 
@@ -94,7 +94,7 @@ function AnimatedStatCard({
             loading ? "bg-muted/50" : "bg-primary/10 group-hover:bg-primary/20"
           }`}>
             {loading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Loader2 className="h-6 w-6 animate-spin text-foreground/80" />
             ) : (
               <div className={`transition-all duration-300 ${isAnimating ? "scale-110" : "group-hover:scale-110"}`}>
                 {icon}
@@ -127,7 +127,7 @@ function AnimatedStatCard({
           <div className="space-y-1">
             <p className="text-sm font-medium text-foreground">{title}</p>
             {subtitle && (
-              <p className="text-xs text-muted-foreground">{subtitle}</p>
+              <p className="text-xs text-foreground/80">{subtitle}</p>
             )}
           </div>
           
@@ -137,7 +137,7 @@ function AnimatedStatCard({
                 value={progress} 
                 className="h-2 bg-muted/30" 
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-foreground/80 mt-1">
                 {progress}% of monthly limit
               </p>
             </div>
@@ -309,7 +309,7 @@ export function EnhancedUsageStats() {
               <CardTitle className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Usage Analytics
               </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-foreground/80 mt-1">
                 Real-time development metrics • Last updated {lastUpdated.toLocaleTimeString()}
               </p>
             </div>
@@ -357,7 +357,7 @@ export function EnhancedUsageStats() {
         
         {/* Real-time status indicator */}
         <div className="flex items-center justify-center pt-4 border-t border-border/50">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-2 text-sm text-foreground/80">
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             <span>Real-time updates active</span>
             <Badge variant="outline" className="text-xs">

@@ -35,12 +35,12 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
       border: "border-destructive/20"
     },
     warning: { 
-      color: "text-muted-foreground", 
+      color: "text-foreground/80", 
       bg: "bg-muted/50", 
       border: "border-border"
     },
     info: { 
-      color: "text-muted-foreground", 
+      color: "text-foreground/80", 
       bg: "bg-muted/50", 
       border: "border-border"
     },
@@ -124,14 +124,14 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
         </div>
         
         <motion.p 
-          className="text-xs text-muted-foreground mb-3 leading-relaxed"
+          className="text-xs text-foreground/80 mb-3 leading-relaxed"
           layoutId={`description-${activity.id}`}
         >
           {activity.description}
         </motion.p>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+          <div className="flex items-center space-x-2 text-xs text-foreground/80">
             <Clock className="h-3 w-3" />
             <span>{activity.timestamp}</span>
           </div>
@@ -382,7 +382,7 @@ export function EnhancedRecentActivity() {
               <h2 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Recent Activity
               </h2>
-              <p className="text-sm text-muted-foreground">Real-time development updates</p>
+              <p className="text-sm text-foreground/80">Real-time development updates</p>
             </div>
           </div>
           
@@ -426,7 +426,7 @@ export function EnhancedRecentActivity() {
           >
             <div className="flex items-center space-x-3">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-muted-foreground">Loading activity...</span>
+              <span className="text-foreground/80">Loading activity...</span>
             </div>
           </motion.div>
         ) : (
@@ -443,10 +443,10 @@ export function EnhancedRecentActivity() {
               >
                 <div className="mb-4">
                   <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Activity className="h-8 w-8 text-muted-foreground" />
+                        <Activity className="h-8 w-8 text-foreground/80" />
                   </div>
-                  <p className="text-muted-foreground">No recent activity</p>
-                  <p className="text-xs text-muted-foreground/70 mt-1">Start a conversation to see activity here</p>
+                      <p className="text-foreground/80">No recent activity</p>
+                      <p className="text-xs text-foreground/80/70 mt-1">Start a conversation to see activity here</p>
                 </div>
               </motion.div>
             )}

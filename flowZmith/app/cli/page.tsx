@@ -747,7 +747,7 @@ export default function CLIWorkspacePage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-display font-semibold text-foreground">CLI Workspace</h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-foreground/80">
                 Execute CLI commands and view results in real-time
               </p>
             </div>
@@ -887,7 +887,7 @@ export default function CLIWorkspacePage() {
                       }}
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <div className="flex items-center justify-center h-full text-foreground/80">
                       <div className="text-center">
                         <FileCode className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No file selected</p>
@@ -912,7 +912,7 @@ export default function CLIWorkspacePage() {
               <TabsContent value="history" className="flex-1 m-0 p-4">
                 <ScrollArea className="h-full">
                   {executionHistory.length === 0 ? (
-                    <div className="text-center text-muted-foreground py-8">
+                    <div className="text-center text-foreground/80 py-8">
                       <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No execution history</p>
                       <p className="text-sm mt-2">
@@ -939,7 +939,7 @@ export default function CLIWorkspacePage() {
                               {entry.result.status}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-foreground/80">
                             {new Date(entry.timestamp).toLocaleString()}
                           </p>
                           {entry.result.error && (
@@ -978,7 +978,7 @@ export default function CLIWorkspacePage() {
           <div className="bg-background p-6 rounded-lg shadow-lg max-w-md">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
             <p className="text-sm text-center font-medium mb-2">Processing...</p>
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-xs text-center text-foreground/80">
               Generating contract files and setting up project structure
             </p>
           </div>

@@ -66,7 +66,7 @@ const McpConnectivityIllustration: React.FC<McpConnectivityIllustrationProps> = 
                 flexShrink: 0,
               }}
             >
-              <Search className="w-full h-full text-muted-foreground" />
+              <Search className="w-full h-full text-foreground/80" />
             </div>
             <span
               style={{

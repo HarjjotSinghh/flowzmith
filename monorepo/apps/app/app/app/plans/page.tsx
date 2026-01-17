@@ -171,7 +171,7 @@ export default function PlansPage() {
 
       {/* Plans Grid */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-[1440px] mx-auto">
           {PLANS.map((plan, index) => (
             <AnimatedSection key={plan.id} delay={index * 0.1}>
               <Card className={`relative h-full ${

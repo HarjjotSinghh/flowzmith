@@ -59,20 +59,28 @@ export const config = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.image = token.image as string
-        session.user.githubId = token.githubId as string
-        
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
+        session.user.githubId = token.githubId as string;
+
         // Fetch user data from database to get requestsLimit
+        // Gracefully handle errors to prevent session creation from failing
         try {
-          const userData = await userQueries.findByEmail(session.user.email)
-          if (userData) {
-            session.user.requestsLimit = userData.requestsLimit || 0
+          if (session.user.email) {
+            const userData = await userQueries.findByEmail(session.user.email);
+            if (userData) {
+              session.user.requestsLimit = userData.requestsLimit || 0;
+            } else {
+              // Set default if user not found
+              session.user.requestsLimit = 0;
+            }
           }
         } catch (error) {
-          console.error("Error fetching user data for session:", error)
+          console.error("Error fetching user data for session:", error);
+          // Set default on error to prevent session failure
+          session.user.requestsLimit = 0;
         }
       }
       return session

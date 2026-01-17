@@ -218,7 +218,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
             variant="ghost"
             size="sm"
             onClick={() => setHistory([])}
-            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+            className="h-6 w-6 p-0 text-foreground/80 hover:text-foreground"
           >
             <ChevronUp className="w-3 h-3" />
           </Button>
@@ -226,7 +226,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+            className="h-6 w-6 p-0 text-foreground/80 hover:text-foreground"
           >
             <X className="w-3 h-3" />
           </Button>
@@ -235,7 +235,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
       
       <div
         ref={terminalRef}
-        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-muted-foreground custom-scrollbar"
+        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-foreground/80 custom-scrollbar"
       >
         {history.map((line, index) => (
           <div key={index} className="mb-1">

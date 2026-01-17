@@ -2,29 +2,23 @@
 
 import { ReactNode } from "react";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ClerkProvider, useAuth } from "@clerk/nextjs";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 interface ConvexClientProviderProps {
   children: ReactNode;
 }
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+// Only initialize Convex client if the URL is provided
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
 
-export function ConvexClientProvider({ children }: ConvexClientProviderProps) {
-  return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
-    >
-      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        {children}
-      </ConvexProviderWithClerk>
-    </ClerkProvider>
-  );
-}
-
-// Alternative provider without Clerk (if using different auth)
+// Simple Convex provider for NextAuth integration
 export function SimpleConvexProvider({ children }: ConvexClientProviderProps) {
+  // If no Convex URL is provided, just render children without Convex
+  if (!convex) {
+    console.warn("NEXT_PUBLIC_CONVEX_URL not set - Convex functionality disabled");
+    return <>{children}</>;
+  }
+
   return (
     <ConvexProvider client={convex}>
       {children}

@@ -81,7 +81,7 @@ export default function EnhancedDashboardPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-muted-foreground"
+            className="text-foreground/80"
           >
             Loading your enhanced dashboard...
           </motion.p>
@@ -105,7 +105,7 @@ export default function EnhancedDashboardPage() {
 
       <DashboardHeader user={session.user} />
       
-      <div className="relative max-w-[1400px] mx-auto px-6 py-8">
+      <div className="relative max-w-[1440px] mx-auto px-6 py-8">
         {/* Welcome Section */}
         <AnimatedSection delay={0.1}>
           <motion.div 
@@ -118,25 +118,23 @@ export default function EnhancedDashboardPage() {
                 <h1 className="text-4xl font-bold text-foreground mb-2">
                   Welcome back, {session.user?.name?.split(' ')[0] || 'Developer'}
                 </h1>
-                <p className="text-lg text-muted-foreground">
+                <p className="text-lg text-foreground/80">
                   Your AI-powered smart contract development hub with real-time insights
                 </p>
               </div>
               
               <div className="flex items-center space-x-3">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="p-3 bg-card/50 hover:bg-card/70 border border-border/50 rounded-xl transition-all duration-200"
                 >
-                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  <Bell className="h-5 w-5 text-foreground/80" />
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="p-3 bg-card/50 hover:bg-card/70 border border-border/50 rounded-xl transition-all duration-200"
                 >
-                  <Settings className="h-5 w-5 text-muted-foreground" />
+                  <Settings className="h-5 w-5 text-foreground/80" />
                 </motion.button>
               </div>
             </div>
@@ -151,7 +149,7 @@ export default function EnhancedDashboardPage() {
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
                   <Sparkles className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Contracts</span>
+                  <span className="text-sm text-foreground/80">Contracts</span>
                 </div>
                 <motion.div
                   key={dashboardStats.totalContracts}
@@ -166,7 +164,7 @@ export default function EnhancedDashboardPage() {
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
                   <Activity className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Live Streams</span>
+                  <span className="text-sm text-foreground/80">Live Streams</span>
                 </div>
                 <motion.div
                   key={dashboardStats.activeStreams}
@@ -181,7 +179,7 @@ export default function EnhancedDashboardPage() {
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
                   <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Success Rate</span>
+                  <span className="text-sm text-foreground/80">Success Rate</span>
                 </div>
                 <motion.div
                   key={Math.round(dashboardStats.successRate)}
@@ -196,7 +194,7 @@ export default function EnhancedDashboardPage() {
               <div className="bg-gradient-to-r from-orange-500/10 to-orange-500/5 border border-orange-500/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
                   <Zap className="h-4 w-4 text-orange-500" />
-                  <span className="text-sm text-muted-foreground">Avg Response</span>
+                  <span className="text-sm text-foreground/80">Avg Response</span>
                 </div>
                 <motion.div
                   key={Math.round(dashboardStats.avgResponseTime)}
@@ -263,7 +261,7 @@ export default function EnhancedDashboardPage() {
           transition={{ delay: 0.8 }}
           className="mt-12 pt-8 border-t border-border/50 text-center"
         >
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/80">
             Powered by AI • Real-time streaming • Enhanced UX
           </p>
         </motion.div>

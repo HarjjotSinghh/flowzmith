@@ -33,7 +33,7 @@ export default function TestAuthPage() {
                     ? "text-primary" 
                     : status === "unauthenticated" 
                     ? "text-destructive" 
-                    : "text-muted-foreground"
+                      : "text-foreground/80"
                 }>
                   {status}
                 </span>
@@ -74,7 +74,7 @@ export default function TestAuthPage() {
             <div className="space-y-4">
               {!session ? (
                 <div className="space-y-2">
-                  <p className="text-muted-foreground">You are not signed in.</p>
+                  <p className="text-foreground/80">You are not signed in.</p>
                   <Link href="/login">
                     <Button>Go to Login</Button>
                   </Link>
@@ -110,7 +110,7 @@ export default function TestAuthPage() {
                 >
                   /api/auth/session
                 </a>
-                <span className="text-muted-foreground ml-2">- Check session data</span>
+                <span className="text-foreground/80 ml-2">- Check session data</span>
               </div>
               <div>
                 <a 
@@ -120,7 +120,7 @@ export default function TestAuthPage() {
                 >
                   /api/auth/providers
                 </a>
-                <span className="text-muted-foreground ml-2">- Check available providers</span>
+                <span className="text-foreground/80 ml-2">- Check available providers</span>
               </div>
               <div>
                 <a 
@@ -130,7 +130,7 @@ export default function TestAuthPage() {
                 >
                   /api/auth/signin/github
                 </a>
-                <span className="text-muted-foreground ml-2">- Direct GitHub sign-in</span>
+                <span className="text-foreground/80 ml-2">- Direct GitHub sign-in</span>
               </div>
             </div>
           </div>

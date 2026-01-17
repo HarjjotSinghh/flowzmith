@@ -71,7 +71,7 @@ contract TestContract {
           <Database className="h-10 w-10 text-primary" />
           Convex Integration Test
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
           This page demonstrates the real-time capabilities of Convex integration 
           with smart contract management, collaboration, and notifications.
         </p>
@@ -108,7 +108,7 @@ contract TestContract {
             </Button>
           </div>
           <div className="mt-4 p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-foreground/80">
               <strong>Current Contracts:</strong> {userContracts?.length || 0} contracts loaded
             </p>
           </div>
@@ -148,7 +148,7 @@ contract TestContract {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">
+                  <p className="text-foreground/80">
                   Create a contract first to test collaboration features
                 </p>
               </CardContent>
@@ -168,21 +168,21 @@ contract TestContract {
               <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Convex Backend</p>
-                <p className="text-sm text-muted-foreground">Connected & Running</p>
+                <p className="text-sm text-foreground/80">Connected & Running</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 border rounded-lg">
               <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Real-time Updates</p>
-                <p className="text-sm text-muted-foreground">Active</p>
+                <p className="text-sm text-foreground/80">Active</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 border rounded-lg">
               <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Authentication</p>
-                <p className="text-sm text-muted-foreground">Ready</p>
+                <p className="text-sm text-foreground/80">Ready</p>
               </div>
             </div>
           </div>

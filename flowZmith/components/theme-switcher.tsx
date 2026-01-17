@@ -27,7 +27,7 @@ export function ThemeSwitcher() {
         className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
           activeTheme === 'light'
             ? 'bg-foreground text-background'
-            : 'text-muted-foreground hover:text-foreground'
+          : 'text-foreground/80 hover:text-foreground'
         }`}
       >
         <Sun className="h-4 w-4" />
@@ -39,7 +39,7 @@ export function ThemeSwitcher() {
         className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
           activeTheme === 'dark'
             ? 'bg-foreground text-background'
-            : 'text-muted-foreground hover:text-foreground'
+          : 'text-foreground/80 hover:text-foreground'
         }`}
       >
         <Moon className="h-4 w-4" />

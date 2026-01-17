@@ -44,9 +44,9 @@ export function RealTimeDashboard() {
       case "failed":
         return <XCircle className="h-4 w-4 text-destructive" />;
       case "pending":
-        return <Clock className="h-4 w-4 text-muted-foreground" />;
+        return <Clock className="h-4 w-4 text-foreground/80" />;
       default:
-        return <Activity className="h-4 w-4 text-muted-foreground" />;
+        return <Activity className="h-4 w-4 text-foreground/80" />;
     }
   };
 
@@ -57,13 +57,13 @@ export function RealTimeDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Contracts</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-foreground/80" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {userContracts?.length || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/80">
               Active smart contracts
             </p>
           </CardContent>
@@ -72,13 +72,13 @@ export function RealTimeDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Deployments (7d)</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-foreground/80" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {deploymentStats?.totalDeployments || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/80">
               {deploymentStats?.successRate || 0}% success rate
             </p>
           </CardContent>
@@ -87,13 +87,13 @@ export function RealTimeDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Deployments</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-foreground/80" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {deploymentStats?.pendingDeployments || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/80">
               Pending deployments
             </p>
           </CardContent>
@@ -102,13 +102,13 @@ export function RealTimeDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Notifications</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <Bell className="h-4 w-4 text-foreground/80" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {unreadCount || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/80">
               Unread notifications
             </p>
           </CardContent>
@@ -137,7 +137,7 @@ export function RealTimeDashboard() {
                       <p className="font-medium text-sm">
                         {deployment.contractName}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-foreground/80">
                         {deployment.network} • {new Date(deployment._creationTime).toLocaleString()}
                       </p>
                     </div>
@@ -151,7 +151,7 @@ export function RealTimeDashboard() {
                 </div>
               ))}
               {(!recentActivity || recentActivity.length === 0) && (
-                <p className="text-sm text-muted-foreground text-center py-4">
+                <p className="text-sm text-foreground/80 text-center py-4">
                   No recent deployments
                 </p>
               )}
@@ -181,19 +181,19 @@ export function RealTimeDashboard() {
                   <p className="text-2xl font-bold text-primary">
                     {deploymentStats?.successfulDeployments || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Successful</p>
+                  <p className="text-xs text-foreground/80">Successful</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-destructive">
                     {deploymentStats?.failedDeployments || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Failed</p>
+                  <p className="text-xs text-foreground/80">Failed</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">
                     {deploymentStats?.pendingDeployments || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Pending</p>
+                  <p className="text-xs text-foreground/80">Pending</p>
                 </div>
               </div>
             </div>
@@ -224,11 +224,11 @@ export function RealTimeDashboard() {
                     {contract.language}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mb-2">
+                <p className="text-xs text-foreground/80 mb-2">
                   {contract.description?.slice(0, 80)}...
                 </p>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">
+                  <span className="text-foreground/80">
                     {new Date(contract._creationTime).toLocaleDateString()}
                   </span>
                   <Badge

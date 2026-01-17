@@ -75,7 +75,7 @@ function StreamingActionCard({
           <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
             {title}
           </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-foreground/80 leading-relaxed">
             {description}
           </p>
         </div>
@@ -130,7 +130,7 @@ function NavigationCard({ title, description, icon, href, count }: NavigationCar
               </Badge>
             )}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          <p className="text-sm text-foreground/80 mt-1">{description}</p>
         </div>
       </div>
     </Link>
@@ -235,7 +235,7 @@ export function StreamingQuickActions() {
             <CardTitle className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
               AI-Powered Actions
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-foreground/80 mt-1">
               Generate and optimize contracts with streaming AI
             </p>
           </div>

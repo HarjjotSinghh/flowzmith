@@ -17,7 +17,7 @@ function CostItem({ service, amount, usage, percentage, loading }: CostItemProps
     <div className="flex items-center justify-between p-4 bg-card/70 rounded-2xl border border-border/70">
       <div className="flex-1">
         <p className="font-medium text-foreground">{service}</p>
-        <p className="text-sm text-muted-foreground">{loading ? "Loading..." : usage}</p>
+        <p className="text-sm text-foreground/80">{loading ? "Loading..." : usage}</p>
       </div>
       <div className="text-right">
         <p className="font-semibold text-foreground">{loading ? "..." : amount}</p>
@@ -28,7 +28,7 @@ function CostItem({ service, amount, usage, percentage, loading }: CostItemProps
               style={{ width: `${Math.min(percentage, 100)}%` }}
             />
           </div>
-          <span className="text-xs text-muted-foreground">{loading ? "..." : `${percentage}%`}</span>
+          <span className="text-xs text-foreground/80">{loading ? "..." : `${percentage}%`}</span>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ export function CostTracking() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-1">Cost Tracking</h2>
-          <p className="text-muted-foreground">Current month spending breakdown</p>
+          <p className="text-foreground/80">Current month spending breakdown</p>
         </div>
         <Button variant="outline" size="sm" className="flex items-center space-x-2">
           <CreditCard className="h-4 w-4" />
@@ -148,7 +148,7 @@ export function CostTracking() {
         
         <div className="bg-muted/60 rounded-2xl p-4">
           <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-foreground/80" />
             <span className="text-sm font-medium text-foreground">Projected Monthly</span>
           </div>
           <p className="text-2xl font-bold text-foreground">
@@ -179,7 +179,7 @@ export function CostTracking() {
       <div className="mt-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-foreground">Budget Usage</span>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-foreground/80">
             {loading ? "..." : `${budgetUsage}% used`}
           </span>
         </div>

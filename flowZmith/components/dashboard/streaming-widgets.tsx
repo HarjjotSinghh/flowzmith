@@ -149,12 +149,12 @@ function ContractGenerationWidget() {
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-card/30 rounded-xl p-4 border border-border/30">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Active</span>
+              <span className="text-sm text-foreground/80">Active</span>
               <motion.div
                 animate={{ rotate: activeGenerations.length > 0 ? 360 : 0 }}
                 transition={{ duration: 2, repeat: activeGenerations.length > 0 ? Infinity : 0, ease: "linear" }}
               >
-                <Loader2 className={`h-4 w-4 ${activeGenerations.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                <Loader2 className={`h-4 w-4 ${activeGenerations.length > 0 ? 'text-primary' : 'text-foreground/80'}`} />
               </motion.div>
             </div>
             <div className="text-2xl font-bold text-foreground">{activeGenerations.length}</div>
@@ -162,7 +162,7 @@ function ContractGenerationWidget() {
           
           <div className="bg-card/30 rounded-xl p-4 border border-border/30">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Today</span>
+              <span className="text-sm text-foreground/80">Today</span>
               <CheckCircle className="h-4 w-4 text-primary" />
             </div>
             <motion.div 
@@ -201,15 +201,15 @@ function ContractGenerationWidget() {
                   />
                 </div>
                 
-                <p className="text-xs text-muted-foreground">{generation.description}</p>
+                <p className="text-xs text-foreground/80">{generation.description}</p>
               </motion.div>
             ))}
           </AnimatePresence>
           
           {activeGenerations.length === 0 && (
             <div className="text-center py-6">
-              <Code className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No active generations</p>
+              <Code className="h-8 w-8 text-foreground/80 mx-auto mb-2" />
+              <p className="text-sm text-foreground/80">No active generations</p>
             </div>
           )}
         </div>
@@ -237,7 +237,7 @@ function SystemStatusWidget() {
 
   const getStatusColor = (value: number, thresholds: [number, number]) => {
     if (value < thresholds[0]) return "text-primary"
-    if (value < thresholds[1]) return "text-muted-foreground"
+    if (value < thresholds[1]) return "text-foreground/80"
     return "text-destructive"
   }
 
@@ -274,7 +274,7 @@ function SystemStatusWidget() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
                 <Cpu className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">CPU</span>
+                <span className="text-sm text-foreground/80">CPU</span>
               </div>
               <span className={`text-sm font-medium ${getStatusColor(cpuUsage, [60, 80])}`}>
                 {Math.round(cpuUsage)}%
@@ -295,7 +295,7 @@ function SystemStatusWidget() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">Memory</span>
+                <span className="text-sm text-foreground/80">Memory</span>
               </div>
               <span className={`text-sm font-medium ${getStatusColor(memoryUsage, [70, 85])}`}>
                 {Math.round(memoryUsage)}%
@@ -316,7 +316,7 @@ function SystemStatusWidget() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">API Latency</span>
+                <span className="text-sm text-foreground/80">API Latency</span>
               </div>
               <span className={`text-sm font-medium ${getStatusColor(apiLatency, [100, 150])}`}>
                 {Math.round(apiLatency)}ms
@@ -359,7 +359,7 @@ function LiveMetricsWidget() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               <Users className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">Active Users</span>
+              <span className="text-sm text-foreground/80">Active Users</span>
             </div>
             <motion.div
               key={activeUsers}
@@ -380,7 +380,7 @@ function LiveMetricsWidget() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               <Activity className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">Requests/min</span>
+              <span className="text-sm text-foreground/80">Requests/min</span>
             </div>
             <motion.div
               key={requestsPerMinute}
@@ -401,7 +401,7 @@ function LiveMetricsWidget() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">Success Rate</span>
+              <span className="text-sm text-foreground/80">Success Rate</span>
             </div>
             <motion.div
               key={Math.round(successRate)}

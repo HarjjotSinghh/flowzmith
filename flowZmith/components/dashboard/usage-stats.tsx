@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { TrendingUp, Zap, Database, Clock, Loader2 } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface StatCardProps {
   title: string
@@ -10,32 +11,47 @@ interface StatCardProps {
   icon: React.ReactNode
   trend: "up" | "down" | "neutral"
   loading?: boolean
+  index: number
 }
 
-function StatCard({ title, value, change, icon, trend, loading }: StatCardProps) {
-  const trendColor = trend === "up" ? "text-primary" : "text-muted-foreground"
-  
+function StatCard({ title, value, change, icon, trend, loading, index }: StatCardProps) {
   return (
-    <div className="bg-card/80 rounded-2xl border border-border/70 p-6 hover:shadow-md transition-all duration-200">
+    <motion.div
+      initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
+      animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      whileHover={{ y: -4, backgroundColor: "hsl(var(--muted)/0.1)" }}
+      className="bg-background border-2 border-foreground p-4 relative group transition-all"
+    >
       <div className="flex items-center justify-between mb-4">
-        <div className="p-2 bg-primary/10 rounded-lg">
-          {icon}
+        <div className="h-10 w-10 bg-black flex items-center justify-center border border-foreground group-hover:bg-accent group-hover:border-black transition-colors duration-300">
+          <div className="group-hover:text-black transition-colors duration-300">
+            {icon}
+          </div>
         </div>
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="h-4 w-4 animate-spin text-accent" />
         ) : (
-          <span className={`text-sm font-medium ${trendColor}`}>
+            <motion.span
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className={`text-[10px] font-black px-1 ${trend === 'up' ? 'bg-accent text-black' : 'bg-black text-white'}`}
+            >
             {change}
-          </span>
+            </motion.span>
         )}
       </div>
       <div>
-        <p className="text-2xl font-bold text-foreground mb-1">
+        <p className="text-2xl font-black text-foreground mb-1 tracking-tighter uppercase group-hover:text-accent transition-colors duration-300">
           {loading ? "..." : value}
         </p>
-        <p className="text-sm text-muted-foreground">{title}</p>
+        <p className="text-[10px] font-black text-foreground/80 uppercase tracking-widest group-hover:text-foreground transition-colors duration-300">{title}</p>
       </div>
-    </div>
+      <motion.div
+        className="absolute bottom-0 right-0 w-2 h-2 bg-foreground"
+        whileHover={{ backgroundColor: "hsl(var(--accent))" }}
+      />
+    </motion.div>
   )
 }
 
@@ -74,13 +90,7 @@ export function UsageStats() {
         const response = await fetch('/api/dashboard/stats')
         
         if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Please log in to view dashboard statistics')
-          } else if (response.status === 404) {
-            throw new Error('User not found. Please try logging in again')
-          } else {
-            throw new Error(`Failed to fetch stats (${response.status})`)
-          }
+          throw new Error(`Failed to fetch stats (${response.status})`)
         }
         
         const data = await response.json()
@@ -98,57 +108,61 @@ export function UsageStats() {
 
   const statsData = stats ? [
     {
-      title: "API Calls Today",
+      title: "API CALLS 24H",
       value: stats.apiCallsToday.value,
       change: stats.apiCallsToday.change,
-      icon: <Zap className="h-5 w-5 text-primary" />,
+      icon: <Zap className="h-5 w-5 text-accent" />,
       trend: stats.apiCallsToday.trend
     },
     {
-      title: "Tokens Processed",
+      title: "TOKENS PROCESSED",
       value: stats.tokensProcessed.value,
       change: stats.tokensProcessed.change,
-      icon: <Database className="h-5 w-5 text-primary" />,
+      icon: <Database className="h-5 w-5 text-accent" />,
       trend: stats.tokensProcessed.trend
     },
     {
-      title: "Avg Response Time",
+      title: "AVG LATENCY",
       value: stats.avgResponseTime.value,
       change: stats.avgResponseTime.change,
-      icon: <Clock className="h-5 w-5 text-primary" />,
+      icon: <Clock className="h-5 w-5 text-accent" />,
       trend: stats.avgResponseTime.trend
     },
     {
-      title: "Success Rate",
+      title: "SUCCESS RATE",
       value: stats.successRate.value,
       change: stats.successRate.change,
-      icon: <TrendingUp className="h-5 w-5 text-primary" />,
+      icon: <TrendingUp className="h-5 w-5 text-accent" />,
       trend: stats.successRate.trend
     }
-  ] : []
+  ] : [
+    { title: "API CALLS 24H", value: "0", change: "+0%", icon: <Zap className="h-5 w-5 text-accent" />, trend: "neutral" as const },
+    { title: "TOKENS PROCESSED", value: "0", change: "+0%", icon: <Database className="h-5 w-5 text-accent" />, trend: "neutral" as const },
+    { title: "AVG LATENCY", value: "0ms", change: "0%", icon: <Clock className="h-5 w-5 text-accent" />, trend: "neutral" as const },
+    { title: "SUCCESS RATE", value: "0%", change: "0%", icon: <TrendingUp className="h-5 w-5 text-accent" />, trend: "neutral" as const }
+  ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-2">Usage Statistics</h2>
-        <p className="text-muted-foreground">Your AI development activity overview</p>
-      </div>
-      
+    <div className="space-y-4">
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-          <p className="text-destructive text-sm mb-2">Failed to load usage statistics: {error}</p>
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="bg-red-500 text-white p-4 font-black text-xs border-2 border-foreground mb-4"
+        >
+          ERROR: {error.toUpperCase()}
           <button 
             onClick={() => window.location.reload()} 
-            className="text-sm text-destructive hover:text-destructive/80 underline"
+            className="ml-4 underline hover:bg-black p-1 transition-colors"
           >
-            Retry
+            RETRY SYNC
           </button>
-        </div>
+        </motion.div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsData.map((stat, index) => (
-          <StatCard key={index} {...stat} loading={loading} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {(loading && !stats ? Array(4).fill(statsData[0]) : statsData).map((stat, index) => (
+          <StatCard key={index} {...stat} loading={loading} index={index} />
         ))}
       </div>
     </div>

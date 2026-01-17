@@ -27,7 +27,7 @@ function ActionCard({ title, description, icon, href, variant = "default" }: Act
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-foreground mb-1">{title}</h3>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-sm text-foreground/80">{description}</p>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ export function QuickActions() {
     <div className="bg-card/80 rounded-2xl border border-border/70 p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-foreground mb-1">Quick Actions</h2>
-        <p className="text-muted-foreground">Start building with AI assistance</p>
+        <p className="text-foreground/80">Start building with AI assistance</p>
       </div>
       
       <div className="space-y-3">
@@ -115,7 +115,7 @@ export function QuickActions() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">{action.title}</p>
-                  <p className="text-xs text-muted-foreground">{action.description}</p>
+                  <p className="text-xs text-foreground/80">{action.description}</p>
                 </div>
               </div>
             </Link>

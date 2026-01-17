@@ -99,9 +99,9 @@ export function RealTimeCollaboration({
       case "delete":
         return <UserMinus className="h-4 w-4 text-destructive" />;
       case "modify":
-        return <Code className="h-4 w-4 text-muted-foreground" />;
+        return <Code className="h-4 w-4 text-foreground/80" />;
       default:
-        return <Activity className="h-4 w-4 text-muted-foreground" />;
+        return <Activity className="h-4 w-4 text-foreground/80" />;
     }
   };
 
@@ -179,7 +179,7 @@ export function RealTimeCollaboration({
                       </span>
                       <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-foreground/80">
                           {participant.role || "collaborator"}
                         </span>
                       </div>
@@ -194,19 +194,19 @@ export function RealTimeCollaboration({
                   <p className="text-lg font-bold text-primary">
                     {collaborationStats?.totalSessions || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Total Sessions</p>
+                  <p className="text-xs text-foreground/80">Total Sessions</p>
                 </div>
                 <div className="p-3 border rounded-lg">
                   <p className="text-lg font-bold text-primary">
                     {collaborationStats?.totalChanges || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Total Changes</p>
+                  <p className="text-xs text-foreground/80">Total Changes</p>
                 </div>
                 <div className="p-3 border rounded-lg">
                   <p className="text-lg font-bold text-primary">
                     {collaborationStats?.uniqueCollaborators || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">Collaborators</p>
+                  <p className="text-xs text-foreground/80">Collaborators</p>
                 </div>
               </div>
             </div>
@@ -241,7 +241,7 @@ export function RealTimeCollaboration({
                           {change.type}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-1">
+                      <p className="text-sm text-foreground/80 mb-1">
                         Line {change.startLine}-{change.endLine}
                       </p>
                       {change.content && (
@@ -250,7 +250,7 @@ export function RealTimeCollaboration({
                           {change.content.length > 100 && "..."}
                         </pre>
                       )}
-                      <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 mt-2 text-xs text-foreground/80">
                         <Clock className="h-3 w-3" />
                         {new Date(change._creationTime).toLocaleString()}
                       </div>
@@ -259,8 +259,8 @@ export function RealTimeCollaboration({
                 ))}
                 {(!recentChanges || recentChanges.length === 0) && (
                   <div className="text-center py-8">
-                    <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
+                    <Activity className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
+                    <p className="text-foreground/80">
                       No recent changes in this session
                     </p>
                   </div>

@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-semibold text-foreground mb-2">Analytics</h1>
-              <p className="text-muted-foreground">
+              <p className="text-foreground/80">
                 Track your platform performance and usage metrics
               </p>
             </div>
@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   timeRange === range.key
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted"
                 }`}
               >
                 {range.label}
@@ -164,7 +164,7 @@ export default function AnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-1">
+                      <p className="text-sm font-medium text-foreground/80 mb-1">
                         {metric.title}
                       </p>
                       <p className="text-2xl font-bold text-foreground mb-1">
@@ -174,10 +174,10 @@ export default function AnalyticsPage() {
                         {metric.changeType === "increase" ? (
                           <ArrowUpRight className="h-4 w-4 text-primary" />
                         ) : (
-                          <ArrowDownRight className="h-4 w-4 text-muted-foreground" />
+                            <ArrowDownRight className="h-4 w-4 text-foreground/80" />
                         )}
                         <span className={`text-sm font-medium ${
-                          metric.changeType === "increase" ? "text-primary" : "text-muted-foreground"
+                          metric.changeType === "increase" ? "text-primary" : "text-foreground/80"
                         }`}>
                           {metric.change > 0 ? "+" : ""}{metric.change}%
                         </span>
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
                       {metric.icon}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-foreground/80 mt-2">
                     {metric.description}
                   </p>
                 </CardContent>
@@ -211,7 +211,7 @@ export default function AnalyticsPage() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === tab.key
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted"
                 }`}
               >
                 {tab.icon}
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
                           <span className="text-sm font-medium">{type.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">{type.value} contracts</span>
+                          <span className="text-sm text-foreground/80">{type.value} contracts</span>
                           <div className="w-16 bg-muted rounded-full h-2">
                             <div 
                               className="h-2 rounded-full" 
@@ -277,11 +277,11 @@ export default function AnalyticsPage() {
                         <span className="text-sm font-medium">{data.day}</span>
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Contracts:</span>
+                            <span className="text-xs text-foreground/80">Contracts:</span>
                             <span className="text-sm font-medium">{data.contracts}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Users:</span>
+                            <span className="text-xs text-foreground/80">Users:</span>
                             <span className="text-sm font-medium">{data.users}</span>
                           </div>
                         </div>
@@ -302,7 +302,7 @@ export default function AnalyticsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-1">
+                        <p className="text-sm font-medium text-foreground/80 mb-1">
                           {metric.name}
                         </p>
                         <p className="text-2xl font-bold text-foreground">
@@ -313,7 +313,7 @@ export default function AnalyticsPage() {
                         {metric.trend === "up" ? (
                           <TrendingUp className="h-5 w-5 text-primary" />
                         ) : (
-                          <TrendingDown className="h-5 w-5 text-muted-foreground" />
+                            <TrendingDown className="h-5 w-5 text-foreground/80" />
                         )}
                       </div>
                     </div>
@@ -332,9 +332,9 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
-                  <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <Activity className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">Usage Analytics</h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-foreground/80">
                     Detailed usage analytics and insights coming soon
                   </p>
                 </div>
@@ -351,9 +351,9 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
-                  <Code className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <Code className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">Contract Analytics</h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-foreground/80">
                     Detailed contract analytics and insights coming soon
                   </p>
                 </div>

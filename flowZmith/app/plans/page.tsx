@@ -89,7 +89,7 @@ export default function PlansPage() {
           <div className="flex items-center justify-between gap-6">
             <div>
               <h1 className="text-3xl font-display font-semibold text-foreground">Choose your plan</h1>
-              <p className="text-muted-foreground mt-2">
+              <p className="text-foreground/80 mt-2">
                 Select the perfect plan for your smart contract development needs
               </p>
             </div>
@@ -100,17 +100,17 @@ export default function PlansPage() {
               {wallet.isConnected ? (
                 <div className="flex items-center gap-3">
                   <div className="text-sm">
-                    <div className="text-muted-foreground">Balance</div>
+                    <div className="text-foreground/80">Balance</div>
                     <div className="font-semibold">{wallet.balance || '0'} FLOW</div>
                   </div>
                   <div className="text-sm text-right">
-                    <div className="text-muted-foreground">Network</div>
+                    <div className="text-foreground/80">Network</div>
                     <div className="font-semibold">
                       {wallet.chainId === 747 ? 'Flow EVM' : 'Wrong Network'}
                     </div>
                   </div>
                   <div className="text-sm text-right max-w-[120px]">
-                    <div className="text-muted-foreground">Address</div>
+                    <div className="text-foreground/80">Address</div>
                     <div className="font-semibold text-xs">
                       {wallet.address?.slice(0, 6)}...{wallet.address?.slice(-4)}
                     </div>
@@ -173,7 +173,7 @@ export default function PlansPage() {
 
       {/* Plans Grid */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-[1440px] mx-auto">
           {PLANS.map((plan, index) => (
             <AnimatedSection key={plan.id} delay={index * 0.1}>
               <Card className={`relative h-full ${
@@ -202,12 +202,12 @@ export default function PlansPage() {
                   }`}>
                     {plan.name}
                   </CardTitle>
-                  <p className="text-muted-foreground">{plan.description}</p>
+                  <p className="text-foreground/80">{plan.description}</p>
                   <div className="pt-4">
                     <div className="text-4xl font-bold text-foreground">
-                      {plan.price} <span className="text-lg text-muted-foreground">FLOW</span>
+                      {plan.price} <span className="text-lg text-foreground/80">FLOW</span>
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-foreground/80">
                       {plan.credits} credits
                     </div>
                   </div>
@@ -264,7 +264,7 @@ export default function PlansPage() {
                   <Wallet className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold">Connect Wallet</h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/80">
                   Connect your EVM wallet and switch to Flow EVM network
                 </p>
               </div>
@@ -273,7 +273,7 @@ export default function PlansPage() {
                   <CreditCard className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold">Choose Plan</h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/80">
                   Select the plan that best fits your development needs
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default function PlansPage() {
                   <Zap className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold">Start Building</h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/80">
                   Use your credits to generate smart contracts with AI
                 </p>
               </div>

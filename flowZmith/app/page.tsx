@@ -18,45 +18,53 @@ export default function LandingPage() {
       <main className="mx-auto">
         <HeroSection />
 
-        <div className="mx-auto max-w-6xl px-6">
-          <AnimatedSection className="mt-16" delay={0.1} animation="fadeInUp">
+        {/* <div className="mx-auto max-w-[1440px]">
+          <AnimatedSection className="" delay={0.1} animation="fadeInUp">
             <DashboardPreview />
           </AnimatedSection>
-        </div>
+        </div> */}
 
-        <AnimatedSection className="mt-20" delay={0.1} animation="fadeInUp">
+        <AnimatedSection className="
+        " delay={0.1} animation="fadeInUp">
           <SocialProof />
         </AnimatedSection>
 
-        <AnimatedSection id="features-section" className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection id="features-section" className="
+        " delay={0.2} animation="fadeInUp">
           <BentoSection />
         </AnimatedSection>
 
-        <AnimatedSection className="mt-20" delay={0.3} animation="fadeInUp">
+        <AnimatedSection className="
+        " delay={0.3} animation="fadeInUp">
           <LiveDemoSection />
         </AnimatedSection>
 
-        <AnimatedSection className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection className="
+        " delay={0.2} animation="fadeInUp">
           <LargeTestimonial />
         </AnimatedSection>
 
-        <AnimatedSection id="pricing-section" className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection id="pricing-section" className="
+        " delay={0.2} animation="fadeInUp">
           <PricingSection />
         </AnimatedSection>
 
-        <AnimatedSection id="testimonials-section" className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection id="testimonials-section" className="
+        " delay={0.2} animation="fadeInUp">
           <TestimonialGridSection />
         </AnimatedSection>
 
-        <AnimatedSection id="faq-section" className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection id="faq-section" className="
+        " delay={0.2} animation="fadeInUp">
           <FAQSection />
         </AnimatedSection>
 
-        <AnimatedSection className="mt-20" delay={0.2} animation="fadeInUp">
+        <AnimatedSection className="
+        " delay={0.2} animation="fadeInUp">
           <CTASection />
         </AnimatedSection>
 
-        <AnimatedSection className="mt-16" delay={0.2} animation="fadeInUp">
+        <AnimatedSection className="" delay={0.2} animation="fadeInUp">
           <FooterSection />
         </AnimatedSection>
       </main>

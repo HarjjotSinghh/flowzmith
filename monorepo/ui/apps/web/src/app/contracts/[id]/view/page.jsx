@@ -86,7 +86,7 @@ export default function ContractView({ params }) {
     <div className="min-h-screen bg-[#F3F3F3] dark:bg-[#0A0A0A]">
       {/* Header */}
       <div className="bg-white dark:bg-[#1E1E1E] border-b border-[#E6E6E6] dark:border-[#333333]">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-6">
           <div className="flex items-center gap-4 mb-4">
             <a 
               href="/"
@@ -131,7 +131,7 @@ export default function ContractView({ params }) {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">

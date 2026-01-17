@@ -37,11 +37,11 @@ export function RealTimeNotifications() {
       case "deployment_failed":
         return <XCircle className="h-4 w-4 text-destructive" />;
       case "collaboration_invite":
-        return <Users className="h-4 w-4 text-muted-foreground" />;
+        return <Users className="h-4 w-4 text-foreground/80" />;
       case "system":
         return <AlertCircle className="h-4 w-4 text-orange-500" />;
       default:
-        return <Info className="h-4 w-4 text-muted-foreground" />;
+        return <Info className="h-4 w-4 text-foreground/80" />;
     }
   };
 
@@ -143,10 +143,10 @@ export function RealTimeNotifications() {
                           <div className="w-2 h-2 bg-primary rounded-full" />
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-sm text-foreground/80 mb-2">
                         {notification.message}
                       </p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4 text-xs text-foreground/80">
                         <span>
                           {new Date(notification._creationTime).toLocaleString()}
                         </span>
@@ -171,7 +171,7 @@ export function RealTimeNotifications() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteNotification(notification._id)}
-                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                      className="h-8 w-8 p-0 text-foreground/80 hover:text-destructive"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -181,8 +181,8 @@ export function RealTimeNotifications() {
             ))}
             {(!notifications || notifications.length === 0) && (
               <div className="text-center py-8">
-                <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">
+                <Bell className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
+                <p className="text-foreground/80">
                   {showUnreadOnly ? "No unread notifications" : "No notifications yet"}
                 </p>
               </div>

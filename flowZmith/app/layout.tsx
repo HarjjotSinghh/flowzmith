@@ -1,35 +1,24 @@
 import type { Metadata } from 'next'
-import { Manrope, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SessionProvider } from 'next-auth/react'
 import AppKitProvider from '@/contexts/AppKitProvider'
 import { SimpleConvexProvider } from "@/components/providers/convex-provider";
+import { WalletProvider } from '@/contexts/WalletProviderHybrid'
 import { headers } from 'next/headers'
 import './globals.css'
 import ContextProvider from '@/context'
 import { ThemeProvider } from '@/components/theme-provider'
 
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  weight: ['400', '500', '600', '700'],
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['400', '500', '600', '700'],
-})
-
-const jetbrainsMono = JetBrains_Mono({
+const mono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
-  title: 'Smart Contract AI Builder',
-  description: 'AI-powered smart contract generation platform',
+  title: 'FLOWZMITH // AI BUILDER',
+  description: 'AI-powered smart contract generation platform for Flow',
 }
 
 export default async function RootLayout({
@@ -41,14 +30,16 @@ export default async function RootLayout({
   const cookies = headersObj.get('cookie')
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${manrope.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${mono.variable} font-mono selection:bg-accent selection:text-black`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
           <SimpleConvexProvider>
             <AppKitProvider cookies={cookies}>
-              <ContextProvider cookies={cookies}>
-                <SessionProvider>{children}</SessionProvider>
-              </ContextProvider>
+              <WalletProvider>
+                <ContextProvider cookies={cookies}>
+                  <SessionProvider>{children}</SessionProvider>
+                </ContextProvider>
+              </WalletProvider>
             </AppKitProvider>
           </SimpleConvexProvider>
         </ThemeProvider>

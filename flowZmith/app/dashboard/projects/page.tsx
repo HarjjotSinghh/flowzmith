@@ -86,9 +86,9 @@ export default function ProjectsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active": return "text-primary bg-primary/10"
-      case "completed": return "text-muted-foreground bg-muted/60"
-      case "archived": return "text-muted-foreground bg-muted/40"
-      default: return "text-muted-foreground bg-muted/40"
+      case "completed": return "text-foreground/80 bg-muted/60"
+      case "archived": return "text-foreground/80 bg-muted/40"
+      default: return "text-foreground/80 bg-muted/40"
     }
   }
 
@@ -101,7 +101,7 @@ export default function ProjectsPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-semibold text-foreground mb-2">Projects</h1>
-              <p className="text-muted-foreground">
+              <p className="text-foreground/80">
                 Manage your smart contract projects and development workflows
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function ProjectsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === tab.key
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted"
                 }`}
               >
                 {tab.label} ({tab.count})
@@ -161,11 +161,11 @@ export default function ProjectsPage() {
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
-                  <p className="text-muted-foreground text-sm line-clamp-2">
+                  <p className="text-foreground/80 text-sm line-clamp-2">
                     {project.description}
                   </p>
                   
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-4 text-sm text-foreground/80">
                     <div className="flex items-center gap-1">
                       <Code className="h-4 w-4" />
                       {project.contracts} contracts
@@ -176,7 +176,7 @@ export default function ProjectsPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1 text-sm text-foreground/80">
                     <Clock className="h-4 w-4" />
                     Updated {project.lastModified}
                   </div>
@@ -216,9 +216,9 @@ export default function ProjectsPage() {
         {filteredProjects.length === 0 && (
           <AnimatedSection delay={0.3}>
             <div className="text-center py-12">
-              <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <FolderOpen className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">No projects found</h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-foreground/80 mb-4">
                 {filter === "all" 
                   ? "Get started by creating your first project"
                   : `No ${filter} projects found`

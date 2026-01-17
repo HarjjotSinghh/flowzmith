@@ -1,33 +1,59 @@
+"use client"
+
 import Image from "next/image"
+import { motion } from "framer-motion"
+import { Quote } from "lucide-react"
 
 export function LargeTestimonial() {
   return (
-    <section className="w-full px-5 overflow-hidden flex justify-center items-center bg-card/30 backdrop-blur-sm">
-      <div className="flex-1 flex flex-col justify-start items-start overflow-hidden">
-        <div className="self-stretch px-4 py-12 md:px-6 md:py-16 lg:py-28 flex flex-col justify-start items-start gap-2">
-          <div className="self-stretch flex justify-between items-center">
-            <div className="flex-1 px-4 py-8 md:px-12 lg:px-20 md:py-8 lg:py-10 overflow-hidden rounded-lg flex flex-col justify-center items-center gap-6 md:gap-8 lg:gap-11">
-              <div className="w-full max-w-[1024px] text-center text-foreground leading-7 md:leading-10 lg:leading-[64px] font-medium text-lg md:text-3xl lg:text-6xl">
-                {
-                  "Flowzmith's real-time previews cut our debugging time in half and made coding collaboratively actually enjoyable."
-                }
-              </div>
-              <div className="flex justify-start items-center gap-5">
-                <Image
-                  src="/images/guillermo-rauch.png"
-                  alt="Guillermo Rauch avatar"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 relative rounded-full"
-                  style={{ border: "1px solid rgba(0, 0, 0, 0.08)" }}
-                />
-                <div className="flex flex-col justify-start items-start">
-                  <div className="text-foreground text-base font-medium leading-6">Guillermo Rauch</div>
-                  <div className="text-muted-foreground text-sm font-normal leading-6">{"CEO, Vercel"}</div>
-                </div>
-              </div>
+    <section className="w-full border-y-4 border-foreground overflow-hidden bg-background py-24 border-x-2 border-foreground mx-auto max-w-[1400px] lg:px-16 relative">
+      {/* Decorative elements */}
+      <div className="absolute top-4 left-4 text-[10px] font-black text-foreground/80 opacity-30">TESTIMONIAL 01 CORE</div>
+      <div className="absolute bottom-4 right-4 text-[10px] font-black text-foreground/80 opacity-30">VERIFIED BLOCK 772A</div>
+
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex flex-col items-center gap-12 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="h-16 w-16 bg-accent flex items-center justify-center border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Quote className="h-8 w-8 text-black" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, filter: "blur(20px)" }}
+            whileInView={{ opacity: 1, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase italic"
+          >
+            "Flowzmith's real-time previews cut our debugging time in half and made coding collaboratively actually enjoyable."
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col items-center gap-6"
+          >
+            <div className="relative">
+              <div className="absolute -inset-2 border-2 border-accent border-dashed animate-[spin_10s_linear_infinite]" />
+              <Image
+                src="/images/guillermo-rauch.png"
+                alt="Guillermo Rauch avatar"
+                width={80}
+                height={80}
+                className="w-20 h-20 relative border-4 border-foreground grayscale hover:grayscale-0 transition-all duration-500"
+              />
             </div>
-          </div>
+            <div className="space-y-1">
+              <div className="text-2xl font-black tracking-tighter text-foreground uppercase">Guillermo Rauch</div>
+              <div className="text-xs font-bold text-accent bg-black px-2 py-0.5 inline-block tracking-widest uppercase">CEO, Vercel</div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -121,9 +121,9 @@ export default function ContractsPage() {
     switch (status) {
       case "deployed": return "text-primary bg-primary/10"
       case "verified": return "text-primary bg-primary/10"
-      case "draft": return "text-muted-foreground bg-muted/60"
-      case "archived": return "text-muted-foreground bg-muted/40"
-      default: return "text-muted-foreground bg-muted/40"
+      case "draft": return "text-foreground/80 bg-muted/60"
+      case "archived": return "text-foreground/80 bg-muted/40"
+      default: return "text-foreground/80 bg-muted/40"
     }
   }
 
@@ -157,7 +157,7 @@ export default function ContractsPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-semibold text-foreground mb-2">Smart Contracts</h1>
-              <p className="text-muted-foreground">
+              <p className="text-foreground/80">
                 Manage and deploy your Cadence smart contracts on Flow blockchain
               </p>
             </div>
@@ -186,7 +186,7 @@ export default function ContractsPage() {
                   className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                     filter === tab.key
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-foreground/80 hover:text-foreground hover:bg-muted"
                   }`}
                 >
                   {tab.label}
@@ -210,7 +210,7 @@ export default function ContractsPage() {
                   className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                     typeFilter === tab.key
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-foreground/80 hover:text-foreground hover:bg-muted"
                   }`}
                 >
                   {tab.label}
@@ -238,7 +238,7 @@ export default function ContractsPage() {
                             {getStatusIcon(contract.status)}
                             {contract.status}
                           </div>
-                          <span className="text-xs text-muted-foreground">{contract.language}</span>
+                          <span className="text-xs text-foreground/80">{contract.language}</span>
                         </div>
                       </div>
                     </div>
@@ -249,30 +249,30 @@ export default function ContractsPage() {
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
-                  <p className="text-muted-foreground text-sm line-clamp-2">
+                  <p className="text-foreground/80 text-sm line-clamp-2">
                     {contract.description}
                   </p>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Size:</span>
+                      <span className="text-foreground/80">Size:</span>
                       <span className="ml-1 font-medium">{contract.size}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Gas Used:</span>
+                      <span className="text-foreground/80">Gas Used:</span>
                       <span className="ml-1 font-medium">{contract.gasUsed}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Security:</span>
+                      <span className="text-foreground/80">Security:</span>
                       <span className="ml-1 font-medium">{contract.securityScore}%</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Project:</span>
+                      <span className="text-foreground/80">Project:</span>
                       <span className="ml-1 font-medium">{contract.project}</span>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1 text-sm text-foreground/80">
                     <Clock className="h-4 w-4" />
                     Updated {contract.lastModified}
                   </div>
@@ -306,9 +306,9 @@ export default function ContractsPage() {
         {filteredContracts.length === 0 && (
           <AnimatedSection delay={0.3}>
             <div className="text-center py-12">
-              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <FileText className="h-12 w-12 text-foreground/80 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">No contracts found</h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-foreground/80 mb-4">
                 {filter === "all" 
                   ? "Get started by creating your first smart contract"
                   : `No ${filter} contracts found`
