@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Sparkles, Zap, TrendingUp, Activity, Settings, Bell } from "lucide-react"
 
 import { AnimatedSection } from "@/components/animated-section"
@@ -59,7 +59,7 @@ export default function EnhancedDashboardPage() {
 
   if (isLoading || status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -74,7 +74,7 @@ export default function EnhancedDashboardPage() {
             <motion.div
               animate={{ rotate: -360 }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-2 w-8 h-8 border-2 border-purple-500/30 border-b-purple-500 rounded-full"
+              className="absolute inset-2 w-8 h-8 border-2 border-primary/30 border-b-primary rounded-full"
             />
           </div>
           <motion.p
@@ -95,12 +95,12 @@ export default function EnhancedDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95">
+    <div className="min-h-screen bg-background">
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-500/3 to-blue-500/3 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary/5 to-primary/5 rounded-full blur-3xl" />
       </div>
 
       <DashboardHeader user={session.user} />
@@ -115,7 +115,7 @@ export default function EnhancedDashboardPage() {
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
+                <h1 className="text-4xl font-bold text-foreground mb-2">
                   Welcome back, {session.user?.name?.split(' ')[0] || 'Developer'}
                 </h1>
                 <p className="text-lg text-muted-foreground">
@@ -148,9 +148,9 @@ export default function EnhancedDashboardPage() {
               transition={{ delay: 0.2 }}
               className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
             >
-              <div className="bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-xl p-4">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
-                  <Sparkles className="h-4 w-4 text-purple-500" />
+                  <Sparkles className="h-4 w-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Contracts</span>
                 </div>
                 <motion.div
@@ -163,9 +163,9 @@ export default function EnhancedDashboardPage() {
                 </motion.div>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-xl p-4">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
-                  <Activity className="h-4 w-4 text-blue-500" />
+                  <Activity className="h-4 w-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Live Streams</span>
                 </div>
                 <motion.div
@@ -178,9 +178,9 @@ export default function EnhancedDashboardPage() {
                 </motion.div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-4">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
+                  <TrendingUp className="h-4 w-4 text-primary" />
                   <span className="text-sm text-muted-foreground">Success Rate</span>
                 </div>
                 <motion.div

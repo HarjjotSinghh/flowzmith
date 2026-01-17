@@ -69,21 +69,19 @@ function AnimatedStatCard({
     }
   }, [value, loading])
 
-  const trendColor = trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"
-  const trendBg = trend === "up" ? "bg-green-500/10" : trend === "down" ? "bg-red-500/10" : "bg-muted/10"
+  const trendColor = trend === "up" ? "text-primary" : "text-muted-foreground"
+  const trendBg = trend === "up" ? "bg-primary/10" : "bg-muted/10"
   const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Activity
 
   return (
-    <Card className="group relative overflow-hidden bg-gradient-to-br from-card/80 to-card/40 border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:shadow-primary/10">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+    <Card className="group relative overflow-hidden bg-card/80 border-border/70 hover:border-primary/30 transition-all duration-500 hover:shadow-lg">
       
       {/* Real-time indicator */}
       {isRealTime && (
         <div className="absolute top-3 right-3">
           <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <Badge variant="outline" className="text-xs border-green-500/30 text-green-600">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <Badge variant="outline" className="text-xs border-primary/30 text-primary">
               Live
             </Badge>
           </div>
@@ -332,14 +330,14 @@ export function EnhancedUsageStats() {
       
       <CardContent className="space-y-6">
         {error && (
-          <Card className="bg-red-500/10 border-red-500/20">
+          <Card className="bg-destructive/10 border-destructive/20">
             <CardContent className="p-4">
-              <p className="text-red-400 text-sm mb-2">Failed to load usage statistics: {error}</p>
+              <p className="text-destructive text-sm mb-2">Failed to load usage statistics: {error}</p>
               <Button 
                 variant="outline"
                 size="sm"
                 onClick={fetchStats}
-                className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+                className="text-destructive border-destructive/30 hover:bg-destructive/10"
               >
                 Retry
               </Button>
@@ -360,7 +358,7 @@ export function EnhancedUsageStats() {
         {/* Real-time status indicator */}
         <div className="flex items-center justify-center pt-4 border-t border-border/50">
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             <span>Real-time updates active</span>
             <Badge variant="outline" className="text-xs">
               Auto-refresh: 30s

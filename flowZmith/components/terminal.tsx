@@ -198,7 +198,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={onToggle}
-          className="bg-gray-800 hover:bg-gray-700 text-white rounded-full p-3 shadow-lg"
+          className="bg-foreground text-background hover:bg-foreground/90 rounded-full p-3 shadow-lg"
         >
           <Terminal className="w-5 h-5" />
         </Button>
@@ -207,18 +207,18 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 z-50 h-80 flex flex-col">
-      <div className="flex items-center justify-between p-3 border-b border-gray-700">
+    <div className="fixed bottom-0 left-0 right-0 bg-card/95 border-t border-border z-50 h-80 flex flex-col backdrop-blur-md">
+      <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-green-400" />
-          <span className="text-sm font-medium text-gray-300">Terminal</span>
+          <Terminal className="w-4 h-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">Terminal</span>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setHistory([])}
-            className="h-6 w-6 p-0 text-gray-400 hover:text-gray-200"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
           >
             <ChevronUp className="w-3 h-3" />
           </Button>
@@ -226,7 +226,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="h-6 w-6 p-0 text-gray-400 hover:text-gray-200"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
           >
             <X className="w-3 h-3" />
           </Button>
@@ -235,7 +235,7 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
       
       <div
         ref={terminalRef}
-        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-gray-300 custom-scrollbar"
+        className="flex-1 p-3 overflow-y-auto font-mono text-sm text-muted-foreground custom-scrollbar"
       >
         {history.map((line, index) => (
           <div key={index} className="mb-1">
@@ -244,16 +244,16 @@ export default function TerminalComponent({ isOpen, onToggle }: TerminalProps) {
         ))}
       </div>
       
-      <div className="p-3 border-t border-gray-700">
+      <div className="p-3 border-t border-border">
         <div className="flex items-center gap-2">
-          <span className="text-green-400">$</span>
+          <span className="text-primary">$</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-gray-300 placeholder-gray-500 focus:outline-none"
+            className="flex-1 bg-transparent text-foreground placeholder-muted-foreground focus:outline-none"
             placeholder="Enter command..."
             autoComplete="off"
           />

@@ -78,16 +78,16 @@ function LineChart({ data }: { data: TimelineData[] }) {
 
 function RequestItemComponent({ request }: { request: RequestItem }) {
   const statusConfig = {
-    success: { icon: CheckCircle, color: "text-green-500", bg: "bg-green-500/10" },
-    error: { icon: XCircle, color: "text-red-500", bg: "bg-red-500/10" },
-    warning: { icon: AlertTriangle, color: "text-yellow-500", bg: "bg-yellow-500/10" }
+    success: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/10" },
+    error: { icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
+    warning: { icon: AlertTriangle, color: "text-muted-foreground", bg: "bg-muted/50" }
   }
   
   const config = statusConfig[request.status]
   const Icon = config.icon
   
   return (
-    <div className="flex items-center space-x-4 p-3 bg-card/30 rounded-lg border border-border/50">
+    <div className="flex items-center space-x-4 p-3 bg-card/70 rounded-2xl border border-border/70">
       <div className={`p-2 rounded-lg ${config.bg}`}>
         <Icon className={`h-4 w-4 ${config.color}`} />
       </div>

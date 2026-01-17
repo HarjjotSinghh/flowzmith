@@ -64,10 +64,11 @@ export function CreditsDisplay({ user }: CreditsDisplayProps) {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'free': return 'bg-gray-100 text-gray-800'
-      case 'pro': return 'bg-blue-100 text-blue-800'
-      case 'enterprise': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'pro': return 'bg-primary/10 text-primary border border-primary/30'
+      case 'enterprise': return 'bg-muted/70 text-foreground border border-border'
+      case 'free':
+      default:
+        return 'bg-muted/70 text-foreground border border-border'
     }
   }
 
@@ -97,7 +98,7 @@ export function CreditsDisplay({ user }: CreditsDisplayProps) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center text-red-500">
+          <div className="flex items-center text-destructive">
             <AlertCircle className="h-5 w-5 mr-2" />
             <span>{error}</span>
           </div>
@@ -126,7 +127,7 @@ export function CreditsDisplay({ user }: CreditsDisplayProps) {
               {credits.planName}
             </Badge>
             {credits.isNewUser && (
-              <Badge className="bg-green-100 text-green-800">
+              <Badge className="bg-primary/10 text-primary border border-primary/30">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 New User
               </Badge>
@@ -148,11 +149,7 @@ export function CreditsDisplay({ user }: CreditsDisplayProps) {
           <div className="w-full bg-muted rounded-full h-2">
             <div 
               className={`h-2 rounded-full transition-all duration-300 ${
-                isOutOfCredits 
-                  ? 'bg-red-500' 
-                  : isLowCredits 
-                    ? 'bg-yellow-500' 
-                    : 'bg-primary'
+                isOutOfCredits ? 'bg-destructive' : 'bg-primary'
               }`}
               style={{ width: `${Math.min(usagePercentage, 100)}%` }}
             />
@@ -166,30 +163,30 @@ export function CreditsDisplay({ user }: CreditsDisplayProps) {
 
         {/* Status Message */}
         {isOutOfCredits ? (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <span className="text-sm text-red-700">
+          <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <span className="text-sm text-destructive">
               No credits remaining. Upgrade your plan to continue.
             </span>
           </div>
         ) : isLowCredits ? (
-          <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <AlertCircle className="h-4 w-4 text-yellow-500" />
-            <span className="text-sm text-yellow-700">
+          <div className="flex items-center gap-2 p-3 bg-muted/60 border border-border rounded-lg">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <span className="text-sm text-muted-foreground">
               Low credits remaining. Consider upgrading your plan.
             </span>
           </div>
         ) : credits.isNewUser ? (
-          <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircle className="h-4 w-4 text-green-500" />
-            <span className="text-sm text-green-700">
+          <div className="flex items-center gap-2 p-3 bg-muted/60 border border-border rounded-lg">
+            <CheckCircle className="h-4 w-4 text-primary" />
+            <span className="text-sm text-muted-foreground">
               Welcome! You have 10 free credits to get started.
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <CheckCircle className="h-4 w-4 text-blue-500" />
-            <span className="text-sm text-blue-700">
+          <div className="flex items-center gap-2 p-3 bg-muted/60 border border-border rounded-lg">
+            <CheckCircle className="h-4 w-4 text-primary" />
+            <span className="text-sm text-muted-foreground">
               {credits.remaining} credits available for use.
             </span>
           </div>

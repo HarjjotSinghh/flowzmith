@@ -172,12 +172,12 @@ export default function AnalyticsPage() {
                       </p>
                       <div className="flex items-center gap-1">
                         {metric.changeType === "increase" ? (
-                          <ArrowUpRight className="h-4 w-4 text-green-500" />
+                          <ArrowUpRight className="h-4 w-4 text-primary" />
                         ) : (
-                          <ArrowDownRight className="h-4 w-4 text-red-500" />
+                          <ArrowDownRight className="h-4 w-4 text-muted-foreground" />
                         )}
                         <span className={`text-sm font-medium ${
-                          metric.changeType === "increase" ? "text-green-500" : "text-red-500"
+                          metric.changeType === "increase" ? "text-primary" : "text-muted-foreground"
                         }`}>
                           {metric.change > 0 ? "+" : ""}{metric.change}%
                         </span>
@@ -311,9 +311,9 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="p-3 bg-primary/10 rounded-lg">
                         {metric.trend === "up" ? (
-                          <TrendingUp className="h-5 w-5 text-green-500" />
+                          <TrendingUp className="h-5 w-5 text-primary" />
                         ) : (
-                          <TrendingDown className="h-5 w-5 text-red-500" />
+                          <TrendingDown className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                     </div>

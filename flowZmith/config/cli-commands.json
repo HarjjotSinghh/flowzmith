@@ -435,32 +435,32 @@
     {
       "id": "contract",
       "label": "Smart Contracts",
-      "color": "bg-blue-500"
+      "color": "bg-primary"
     },
     {
       "id": "deployment",
       "label": "Deployment",
-      "color": "bg-green-500"
+      "color": "bg-primary"
     },
     {
       "id": "flow",
       "label": "Flow CLI",
-      "color": "bg-purple-500"
+      "color": "bg-primary"
     },
     {
       "id": "documentation",
       "label": "Documentation",
-      "color": "bg-yellow-500"
+      "color": "bg-primary"
     },
     {
       "id": "system",
       "label": "System",
-      "color": "bg-gray-500"
+      "color": "bg-primary"
     },
     {
       "id": "chat",
       "label": "Chat",
-      "color": "bg-pink-500"
+      "color": "bg-primary"
     }
   ]
 }

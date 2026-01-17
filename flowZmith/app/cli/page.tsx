@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +36,7 @@ import type { CLICommand } from "@/lib/cli-commands"
 import dynamic from "next/dynamic"
 import JSZip from "jszip"
 import { configureMonacoLanguages, getLanguageFromFileName, getEditorOptions } from "@/lib/monaco-config"
+import { useTheme } from "next-themes"
 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
@@ -53,6 +55,7 @@ interface ProjectData {
 }
 
 export default function CLIWorkspacePage() {
+  const { resolvedTheme } = useTheme()
   const [selectedCommand, setSelectedCommand] =
     React.useState<CLICommand | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -65,6 +68,7 @@ export default function CLIWorkspacePage() {
   const [isCompiling, setIsCompiling] = React.useState(false);
   const [isDeploying, setIsDeploying] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
+  const editorTheme = resolvedTheme === "dark" ? "vs-dark" : "vs";
 
   // Terminal logs
   const {
@@ -727,7 +731,7 @@ export default function CLIWorkspacePage() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <div className="w-64 flex-shrink-0">
         <CLISidebar
@@ -739,19 +743,24 @@ export default function CLIWorkspacePage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="border-b p-4">
-          <h1 className="text-2xl font-bold">CLI Workspace</h1>
-          <p className="text-sm text-muted-foreground">
-            Execute CLI commands and view results in real-time
-          </p>
+        <div className="border-b border-border bg-card/80 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-display font-semibold text-foreground">CLI Workspace</h1>
+              <p className="text-sm text-muted-foreground">
+                Execute CLI commands and view results in real-time
+              </p>
+            </div>
+            <ThemeSwitcher />
+          </div>
         </div>
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {/* File Explorer */}
           {files.length > 0 && (
-            <div className="w-64 border-r flex flex-col">
-              <div className="p-4 border-b">
+            <div className="w-64 border-r border-border bg-card/80 flex flex-col">
+              <div className="p-4 border-b border-border">
                 <h3 className="font-semibold text-sm">Generated Files</h3>
               </div>
               <ScrollArea className="flex-1">
@@ -774,8 +783,8 @@ export default function CLIWorkspacePage() {
                     Terminal
                     {isStreaming && (
                       <span className="ml-2 flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                       </span>
                     )}
                   </TabsTrigger>
@@ -869,7 +878,7 @@ export default function CLIWorkspacePage() {
                       height="100%"
                       language={getLanguageFromFileName(selectedFile.name)}
                       value={selectedFile.content || ""}
-                      theme="vs-dark"
+                      theme={editorTheme}
                       options={getEditorOptions(getLanguageFromFileName(selectedFile.name))}
                       onChange={(value) => {
                         if (selectedFile && value !== undefined) {
@@ -934,7 +943,7 @@ export default function CLIWorkspacePage() {
                             {new Date(entry.timestamp).toLocaleString()}
                           </p>
                           {entry.result.error && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                               {entry.result.error}
                             </p>
                           )}

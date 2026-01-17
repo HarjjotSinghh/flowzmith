@@ -27,26 +27,26 @@ export function RealTimeDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "success":
-        return "bg-green-500";
+        return "bg-primary";
       case "failed":
-        return "bg-red-500";
+        return "bg-destructive";
       case "pending":
-        return "bg-yellow-500";
+        return "bg-muted-foreground";
       default:
-        return "bg-gray-500";
+        return "bg-muted-foreground";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-primary" />;
       case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case "pending":
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-500" />;
+        return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -178,19 +178,19 @@ export function RealTimeDashboard() {
               
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-primary">
                     {deploymentStats?.successfulDeployments || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Successful</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-2xl font-bold text-destructive">
                     {deploymentStats?.failedDeployments || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Failed</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-yellow-600">
+                  <p className="text-2xl font-bold text-foreground">
                     {deploymentStats?.pendingDeployments || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Pending</p>

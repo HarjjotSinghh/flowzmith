@@ -122,56 +122,56 @@ function FileTreeItem({ item, level, selectedFileId, onFileSelect, onFileDownloa
   const getFileIcon = () => {
     if (item.type === 'folder') {
       return isExpanded ? (
-        <FolderOpen className="w-4 h-4 text-blue-400" />
+        <FolderOpen className="w-4 h-4 text-muted-foreground" />
       ) : (
-        <Folder className="w-4 h-4 text-blue-400" />
+        <Folder className="w-4 h-4 text-muted-foreground" />
       )
     }
 
     // Cadence files
     if (item.name.endsWith('.cdc')) {
-      return <FileText className="w-4 h-4 text-purple-400" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
     // JavaScript/TypeScript files
     if (item.name.endsWith('.js') || item.name.endsWith('.jsx') || item.name.endsWith('.ts') || item.name.endsWith('.tsx')) {
-      return <FileText className="w-4 h-4 text-yellow-400" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
     // CSS files
     if (item.name.endsWith('.css')) {
-      return <FileText className="w-4 h-4 text-blue-400" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
     // JSON files
     if (item.name.endsWith('.json')) {
-      return <FileText className="w-4 h-4 text-green-400" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
     // Python files
     if (item.name.endsWith('.py')) {
-      return <FileText className="w-4 h-4 text-yellow-500" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
     // Solidity files
     if (item.name.endsWith('.sol')) {
-      return <FileText className="w-4 h-4 text-gray-400" />
+      return <FileText className="w-4 h-4 text-muted-foreground" />
     }
 
-    return <File className="w-4 h-4 text-gray-400" />
+    return <File className="w-4 h-4 text-muted-foreground" />
   }
 
   return (
     <div>
       <div
-        className={`flex items-center gap-2 py-1 px-2 hover:bg-gray-700 rounded cursor-pointer transition-colors ${
-          selectedFileId === item.fileId ? 'bg-blue-600/20 border-l-2 border-blue-400' : ''
+        className={`flex items-center gap-2 py-1 px-2 hover:bg-muted/50 rounded cursor-pointer transition-colors ${
+          selectedFileId === item.fileId ? 'bg-primary/10 border-l-2 border-primary' : ''
         }`}
         style={{ paddingLeft: `${padding + 8}px` }}
         onClick={handleClick}
       >
         {getFileIcon()}
-        <span className={`text-sm ${item.isModified ? 'text-orange-400 font-medium' : 'text-gray-300'}`}>
+        <span className={`text-sm ${item.isModified ? 'text-primary font-medium' : 'text-foreground'}`}>
           {item.name}
           {item.isModified && ' *'}
         </span>
@@ -180,7 +180,7 @@ function FileTreeItem({ item, level, selectedFileId, onFileSelect, onFileDownloa
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0 hover:bg-gray-700 text-gray-400 hover:text-gray-200"
+              className="h-6 w-6 p-0 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
               onClick={(e) => {
                 e.stopPropagation()
                 onFileCopy(item.fileId!)
@@ -191,7 +191,7 @@ function FileTreeItem({ item, level, selectedFileId, onFileSelect, onFileDownloa
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0 hover:bg-gray-700 text-gray-400 hover:text-gray-200"
+              className="h-6 w-6 p-0 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
               onClick={(e) => {
                 e.stopPropagation()
                 onFileDownload(item.fileId!)
@@ -227,13 +227,13 @@ export default function FileTree({ files, selectedFileId, onFileSelect, onFileDo
   console.log('Built tree:', tree)
 
   return (
-    <div className="overflow-y-auto h-full bg-gray-900 border-r border-gray-700 custom-scrollbar">
-      <div className="p-3 border-b border-gray-700">
-        <h3 className="text-sm font-medium text-gray-300">Files</h3>
+    <div className="overflow-y-auto h-full bg-card/80 border-r border-border custom-scrollbar">
+      <div className="p-3 border-b border-border">
+        <h3 className="text-sm font-medium text-foreground">Files</h3>
       </div>
       <div className="p-2">
         {tree.length === 0 && files.length === 0 ? (
-          <div className="text-center text-gray-500 text-sm py-4">
+          <div className="text-center text-muted-foreground text-sm py-4">
             No files generated yet
           </div>
         ) : tree.length === 0 && files.length > 0 ? (
@@ -242,13 +242,13 @@ export default function FileTree({ files, selectedFileId, onFileSelect, onFileDo
             {files.map((file) => (
               <div
                 key={file.id}
-                className={`flex items-center gap-2 py-1 px-2 hover:bg-gray-700 rounded cursor-pointer transition-colors ${
-                  selectedFileId === file.id ? 'bg-blue-600/20 border-l-2 border-blue-400' : ''
+                className={`flex items-center gap-2 py-1 px-2 hover:bg-muted/50 rounded cursor-pointer transition-colors ${
+                  selectedFileId === file.id ? 'bg-primary/10 border-l-2 border-primary' : ''
                 }`}
                 onClick={() => onFileSelect(file.id)}
               >
-                <FileText className="w-4 h-4 text-purple-400" />
-                <span className={`text-sm ${file.isModified ? 'text-orange-400 font-medium' : 'text-gray-300'}`}>
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <span className={`text-sm ${file.isModified ? 'text-primary font-medium' : 'text-foreground'}`}>
                   {file.path.split('/').pop()}
                   {file.isModified && ' *'}
                 </span>
@@ -256,7 +256,7 @@ export default function FileTree({ files, selectedFileId, onFileSelect, onFileDo
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 hover:bg-gray-700 text-gray-400 hover:text-gray-200"
+                    className="h-6 w-6 p-0 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                     onClick={(e) => {
                       e.stopPropagation()
                       onFileCopy(file.id)
@@ -267,7 +267,7 @@ export default function FileTree({ files, selectedFileId, onFileSelect, onFileDo
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 hover:bg-gray-700 text-gray-400 hover:text-gray-200"
+                    className="h-6 w-6 p-0 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                     onClick={(e) => {
                       e.stopPropagation()
                       onFileDownload(file.id)

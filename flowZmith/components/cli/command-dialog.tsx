@@ -96,7 +96,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
           <div key={field.name} className="space-y-2">
             <Label htmlFor={field.name}>
               {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Textarea
               id={field.name}
@@ -116,7 +116,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
           <div key={field.name} className="space-y-2">
             <Label htmlFor={field.name}>
               {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Select
               value={value}
@@ -158,7 +158,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
           <div key={field.name} className="space-y-2">
             <Label htmlFor={field.name}>
               {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Input
               id={field.name}
@@ -178,7 +178,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
           <div key={field.name} className="space-y-2">
             <Label htmlFor={field.name}>
               {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Input
               id={field.name}
@@ -225,7 +225,7 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
 
     return (
       <div className="space-y-4">
-        <div className={`flex items-center gap-2 ${isSuccess ? "text-green-600" : "text-red-600"}`}>
+        <div className={`flex items-center gap-2 ${isSuccess ? "text-primary" : "text-destructive"}`}>
           <Icon className="h-5 w-5" />
           <span className="font-medium">
             {isSuccess ? "Command executed successfully!" : "Command failed"}
@@ -233,8 +233,8 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
         </div>
 
         {executionResult.error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-800">{executionResult.error}</p>
+          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+            <p className="text-sm text-destructive">{executionResult.error}</p>
           </div>
         )}
 
@@ -250,16 +250,16 @@ export function CommandDialog({ command, open, onOpenChange, onExecute }: Comman
         )}
 
         {executionResult.project_dir && (
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-            <p className="text-sm text-blue-800">
+          <div className="p-3 bg-muted/60 border border-border rounded-md">
+            <p className="text-sm text-foreground">
               <strong>Project Directory:</strong> {executionResult.project_dir}
             </p>
           </div>
         )}
 
         {executionResult.transaction_id && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-sm text-green-800">
+          <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
+            <p className="text-sm text-primary">
               <strong>Transaction ID:</strong> {executionResult.transaction_id}
             </p>
           </div>

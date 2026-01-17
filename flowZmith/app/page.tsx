@@ -11,96 +11,55 @@ import { FAQSection } from "@/components/faq-section"
 import { CTASection } from "@/components/cta-section"
 import { FooterSection } from "@/components/footer-section"
 import { AnimatedSection } from "@/components/animated-section"
-import Aurora from "@/components/Aurora"
-import { motion } from "framer-motion"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden pb-0">
-      {/* Global Aurora Background */}
-      <div className="fixed inset-0 z-0 opacity-50">
-        <Aurora
-          colorStops={["#78fcd6", "#5effba", "#78fcd6"]}
-          blend={0.4}
-        />
-      </div>
+    <div className="min-h-screen">
+      <main className="mx-auto">
+        <HeroSection />
 
-      <div className="relative z-10">
-        <main className=" mx-auto relative">
-          <HeroSection />
-          {/* Dashboard Preview Wrapper */}
-          <div className="absolute bottom-[-150px] md:bottom-[-400px] left-1/2 transform -translate-x-1/2 z-30">
-            <AnimatedSection>
-              <DashboardPreview />
-            </AnimatedSection>
-          </div>
-        </main>
-        <AnimatedSection className="relative z-10 mx-auto px-0 mt-[411px] md:mt-[400px]" delay={0.1} animation="fadeInUp">
+        <div className="mx-auto max-w-6xl px-6">
+          <AnimatedSection className="mt-16" delay={0.1} animation="fadeInUp">
+            <DashboardPreview />
+          </AnimatedSection>
+        </div>
+
+        <AnimatedSection className="mt-20" delay={0.1} animation="fadeInUp">
           <SocialProof />
         </AnimatedSection>
-        <AnimatedSection id="features-section" className="relative z-10 mx-auto mt-0" delay={0.2} animation="scaleIn">
+
+        <AnimatedSection id="features-section" className="mt-20" delay={0.2} animation="fadeInUp">
           <BentoSection />
         </AnimatedSection>
-        <AnimatedSection className="relative z-10 mx-auto mt-0" delay={0.3} animation="fadeInLeft">
+
+        <AnimatedSection className="mt-20" delay={0.3} animation="fadeInUp">
           <LiveDemoSection />
         </AnimatedSection>
-        <AnimatedSection className="relative z-10 mx-auto mt-8 md:mt-16" delay={0.2} animation="fadeInRight">
+
+        <AnimatedSection className="mt-20" delay={0.2} animation="fadeInUp">
           <LargeTestimonial />
         </AnimatedSection>
-        <AnimatedSection
-          id="pricing-section"
-          className="relative z-10 mx-auto mt-8 md:mt-16"
-          delay={0.2}
-          animation="blurIn"
-        >
+
+        <AnimatedSection id="pricing-section" className="mt-20" delay={0.2} animation="fadeInUp">
           <PricingSection />
         </AnimatedSection>
-        <AnimatedSection
-          id="testimonials-section"
-          className="relative z-10 mx-auto mt-8 md:mt-16"
-          delay={0.2}
-          animation="fadeInUp"
-        >
+
+        <AnimatedSection id="testimonials-section" className="mt-20" delay={0.2} animation="fadeInUp">
           <TestimonialGridSection />
         </AnimatedSection>
-        <AnimatedSection id="faq-section" className="relative z-10 mx-auto mt-8 md:mt-16" delay={0.2} animation="fadeInDown">
+
+        <AnimatedSection id="faq-section" className="mt-20" delay={0.2} animation="fadeInUp">
           <FAQSection />
         </AnimatedSection>
-        <AnimatedSection className="relative z-10 mx-auto mt-8 md:mt-16" delay={0.2} animation="scaleIn">
+
+        <AnimatedSection className="mt-20" delay={0.2} animation="fadeInUp">
           <CTASection />
         </AnimatedSection>
-        <AnimatedSection className="relative z-10 mx-auto mt-8 md:mt-16" delay={0.2} animation="fadeInUp">
-        <div className="absolute inset-0 scale-y-[-1] -z-[10] opacity-30">
-        <Aurora colorStops={["#78fcd6", "#5effba", "#78fcd6"]} blend={0.9} amplitude={0.3}  />
-        <div className="absolute inset-0" />
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"
-          animate={{
-            x: [0, -50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+
+        <AnimatedSection className="mt-16" delay={0.2} animation="fadeInUp">
           <FooterSection />
         </AnimatedSection>
-      </div>
+      </main>
     </div>
   )
 }

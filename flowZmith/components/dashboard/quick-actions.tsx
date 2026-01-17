@@ -13,16 +13,16 @@ interface ActionCardProps {
 }
 
 function ActionCard({ title, description, icon, href, variant = "default" }: ActionCardProps) {
-  const baseClasses = "w-full p-4 rounded-lg border transition-all duration-200  cursor-pointer"
+  const baseClasses = "w-full p-4 rounded-2xl border transition-all duration-200 cursor-pointer"
   const variantClasses = variant === "default" 
-    ? "bg-card/50 border-border hover:bg-card/70 hover:border-primary/50"
-    : "bg-primary/10 border-primary/20 hover:bg-primary/20 hover:border-primary/40"
+    ? "bg-card/80 border-border/70 hover:shadow-md"
+    : "bg-card/80 border-primary/30 hover:border-primary/50"
   
   return (
     <Link href={href}>
       <div className={`${baseClasses} ${variantClasses}`}>
         <div className="flex items-start space-x-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="p-2 bg-muted/70 rounded-xl">
             {icon}
           </div>
           <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export function QuickActions() {
   ]
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+    <div className="bg-card/80 rounded-2xl border border-border/70 p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-foreground mb-1">Quick Actions</h2>
         <p className="text-muted-foreground">Start building with AI assistance</p>
@@ -109,8 +109,8 @@ export function QuickActions() {
         <div className="space-y-2">
           {navigationActions.map((action, index) => (
             <Link key={index} href={action.href}>
-              <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="p-1 bg-primary/10 rounded">
+              <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
+                <div className="p-1 bg-muted/70 rounded">
                   {action.icon}
                 </div>
                 <div>

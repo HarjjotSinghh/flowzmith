@@ -119,11 +119,11 @@ export default function ContractsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "deployed": return "text-green-500 bg-green-500/10"
-      case "verified": return "text-blue-500 bg-blue-500/10"
-      case "draft": return "text-yellow-500 bg-yellow-500/10"
-      case "archived": return "text-gray-500 bg-gray-500/10"
-      default: return "text-gray-500 bg-gray-500/10"
+      case "deployed": return "text-primary bg-primary/10"
+      case "verified": return "text-primary bg-primary/10"
+      case "draft": return "text-muted-foreground bg-muted/60"
+      case "archived": return "text-muted-foreground bg-muted/40"
+      default: return "text-muted-foreground bg-muted/40"
     }
   }
 
@@ -292,7 +292,7 @@ export default function ContractsPage() {
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600">
+                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

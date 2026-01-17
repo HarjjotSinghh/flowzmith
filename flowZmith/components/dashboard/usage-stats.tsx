@@ -13,10 +13,10 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, change, icon, trend, loading }: StatCardProps) {
-  const trendColor = trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"
+  const trendColor = trend === "up" ? "text-primary" : "text-muted-foreground"
   
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6 hover:bg-card/70 transition-all duration-200">
+    <div className="bg-card/80 rounded-2xl border border-border/70 p-6 hover:shadow-md transition-all duration-200">
       <div className="flex items-center justify-between mb-4">
         <div className="p-2 bg-primary/10 rounded-lg">
           {icon}
@@ -135,11 +135,11 @@ export function UsageStats() {
       </div>
       
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-          <p className="text-red-400 text-sm mb-2">Failed to load usage statistics: {error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <p className="text-destructive text-sm mb-2">Failed to load usage statistics: {error}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="text-sm text-red-400 hover:text-red-300 underline"
+            className="text-sm text-destructive hover:text-destructive/80 underline"
           >
             Retry
           </button>

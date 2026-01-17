@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { Terminal, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -43,15 +42,15 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
   const getLogColor = (type: LogEntry["type"]) => {
     switch (type) {
       case "error":
-        return "text-red-400"
+        return "text-destructive"
       case "success":
-        return "text-green-400"
+        return "text-primary"
       case "warning":
-        return "text-yellow-400"
+        return "text-muted-foreground"
       case "command":
-        return "text-blue-400"
+        return "text-muted-foreground"
       default:
-        return "text-gray-300"
+        return "text-foreground"
     }
   }
 
@@ -71,14 +70,14 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
   }
 
   return (
-    <div className={cn("flex flex-col h-full max-h-[500px] bg-black rounded-lg border border-gray-800", className)}>
+    <div className={cn("flex flex-col h-full max-h-[500px] bg-card/90 rounded-lg border border-border", className)}>
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800 rounded-t-lg">
+      <div className="flex items-center justify-between px-4 py-2 bg-card/95 border-b border-border rounded-t-lg">
         <div className="flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-green-400" />
-          <span className="text-sm font-mono text-gray-300">Terminal Output</span>
+          <Terminal className="h-4 w-4 text-primary" />
+          <span className="text-sm font-mono text-foreground">Terminal Output</span>
           {isStreaming && (
-            <span className="flex items-center gap-1 text-xs text-green-400">
+            <span className="flex items-center gap-1 text-xs text-primary">
               <span className="animate-pulse">●</span>
               Streaming...
             </span>
@@ -109,7 +108,7 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
       {/* Terminal Content */}
       <div className="flex-1 p-4 overflow-y-auto" ref={scrollRef}>
         {logs.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div className="flex items-center justify-center h-full text-muted-foreground">
             <div className="text-center">
               <Terminal className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No output yet</p>
@@ -119,8 +118,8 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
         ) : (
           <div className="font-mono text-sm space-y-1 oveflow-y-auto">
             {logs.map((log, idx) => (
-              <div key={idx} className="flex gap-3 hover:bg-gray-900/50 px-2 py-1 rounded">
-                <span className="text-gray-500 text-xs flex-shrink-0 select-none">
+              <div key={idx} className="flex gap-3 hover:bg-card/95/50 px-2 py-1 rounded">
+                <span className="text-muted-foreground text-xs flex-shrink-0 select-none">
                   {formatTime(log.timestamp)}
                 </span>
                 <span className="flex-shrink-0 select-none">
@@ -136,11 +135,11 @@ export function TerminalOutput({ logs, isStreaming, onClear, className }: Termin
       </div>
 
       {/* Terminal Footer */}
-      <div className="px-4 py-2 bg-gray-900 border-t border-gray-800 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="px-4 py-2 bg-card/95 border-t border-border rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{logs.length} lines</span>
           {isStreaming && (
-            <span className="text-green-400">Receiving data...</span>
+            <span className="text-primary">Receiving data...</span>
           )}
         </div>
       </div>

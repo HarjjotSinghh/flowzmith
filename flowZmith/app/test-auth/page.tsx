@@ -23,24 +23,24 @@ export default function TestAuthPage() {
         
         <div className="space-y-6">
           {/* Session Status */}
-          <div className="bg-card p-6 rounded-lg border">
+          <div className="bg-card/80 p-6 rounded-2xl border border-border/70">
             <h2 className="text-xl font-semibold text-foreground mb-4">Session Status</h2>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Status:</span>
                 <span className={
                   status === "authenticated" 
-                    ? "text-green-500" 
+                    ? "text-primary" 
                     : status === "unauthenticated" 
-                    ? "text-red-500" 
-                    : "text-yellow-500"
+                    ? "text-destructive" 
+                    : "text-muted-foreground"
                 }>
                   {status}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Has Session:</span>
-                <span className={session ? "text-green-500" : "text-red-500"}>
+                <span className={session ? "text-primary" : "text-destructive"}>
                   {session ? "✅ Yes" : "❌ No"}
                 </span>
               </div>
@@ -49,7 +49,7 @@ export default function TestAuthPage() {
 
           {/* User Information */}
           {session && (
-            <div className="bg-card p-6 rounded-lg border">
+            <div className="bg-card/80 p-6 rounded-2xl border border-border/70">
               <h2 className="text-xl font-semibold text-foreground mb-4">User Information</h2>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
@@ -69,7 +69,7 @@ export default function TestAuthPage() {
           )}
 
           {/* Actions */}
-          <div className="bg-card p-6 rounded-lg border">
+          <div className="bg-card/80 p-6 rounded-2xl border border-border/70">
             <h2 className="text-xl font-semibold text-foreground mb-4">Actions</h2>
             <div className="space-y-4">
               {!session ? (
@@ -81,7 +81,7 @@ export default function TestAuthPage() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-green-500">You are signed in!</p>
+                  <p className="text-primary">You are signed in!</p>
                   <div className="flex space-x-4">
                     <Link href="/dashboard">
                       <Button>Go to Dashboard</Button>
@@ -99,7 +99,7 @@ export default function TestAuthPage() {
           </div>
 
           {/* API Endpoints */}
-          <div className="bg-card p-6 rounded-lg border">
+          <div className="bg-card/80 p-6 rounded-2xl border border-border/70">
             <h2 className="text-xl font-semibold text-foreground mb-4">API Endpoints</h2>
             <div className="space-y-2">
               <div>

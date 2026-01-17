@@ -25,34 +25,29 @@ interface RecentActivityData {
 function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; index: number }) {
   const typeConfig = {
     success: { 
-      color: "text-emerald-500", 
-      bg: "bg-emerald-500/10", 
-      border: "border-emerald-500/20",
-      glow: "shadow-emerald-500/20"
+      color: "text-primary", 
+      bg: "bg-primary/10", 
+      border: "border-primary/20"
     },
     error: { 
-      color: "text-red-500", 
-      bg: "bg-red-500/10", 
-      border: "border-red-500/20",
-      glow: "shadow-red-500/20"
+      color: "text-destructive", 
+      bg: "bg-destructive/10", 
+      border: "border-destructive/20"
     },
     warning: { 
-      color: "text-amber-500", 
-      bg: "bg-amber-500/10", 
-      border: "border-amber-500/20",
-      glow: "shadow-amber-500/20"
+      color: "text-muted-foreground", 
+      bg: "bg-muted/50", 
+      border: "border-border"
     },
     info: { 
-      color: "text-blue-500", 
-      bg: "bg-blue-500/10", 
-      border: "border-blue-500/20",
-      glow: "shadow-blue-500/20"
+      color: "text-muted-foreground", 
+      bg: "bg-muted/50", 
+      border: "border-border"
     },
     streaming: { 
-      color: "text-purple-500", 
-      bg: "bg-purple-500/10", 
-      border: "border-purple-500/20",
-      glow: "shadow-purple-500/20"
+      color: "text-primary", 
+      bg: "bg-primary/10", 
+      border: "border-primary/20"
     }
   }
   
@@ -70,10 +65,10 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
         stiffness: 300,
         damping: 30
       }}
-      className={`group relative flex items-start space-x-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-lg ${
+      className={`group relative flex items-start space-x-4 p-4 rounded-2xl border transition-all duration-300 hover:shadow-lg ${
         activity.isNew 
-          ? `bg-gradient-to-r from-purple-500/5 to-blue-500/5 border-purple-500/30 ${config.glow} shadow-lg` 
-          : `bg-card/30 hover:bg-card/50 border-border hover:border-border/60`
+          ? `bg-primary/5 border-primary/30` 
+          : `bg-card/70 border-border/70 hover:border-border`
       }`}
     >
       {/* New indicator */}
@@ -81,9 +76,9 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full shadow-lg"
+          className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full shadow-lg"
         >
-          <div className="absolute inset-0 bg-purple-500 rounded-full animate-ping opacity-75" />
+          <div className="absolute inset-0 bg-primary rounded-full animate-ping opacity-75" />
         </motion.div>
       )}
 
@@ -99,7 +94,7 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
         {/* Streaming progress indicator */}
         {activity.type === "streaming" && activity.progress !== undefined && (
           <motion.div
-            className="absolute inset-0 rounded-xl border-2 border-purple-500/30"
+            className="absolute inset-0 rounded-xl border-2 border-primary/30"
             style={{
               background: `conic-gradient(from 0deg, transparent ${360 - (activity.progress * 3.6)}deg, rgba(168, 85, 247, 0.3) ${360 - (activity.progress * 3.6)}deg)`
             }}
@@ -123,7 +118,7 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               className="flex-shrink-0"
             >
-              <Loader2 className="h-3 w-3 text-purple-500" />
+              <Loader2 className="h-3 w-3 text-primary" />
             </motion.div>
           )}
         </div>
@@ -145,13 +140,13 @@ function AnimatedActivityItem({ activity, index }: { activity: ActivityItem; ind
             <div className="flex items-center space-x-2">
               <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
+                  className="h-full bg-primary"
                   initial={{ width: 0 }}
                   animate={{ width: `${activity.progress}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>
-              <span className="text-xs text-purple-500 font-medium">{Math.round(activity.progress)}%</span>
+              <span className="text-xs text-primary font-medium">{Math.round(activity.progress)}%</span>
             </div>
           )}
         </div>
@@ -379,9 +374,9 @@ export function EnhancedRecentActivity() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="p-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg"
+              className="p-2 bg-primary/10 rounded-lg"
             >
-              <Activity className="h-5 w-5 text-purple-500" />
+              <Activity className="h-5 w-5 text-primary" />
             </motion.div>
             <div>
               <h2 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -395,10 +390,10 @@ export function EnhancedRecentActivity() {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="flex items-center space-x-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full"
+              className="flex items-center space-x-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full"
             >
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
-              <span className="text-xs text-purple-500 font-medium">Live</span>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="text-xs text-primary font-medium">Live</span>
             </motion.div>
           )}
         </div>
@@ -410,12 +405,12 @@ export function EnhancedRecentActivity() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6"
+            className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 mb-6"
           >
-            <p className="text-red-400 text-sm mb-3">Failed to load recent activity: {error}</p>
+            <p className="text-destructive text-sm mb-3">Failed to load recent activity: {error}</p>
             <button 
               onClick={retryFetch}
-              className="text-sm text-red-400 hover:text-red-300 underline transition-colors"
+              className="text-sm text-destructive hover:text-destructive/80 underline transition-colors"
             >
               Retry
             </button>
@@ -430,7 +425,7 @@ export function EnhancedRecentActivity() {
             className="flex items-center justify-center py-12"
           >
             <div className="flex items-center space-x-3">
-              <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-muted-foreground">Loading activity...</span>
             </div>
           </motion.div>

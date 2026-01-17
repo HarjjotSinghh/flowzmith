@@ -95,13 +95,13 @@ export function RealTimeCollaboration({
   const getChangeTypeIcon = (type: string) => {
     switch (type) {
       case "insert":
-        return <Edit className="h-4 w-4 text-green-500" />;
+        return <Edit className="h-4 w-4 text-primary" />;
       case "delete":
-        return <UserMinus className="h-4 w-4 text-red-500" />;
+        return <UserMinus className="h-4 w-4 text-destructive" />;
       case "modify":
-        return <Code className="h-4 w-4 text-blue-500" />;
+        return <Code className="h-4 w-4 text-muted-foreground" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-500" />;
+        return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -115,7 +115,7 @@ export function RealTimeCollaboration({
               <Users className="h-5 w-5" />
               Collaboration Session
               {activeSession && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-primary/10 text-primary">
                   Active
                 </Badge>
               )}
@@ -178,7 +178,7 @@ export function RealTimeCollaboration({
                         {participant.userName}
                       </span>
                       <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                         <span className="text-xs text-muted-foreground">
                           {participant.role || "collaborator"}
                         </span>
@@ -191,19 +191,19 @@ export function RealTimeCollaboration({
               {/* Session Stats */}
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 border rounded-lg">
-                  <p className="text-lg font-bold text-blue-600">
+                  <p className="text-lg font-bold text-primary">
                     {collaborationStats?.totalSessions || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Total Sessions</p>
                 </div>
                 <div className="p-3 border rounded-lg">
-                  <p className="text-lg font-bold text-green-600">
+                  <p className="text-lg font-bold text-primary">
                     {collaborationStats?.totalChanges || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Total Changes</p>
                 </div>
                 <div className="p-3 border rounded-lg">
-                  <p className="text-lg font-bold text-purple-600">
+                  <p className="text-lg font-bold text-primary">
                     {collaborationStats?.uniqueCollaborators || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">Collaborators</p>

@@ -14,16 +14,16 @@ interface ActivityItem {
 
 function ActivityItemComponent({ activity }: { activity: ActivityItem }) {
   const typeConfig = {
-    success: { color: "text-green-500", bg: "bg-green-500/10" },
-    error: { color: "text-red-500", bg: "bg-red-500/10" },
-    warning: { color: "text-yellow-500", bg: "bg-yellow-500/10" },
-    info: { color: "text-blue-500", bg: "bg-blue-500/10" }
+    success: { color: "text-primary", bg: "bg-primary/10" },
+    error: { color: "text-destructive", bg: "bg-destructive/10" },
+    warning: { color: "text-muted-foreground", bg: "bg-muted/50" },
+    info: { color: "text-muted-foreground", bg: "bg-muted/50" }
   }
   
   const config = typeConfig[activity.type]
   
   return (
-    <div className="flex items-start space-x-3 p-3 hover:bg-card/30 rounded-lg transition-colors">
+    <div className="flex items-start space-x-3 p-3 hover:bg-muted/40 rounded-2xl transition-colors">
       <div className={`p-2 rounded-lg ${config.bg} flex-shrink-0`}>
         <div className={`${config.color}`}>
           {activity.icon}
@@ -145,11 +145,11 @@ export function RecentActivity() {
       </div>
       
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
-          <p className="text-red-400 text-sm mb-2">Failed to load recent activity: {error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-4">
+          <p className="text-destructive text-sm mb-2">Failed to load recent activity: {error}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="text-sm text-red-400 hover:text-red-300 underline"
+            className="text-sm text-destructive hover:text-destructive/80 underline"
           >
             Retry
           </button>

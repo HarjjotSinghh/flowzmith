@@ -1,573 +1,115 @@
 'use client'
 
-import React from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Header } from "./header"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import GradientText from "@/components/GradientText"
-import ShinyText from "@/components/ShinyText"
-import Aurora from "@/components/Aurora"
-import Magnet from "@/components/Magnet"
-import ClickSpark from "@/components/ClickSpark"
+import { ArrowUpRight, ShieldCheck, Sparkles, Zap } from "lucide-react"
 
 export function HeroSection() {
   return (
-    <section
-      className="flex flex-col items-center text-center relative mx-auto rounded-2xl overflow-hidden my-6 py-0 px-4 bg-card/50 backdrop-blur-sm border border-border/30
-         w-full h-[400px] md:w-[1220px] md:h-[600px] lg:h-[810px] md:px-0"
-    >
-      {/* Enhanced Background with Aurora */}
-      <div className="absolute inset-0 z-0">
-        <Aurora
-          colorStops={["#78fcd6", "#5effba", "#78fcd6"]}
-          blend={0.5}
-        />
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 1220 810"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g clipPath="url(#clip0_186_1134)">
-            <mask
-              id="mask0_186_1134"
-              style={{ maskType: "alpha" }}
-              maskUnits="userSpaceOnUse"
-              x="10"
-              y="-1"
-              width="1200"
-              height="812"
-            >
-              <rect x="10" y="-0.84668" width="1200" height="811.693" fill="url(#paint0_linear_186_1134)" />
-            </mask>
-            <g mask="url(#mask0_186_1134)">
-              {/* Grid Rectangles */}
-              {[...Array(35)].map((_, i) => (
-                <React.Fragment key={`row1-${i}`}>
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="9.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="45.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="81.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="117.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="153.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="189.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="225.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="261.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="297.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="333.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="369.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="405.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="441.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="477.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="513.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="549.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="585.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="621.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="657.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="693.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="729.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                  <rect
-                    x={-20.0891 + i * 36}
-                    y="765.2"
-                    width="35.6"
-                    height="35.6"
-                    stroke="hsl(var(--foreground))"
-                    strokeOpacity="0.11"
-                    strokeWidth="0.4"
-                    strokeDasharray="2 2"
-                  />
-                </React.Fragment>
-              ))}
-              {/* Specific Rectangles with fill */}
-              <rect x="699.711" y="81" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.08" />
-              <rect x="195.711" y="153" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="1023.71" y="153" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="123.711" y="225" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="1095.71" y="225" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="951.711" y="297" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="231.711" y="333" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.07" />
-              <rect x="303.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.07" />
-              <rect x="87.7109" y="405" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="519.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.08" />
-              <rect x="771.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.09" />
-              <rect x="591.711" y="477" width="36" height="36" fill="hsl(var(--foreground))" fillOpacity="0.07" />
-            </g>
-
-            <g filter="url(#filter0_f_186_1134)">
-              <path
-                d="M1447.45 -87.0203V-149.03H1770V1248.85H466.158V894.269C1008.11 894.269 1447.45 454.931 1447.45 -87.0203Z"
-                fill="url(#paint1_linear_186_1134)"
-              />
-            </g>
-
-            <g filter="url(#filter1_f_186_1134)">
-              <path
-                d="M1383.45 -151.02V-213.03H1706V1184.85H402.158V830.269C944.109 830.269 1383.45 390.931 1383.45 -151.02Z"
-                fill="url(#paint2_linear_186_1134)"
-                fillOpacity="0.69"
-              />
-            </g>
-
-            <g style={{ mixBlendMode: "lighten" }} filter="url(#filter2_f_186_1134)">
-              <path
-                d="M1567.45 -231.02V-293.03H1890V1104.85H586.158V750.269C1128.11 750.269 1567.45 310.931 1567.45 -231.02Z"
-                fill="url(#paint3_linear_186_1134)"
-              />
-            </g>
-
-            <g style={{ mixBlendMode: "overlay" }} filter="url(#filter3_f_186_1134)">
-              <path
-                d="M65.625 750.269H284.007C860.205 750.269 1327.31 283.168 1327.31 -293.03H1650V1104.85H65.625V750.269Z"
-                fill="url(#paint4_radial_186_1134)"
-                fillOpacity="0.64"
-              />
-            </g>
-          </g>
-
-          <rect
-            x="0.5"
-            y="0.5"
-            width="1219"
-            height="809"
-            rx="15.5"
-            stroke="hsl(var(--foreground))"
-            strokeOpacity="0.06"
-          />
-
-          <defs>
-            <filter
-              id="filter0_f_186_1134"
-              x="147.369"
-              y="-467.818"
-              width="1941.42"
-              height="2035.46"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
-            </filter>
-            <filter
-              id="filter1_f_186_1134"
-              x="-554.207"
-              y="-1169.39"
-              width="3216.57"
-              height="3310.61"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="478.182" result="effect1_foregroundBlur_186_1134" />
-            </filter>
-            <filter
-              id="filter2_f_186_1134"
-              x="426.762"
-              y="-452.424"
-              width="1622.63"
-              height="1716.67"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="79.6969" result="effect1_foregroundBlur_186_1134" />
-            </filter>
-            <filter
-              id="filter3_f_186_1134"
-              x="-253.163"
-              y="-611.818"
-              width="2221.95"
-              height="2035.46"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
-            </filter>
-            <linearGradient
-              id="paint0_linear_186_1134"
-              x1="35.0676"
-              y1="23.6807"
-              x2="903.8"
-              y2="632.086"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="hsl(var(--foreground))" stopOpacity="0" />
-              <stop offset="1" stopColor="hsl(var(--muted-foreground))" />
-            </linearGradient>
-            <linearGradient
-              id="paint1_linear_186_1134"
-              x1="1118.08"
-              y1="-149.03"
-              x2="1118.08"
-              y2="1248.85"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="hsl(var(--foreground))" />
-              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-              <stop offset="1" stopColor="hsl(var(--primary))" />
-            </linearGradient>
-            <linearGradient
-              id="paint2_linear_186_1134"
-              x1="1054.08"
-              y1="-213.03"
-              x2="1054.08"
-              y2="1184.85"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="hsl(var(--foreground))" />
-              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-              <stop offset="1" stopColor="hsl(var(--primary))" />
-            </linearGradient>
-            <linearGradient
-              id="paint3_linear_186_1134"
-              x1="1238.08"
-              y1="-293.03"
-              x2="1238.08"
-              y2="1104.85"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="hsl(var(--foreground))" />
-              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-              <stop offset="1" stopColor="hsl(var(--primary))" />
-            </linearGradient>
-            <radialGradient
-              id="paint4_radial_186_1134"
-              cx="0"
-              cy="0"
-              r="1"
-              gradientUnits="userSpaceOnUse"
-              gradientTransform="translate(989.13 557.24) rotate(47.9516) scale(466.313 471.424)"
-            >
-              <stop stopColor="hsl(var(--foreground))" />
-              <stop offset="0.157789" stopColor="hsl(var(--primary-light))" />
-              <stop offset="1" stopColor="hsl(var(--primary))" />
-            </radialGradient>
-            <clipPath id="clip0_186_1134">
-              <rect width="1220" height="810" rx="16" fill="hsl(var(--foreground))" />
-            </clipPath>
-          </defs>
-        </svg>
+    <section className="relative mx-auto my-6 w-full max-w-6xl overflow-hidden rounded-[32px] border border-border/70 bg-card/85">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_10%_-10%,hsl(var(--primary)/0.12),transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_90%_10%,hsl(var(--foreground)/0.08),transparent_45%)]" />
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(to right, hsl(var(--border)/0.6) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)/0.6) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
       </div>
 
-      {/* Header positioned at top of hero container */}
-      <div className="absolute top-0 left-0 right-0 z-20">
+      <div className="relative z-10">
         <Header />
-      </div>
 
-      <div className="relative z-10 space-y-4 md:space-y-5 lg:space-y-6 mb-6 md:mb-7 lg:mb-9 mt-16 md:mt-[120px] lg:mt-[160px] px-6">
-        {/* Animated Hackathon Badge */}
-        <motion.div
-          className="flex justify-start mb-4"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full text-sm font-medium text-primary backdrop-blur-sm hover-lift">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            <ShinyText text="We are now live!" className="text-primary" />
+        <div className="grid gap-10 px-6 pb-14 pt-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              Now in public beta
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-semibold text-balance">
+              Build, verify, and ship Flow smart contracts at product speed.
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground max-w-xl">
+              Flowzmith blends AI pair-programming with production-grade deployment, so your team can move from prompt to on-chain in minutes.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/login">
+                <Button className="rounded-full px-6">Start building</Button>
+              </Link>
+              <Link href="/plans">
+                <Button variant="outline" className="rounded-full px-6">
+                  View plans
+                </Button>
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Real-time with Convex
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                GPT-assisted workflows
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Secure Flow deployments
+              </div>
+            </div>
           </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <h1 className="text-foreground text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight font-mono text-left text-balance">
-            {/* <GradientText className="text-foreground"> */}
-              The Future of Smart Contract Development.
-            {/* </GradientText> */}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-tl from-primary/70 to-foreground to-60% mt-2 text-2xl md:text-3xl lg:text-5xl">
-              Powered by Convex, OpenAI & Firecrawl
-            </span>
-          </h1>
-        </motion.div>
-        {/* <p className="text-muted-foreground text-base md:text-lg lg:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
-          Experience the revolutionary platform that combines real-time collaboration, AI-powered contract generation, and intelligent web crawling to transform how you build Flow blockchain smart contracts.
-        </p> */}
+          <div className="space-y-4">
+            <div className="surface rounded-3xl p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Daily flow</p>
+                  <p className="text-3xl font-semibold">2.4K contracts</p>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  Audited templates
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1">
+                  <Zap className="h-4 w-4 text-primary" />
+                  3x faster
+                </span>
+              </div>
+            </div>
+
+            <div className="surface rounded-3xl p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium">Live deployment status</p>
+                  <p className="text-xs text-muted-foreground">Flow EVM � 2 minutes ago</p>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-primary" />
+              </div>
+              <div className="mt-4 rounded-2xl border border-border bg-muted/60 p-4">
+                <p className="text-sm font-medium">Contract: StreamingRewards.cdc</p>
+                <p className="text-xs text-muted-foreground mt-1">Gas usage optimized by 18%</p>
+              </div>
+            </div>
+
+            <div className="surface rounded-3xl p-6 animate-float">
+              <p className="text-sm font-medium">Team velocity</p>
+              <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                <span>Design</span>
+                <span className="text-foreground">16 min</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                <span>Generate</span>
+                <span className="text-foreground">4 min</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                <span>Deploy</span>
+                <span className="text-foreground">2 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <motion.div
-        className="flex sm:flex-row gap-4 relative z-10 px-6 items-start flex-row justify-start w-full"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-      >
-        <Magnet>
-          <ClickSpark
-            sparkColor="#78fcd6"
-            sparkSize={4}
-            sparkCount={8}
-            duration={400}
-          >
-            <Link href="/login">
-              <Button className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-primary-foreground px-8 py-4 rounded-full font-semibold text-base shadow-xl ring-2 ring-primary/50 transition-all duration-300 hover-lift animate-pulse-glow">
-                Start Building Now
-              </Button>
-            </Link>
-          </ClickSpark>
-        </Magnet>
-          <ClickSpark
-            sparkColor="#78fcd6"
-            sparkSize={3}
-            sparkCount={6}
-            duration={300}
-          >
-            <Link href="https://www.youtube.com/watch?v=LL6dfPs0COo" target="_blank">
-              <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary/80 px-8 py-4 rounded-full font-medium text-base transition-all duration-300 hover-lift">
-                Live Demo
-              </Button>
-            </Link>
-          </ClickSpark>
-      </motion.div>
-
-      {/* Animated Tech Stack Showcase */}
-      <motion.div
-        className="relative z-10 mt-12 grid grid-cols-3 gap-4 max-w-md mx-auto"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-      >
-        <motion.div
-          className="flex flex-col items-center text-center p-3 bg-primary/10 border border-primary/20 rounded-lg backdrop-blur-sm hover-lift"
-          whileHover={{ scale: 1.05, y: -5 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
-          <motion.div
-            className="w-8 h-8 bg-gradient-to-r from-primary to-primary-dark rounded-lg mb-2 flex items-center justify-center animate-float"
-            style={{ animationDelay: "0s" }}
-          >
-            <span className="text-primary-foreground text-xs font-bold">C</span>
-          </motion.div>
-          <span className="text-xs text-primary font-medium">Convex</span>
-        </motion.div>
-
-        <motion.div
-          className="flex flex-col items-center text-center p-3 bg-accent/10 border border-accent/20 rounded-lg backdrop-blur-sm hover-lift"
-          whileHover={{ scale: 1.05, y: -5 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
-          <motion.div
-            className="w-8 h-8 bg-gradient-to-r from-accent to-muted rounded-lg mb-2 flex items-center justify-center animate-float"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <span className="text-accent-foreground text-xs font-bold">AI</span>
-          </motion.div>
-          <span className="text-xs text-accent-foreground font-medium">OpenAI</span>
-        </motion.div>
-
-        <motion.div
-          className="flex flex-col items-center text-center p-3 bg-secondary/10 border border-secondary/20 rounded-lg backdrop-blur-sm hover-lift"
-          whileHover={{ scale: 1.05, y: -5 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
-          <motion.div
-            className="w-8 h-8 bg-gradient-to-r from-secondary to-muted rounded-lg mb-2 flex items-center justify-center animate-float"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <span className="text-secondary-foreground text-xs font-bold">🔥</span>
-          </motion.div>
-          <span className="text-xs text-secondary-foreground font-medium">Firecrawl</span>
-        </motion.div>
-      </motion.div>
     </section>
   )
 }

@@ -47,7 +47,7 @@ export default function DashboardPage() {
       <div className="max-w-[1320px] mx-auto px-6 py-8">
         <AnimatedSection delay={0.1}>
           <div className="mb-8">
-            <h1 className="text-3xl font-semibold text-foreground mb-2">
+            <h1 className="text-3xl font-display font-semibold text-foreground mb-2">
               Welcome back, {session.user?.name || session.user?.email}
             </h1>
             <p className="text-muted-foreground">

@@ -10,6 +10,7 @@ import { useCreateContract, useUserContracts } from "@/hooks/use-convex-contract
 import { useCreateNotification } from "@/hooks/use-convex-notifications";
 import { Badge } from "@/components/ui/badge";
 import { Database, Zap, Users, Bell } from "lucide-react";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function ConvexTestPage() {
   const userContracts = useUserContracts(10);
@@ -62,8 +63,12 @@ contract TestContract {
     <div className="container mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold flex items-center justify-center gap-3">
-          <Database className="h-10 w-10 text-blue-600" />
+        <div className="flex items-center justify-between">
+          <div className="flex-1" />
+          <ThemeSwitcher />
+        </div>
+        <h1 className="text-4xl font-display font-semibold flex items-center justify-center gap-3">
+          <Database className="h-10 w-10 text-primary" />
           Convex Integration Test
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -71,15 +76,15 @@ contract TestContract {
           with smart contract management, collaboration, and notifications.
         </p>
         <div className="flex items-center justify-center gap-2">
-          <Badge variant="secondary" className="bg-green-100 text-green-800">
+          <Badge variant="secondary" className="bg-primary/10 text-primary border border-primary/30">
             <Zap className="h-3 w-3 mr-1" />
             Real-time Updates
           </Badge>
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+          <Badge variant="secondary" className="bg-muted/70 text-foreground border border-border">
             <Users className="h-3 w-3 mr-1" />
             Collaboration
           </Badge>
-          <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+          <Badge variant="secondary" className="bg-muted/70 text-foreground border border-border">
             <Bell className="h-3 w-3 mr-1" />
             Notifications
           </Badge>
@@ -112,8 +117,8 @@ contract TestContract {
 
       {/* Real-time Dashboard */}
       <div>
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Zap className="h-6 w-6" />
+        <h2 className="text-2xl font-display font-semibold mb-4 flex items-center gap-2">
+          <Zap className="h-6 w-6 text-primary" />
           Real-time Analytics Dashboard
         </h2>
         <RealTimeDashboard />
@@ -122,8 +127,8 @@ contract TestContract {
       {/* Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <Bell className="h-6 w-6" />
+          <h2 className="text-2xl font-display font-semibold mb-4 flex items-center gap-2">
+            <Bell className="h-6 w-6 text-primary" />
             Real-time Notifications
           </h2>
           <RealTimeNotifications />
@@ -131,8 +136,8 @@ contract TestContract {
 
         {/* Collaboration */}
         <div>
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <Users className="h-6 w-6" />
+          <h2 className="text-2xl font-display font-semibold mb-4 flex items-center gap-2">
+            <Users className="h-6 w-6 text-primary" />
             Real-time Collaboration
           </h2>
           {userContracts && userContracts.length > 0 ? (
@@ -160,21 +165,21 @@ contract TestContract {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 p-4 border rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Convex Backend</p>
                 <p className="text-sm text-muted-foreground">Connected & Running</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 border rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Real-time Updates</p>
                 <p className="text-sm text-muted-foreground">Active</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 border rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
               <div>
                 <p className="font-medium">Authentication</p>
                 <p className="text-sm text-muted-foreground">Ready</p>

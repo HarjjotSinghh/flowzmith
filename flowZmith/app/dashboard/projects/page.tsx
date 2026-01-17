@@ -85,10 +85,10 @@ export default function ProjectsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "text-green-500 bg-green-500/10"
-      case "completed": return "text-blue-500 bg-blue-500/10"
-      case "archived": return "text-gray-500 bg-gray-500/10"
-      default: return "text-gray-500 bg-gray-500/10"
+      case "active": return "text-primary bg-primary/10"
+      case "completed": return "text-muted-foreground bg-muted/60"
+      case "archived": return "text-muted-foreground bg-muted/40"
+      default: return "text-muted-foreground bg-muted/40"
     }
   }
 

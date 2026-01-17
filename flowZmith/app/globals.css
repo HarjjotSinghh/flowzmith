@@ -4,120 +4,178 @@
 
 @layer base {
   :root {
-    /* Themeable Colors - Restored to Original Vibe */
-    --background: 210 11% 7%; /* #0f1211 */
-    --foreground: 160 14% 93%; /* #e7eceb */
+    --background: 0 0% 98%;
+    --foreground: 220 13% 10%;
 
-    --muted: 240 2% 16%; /* #27272a */
-    --muted-foreground: 160 14% 93% / 0.7; /* rgba(231, 236, 235, 0.7) */
-    --muted-foreground-light: 160 14% 93% / 0.5; /* rgba(231, 236, 235, 0.5) */
-    --muted-foreground-dark: 160 14% 93% / 0.6; /* rgba(231, 236, 235, 0.6) */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 10%;
 
-    --card: 220 17% 98% / 0.01;
-    --card-foreground: 160 14% 93%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 10%;
 
-    --popover: 210 11% 7%;
-    --popover-foreground: 160 14% 93%;
+    --muted: 220 8% 94%;
+    --muted-foreground: 220 9% 40%;
 
-    /* Primary Accent Colors */
-    --primary: 165 96% 71%; /* #78fcd6 */
-    --primary-foreground: 160 8% 6%; /* #0d0f0e */
-    --primary-dark: 160 100% 50%; /* #00ffb6 */
-    --primary-light: 160 48% 87%; /* New variable for lighter teal/green shades */
+    --secondary: 220 8% 96%;
+    --secondary-foreground: 220 13% 10%;
 
-    /* Secondary Accent Colors (for buttons, etc.) */
-    --secondary: 160 14% 93%; /* #e7eceb */
-    --secondary-foreground: 165 14% 8%; /* #141a18 */
+    --accent: 220 8% 92%;
+    --accent-foreground: 220 13% 10%;
 
-    --accent: 240 2% 25%; /* #3f3f42 */
-    --accent-foreground: 240 2% 96%; /* #f4f4f5 */
+    --primary: 199 92% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 199 92% 35%;
+    --primary-light: 199 92% 90%;
 
-    --border: 240 100% 100% / 0.08; /* rgba(255, 255, 255, 0.08) */
-    --border-light: 210 17% 6% / 0.1; /* rgba(16,24,40,0.1) */
-    --border-dark: 210 17% 6% / 0.05; /* rgba(16,24,40,0.05) */
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 98%;
 
-    --ring: 165 96% 71%;
+    --border: 220 8% 88%;
+    --input: 220 8% 88%;
+    --ring: 199 92% 45%;
 
-    --radius: 0.1rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-foreground: 220 13% 20%;
+    --sidebar-primary: 220 13% 12%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
+    --sidebar-accent: 220 8% 92%;
+    --sidebar-accent-foreground: 220 13% 12%;
+    --sidebar-border: 220 8% 88%;
+    --sidebar-ring: 199 92% 45%;
 
-@layer base {
+    --scrollbar-track: 0 0% 98%;
+    --scrollbar-thumb: 220 8% 80%;
+    --scrollbar-thumb-hover: 220 8% 68%;
+  }
+
+  .dark {
+    --background: 220 16% 8%;
+    --foreground: 0 0% 96%;
+
+    --card: 220 16% 10%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 220 16% 10%;
+    --popover-foreground: 0 0% 96%;
+
+    --muted: 220 12% 14%;
+    --muted-foreground: 220 8% 62%;
+
+    --secondary: 220 12% 14%;
+    --secondary-foreground: 0 0% 96%;
+
+    --accent: 220 12% 16%;
+    --accent-foreground: 0 0% 96%;
+
+    --primary: 199 92% 58%;
+    --primary-foreground: 220 16% 8%;
+    --primary-dark: 199 92% 44%;
+    --primary-light: 199 92% 22%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 10% 20%;
+    --input: 220 10% 20%;
+    --ring: 199 92% 58%;
+
+    --sidebar-background: 220 16% 8%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 220 16% 8%;
+    --sidebar-accent: 220 12% 16%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 220 10% 20%;
+    --sidebar-ring: 199 92% 58%;
+
+    --scrollbar-track: 220 16% 8%;
+    --scrollbar-thumb: 220 10% 24%;
+    --scrollbar-thumb-hover: 220 10% 34%;
+  }
+
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background:
+      radial-gradient(800px circle at 12% -10%, hsl(var(--primary) / 0.08), transparent 45%),
+      radial-gradient(900px circle at 80% 10%, hsl(var(--foreground) / 0.06), transparent 40%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+
+  .dark body::before {
+    background:
+      radial-gradient(700px circle at 12% -10%, hsl(var(--primary) / 0.12), transparent 50%),
+      radial-gradient(900px circle at 80% 10%, hsl(var(--foreground) / 0.08), transparent 45%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
   }
 }
 
-/* Custom Scrollbar Styles */
 @layer utilities {
-  /* Webkit browsers (Chrome, Safari, Edge) */
+  .surface {
+    background-color: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--border) / 0.7);
+    box-shadow: 0 20px 60px -40px hsl(var(--foreground) / 0.35);
+  }
+
+  .surface-muted {
+    background-color: hsl(var(--muted) / 0.7);
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  .accent-ring {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.25),
+      0 12px 40px -28px hsl(var(--primary) / 0.55);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(210 11% 7%); /* Dark background - no white */
-    border-radius: 4px;
+    background: hsl(var(--scrollbar-track));
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(240 2% 25%); /* Dark gray - no white */
-    border-radius: 4px;
-    transition: background 0.2s ease;
+    background: hsl(var(--scrollbar-thumb));
+    border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(240 2% 35%); /* Slightly lighter dark gray */
+    background: hsl(var(--scrollbar-thumb-hover));
   }
 
-  ::-webkit-scrollbar-thumb:active {
-    background: hsl(240 2% 45%); /* Even lighter dark gray */
-  }
-
-  ::-webkit-scrollbar-corner {
-    background: hsl(210 11% 7%); /* Dark background - no white */
-  }
-
-  /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(240 2% 25%) hsl(210 11% 7%); /* Dark colors - no white */
+    scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
   }
 
-  /* Custom scrollbar for specific elements */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: hsl(240 2% 25%) hsl(210 11% 7%); /* Dark colors - no white */
+    scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -125,156 +183,108 @@
     height: 6px;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: hsl(210 11% 7%); /* Dark background - no white */
-  }
-
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(240 2% 25%); /* Dark gray - no white */
-    border-radius: 3px;
+    border-radius: 999px;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(240 2% 35%); /* Slightly lighter dark gray */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* Thin scrollbar variant */
-  .thin-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(240 2% 30%) hsl(210 11% 7%); /* Dark colors - no white */
-  }
-
-  .thin-scrollbar::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  .thin-scrollbar::-webkit-scrollbar-track {
-    background: hsl(210 11% 7%); /* Dark background - no white */
-  }
-
-  .thin-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(240 2% 30%); /* Dark gray - no white */
-    border-radius: 2px;
-  }
-
-  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(240 2% 40%); /* Slightly lighter dark gray */
-  }
-
-  /* Hidden scrollbar variant */
-  .hidden-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .hidden-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Gradient scrollbar variant */
-  .gradient-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .gradient-scrollbar::-webkit-scrollbar-track {
-    background: linear-gradient(180deg, hsl(210 11% 7%), hsl(210 11% 9%)); /* Dark gradient - no white */
-    border-radius: 3px;
-  }
-
-  .gradient-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, hsl(240 2% 25%), hsl(240 2% 35%)); /* Dark gray gradient - no white */
-    border-radius: 3px;
-    transition: all 0.2s ease;
-  }
-
-  .gradient-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, hsl(240 2% 35%), hsl(240 2% 45%)); /* Slightly lighter dark gradient */
-  }
-
-  /* AppKit Button Styling - More Specific Targeting */
-  appkit-button,
-  appkit-button *,
-  appkit-button::part(button),
-  appkit-button w3m-button,
-  appkit-button w3m-button * {
-    --w3m-accent: hsl(165 96% 71%) !important; /* Primary color from theme */
-    --w3m-accent-foreground: hsl(160 8% 6%) !important; /* Primary foreground */
-    --w3m-background: hsl(210 11% 7%) !important; /* Background color */
-    --w3m-foreground: hsl(160 14% 93%) !important; /* Foreground color */
-    --w3m-border-radius: 0.5rem !important; /* Match theme border radius */
-  }
-
-  /* Target the actual button element inside appkit-button */
-  appkit-button w3m-button {
-    background-color: hsl(165 96% 71%) !important;
-    color: hsl(160 8% 6%) !important;
-    border-radius: 0.5rem !important;
-  }
-
-  /* AppKit Button Hover States */
-  appkit-button:hover,
-  appkit-button:hover w3m-button {
-    --w3m-accent: hsl(160 100% 50%) !important; /* Primary dark on hover */
-    background-color: hsl(160 100% 50%) !important;
-  }
-
-  /* AppKit Button Focus States */
-  appkit-button:focus,
-  appkit-button:focus w3m-button {
-    --w3m-accent: hsl(165 96% 71%) !important;
-    background-color: hsl(165 96% 71%) !important;
-    outline: 2px solid hsl(165 96% 71%) !important;
-    outline-offset: 2px !important;
-  }
-
-  /* Additional targeting for Web3Modal components */
-  w3m-button,
-  w3m-button * {
-    background-color: hsl(165 96% 71%) !important;
-    color: hsl(160 8% 6%) !important;
-    border-radius: 0.5rem !important;
-  }
-
-  w3m-button:hover {
-    background-color: hsl(160 100% 50%) !important;
-  }
-
-  /* Target all possible AppKit button selectors */
-  appkit-button button,
-  appkit-button [role="button"],
-  appkit-button .w3m-button,
-  appkit-button .w3m-button *,
-  appkit-button w3m-button,
-  appkit-button w3m-button * {
-    background-color: hsl(165 96% 71%) !important;
-    color: hsl(160 8% 6%) !important;
-    border-radius: 0.5rem !important;
-    border: none !important;
-  }
-
-  appkit-button button:hover,
-  appkit-button [role="button"]:hover,
-  appkit-button .w3m-button:hover,
-  appkit-button w3m-button:hover {
-    background-color: hsl(160 100% 50%) !important;
-  }
-
-  /* Target the shadow DOM if possible */
-  appkit-button::part(button) {
-    background-color: hsl(165 96% 71%) !important;
-    color: hsl(160 8% 6%) !important;
-    border-radius: 0.5rem !important;
-  }
-
-  appkit-button::part(button):hover {
-    background-color: hsl(160 100% 50%) !important;
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -30px hsl(var(--foreground) / 0.6);
   }
 }
 
-/* Animation utilities for React Bits and MagicUI components */
-@keyframes shiny-text {
+/* AppKit Button Styling */
+appkit-button,
+appkit-button *,
+appkit-button::part(button),
+appkit-button w3m-button,
+appkit-button w3m-button * {
+  --w3m-accent: hsl(var(--primary)) !important;
+  --w3m-accent-foreground: hsl(var(--primary-foreground)) !important;
+  --w3m-background: hsl(var(--background)) !important;
+  --w3m-foreground: hsl(var(--foreground)) !important;
+  --w3m-border-radius: 999px !important;
+}
+
+appkit-button w3m-button {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 999px !important;
+}
+
+appkit-button:hover,
+appkit-button:hover w3m-button {
+  --w3m-accent: hsl(var(--primary-dark)) !important;
+  background-color: hsl(var(--primary-dark)) !important;
+}
+
+appkit-button:focus,
+appkit-button:focus w3m-button {
+  --w3m-accent: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary)) !important;
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: 2px !important;
+}
+
+w3m-button,
+w3m-button * {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 999px !important;
+}
+
+w3m-button:hover {
+  background-color: hsl(var(--primary-dark)) !important;
+}
+
+appkit-button button,
+appkit-button [role="button"],
+appkit-button .w3m-button,
+appkit-button .w3m-button *,
+appkit-button w3m-button,
+appkit-button w3m-button * {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 999px !important;
+  border: none !important;
+}
+
+appkit-button button:hover,
+appkit-button [role="button"]:hover,
+appkit-button .w3m-button:hover,
+appkit-button w3m-button:hover {
+  background-color: hsl(var(--primary-dark)) !important;
+}
+
+appkit-button::part(button) {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 999px !important;
+}
+
+appkit-button::part(button):hover {
+  background-color: hsl(var(--primary-dark)) !important;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@keyframes shine {
   0% {
     background-position: 0% 50%;
   }
@@ -284,108 +294,12 @@
 }
 
 .animate-shiny-text {
-  animation: shiny-text 3s ease-in-out infinite;
+  animation: shine 3s ease-in-out infinite;
   background-size: 200% auto;
   background-image: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    hsl(var(--foreground) / 0.3),
     transparent
   );
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(120, 252, 214, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(120, 252, 214, 0.8);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 4s ease infinite;
-}
-
-/* Scroll-based animations */
-.scroll-animate {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.scroll-animate.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Enhanced hover effects */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(120, 252, 214, 0.3);
-}
-
-/* Magnetic effect for interactive elements */
-.magnetic-element {
-  transition: transform 0.2s ease-out;
-}
-
-/* Aurora background effect */
-.aurora-bg {
-  background: linear-gradient(
-    135deg,
-    rgba(120, 252, 214, 0.1) 0%,
-    rgba(120, 252, 214, 0.05) 25%,
-    rgba(255, 255, 255, 0.02) 50%,
-    rgba(120, 252, 214, 0.05) 75%,
-    rgba(120, 252, 214, 0.1) 100%
-  );
-  background-size: 400% 400%;
-  animation: aurora-wave 15s ease infinite;
-}
-
-@keyframes aurora-wave {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }

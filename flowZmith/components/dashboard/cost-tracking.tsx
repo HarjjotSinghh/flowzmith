@@ -14,7 +14,7 @@ interface CostItemProps {
 
 function CostItem({ service, amount, usage, percentage, loading }: CostItemProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border/50">
+    <div className="flex items-center justify-between p-4 bg-card/70 rounded-2xl border border-border/70">
       <div className="flex-1">
         <p className="font-medium text-foreground">{service}</p>
         <p className="text-sm text-muted-foreground">{loading ? "Loading..." : usage}</p>
@@ -110,7 +110,7 @@ export function CostTracking() {
     Math.round((parseFloat(costData.totalCost) / 200) * 100) : 0
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+    <div className="bg-card/80 rounded-2xl border border-border/70 p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-1">Cost Tracking</h2>
@@ -123,11 +123,11 @@ export function CostTracking() {
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
-          <p className="text-red-400 text-sm mb-2">Failed to load cost data: {error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
+          <p className="text-destructive text-sm mb-2">Failed to load cost data: {error}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="text-sm text-red-400 hover:text-red-300 underline"
+            className="text-sm text-destructive hover:text-destructive/80 underline"
           >
             Retry
           </button>
@@ -136,7 +136,7 @@ export function CostTracking() {
 
       {/* Budget Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-primary/10 rounded-lg p-4">
+        <div className="bg-primary/10 rounded-2xl p-4">
           <div className="flex items-center space-x-2 mb-2">
             <DollarSign className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-foreground">Total Spent</span>
@@ -146,7 +146,7 @@ export function CostTracking() {
           </p>
         </div>
         
-        <div className="bg-muted/50 rounded-lg p-4">
+        <div className="bg-muted/60 rounded-2xl p-4">
           <div className="flex items-center space-x-2 mb-2">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium text-foreground">Projected Monthly</span>
@@ -156,9 +156,9 @@ export function CostTracking() {
           </p>
         </div>
         
-        <div className="bg-green-500/10 rounded-lg p-4">
+        <div className="bg-muted/60 rounded-2xl p-4">
           <div className="flex items-center space-x-2 mb-2">
-            <AlertCircle className="h-4 w-4 text-green-500" />
+            <AlertCircle className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-foreground">Remaining Credits</span>
           </div>
           <p className="text-2xl font-bold text-foreground">
@@ -185,7 +185,7 @@ export function CostTracking() {
         </div>
         <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-primary to-primary-dark transition-all duration-500" 
+            className="h-full bg-primary transition-all duration-500" 
             style={{ width: `${budgetUsage}%` }} 
           />
         </div>

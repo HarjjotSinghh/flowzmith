@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AnimatedSection } from '@/components/animated-section'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import { useWallet, PLANS } from '@/contexts/WalletProviderHybrid'
 import {
   CreditCard,
@@ -83,11 +84,11 @@ export default function PlansPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border">
+      <div className="border-b border-border bg-card/80">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Choose Your Plan</h1>
+              <h1 className="text-3xl font-display font-semibold text-foreground">Choose your plan</h1>
               <p className="text-muted-foreground mt-2">
                 Select the perfect plan for your smart contract development needs
               </p>
@@ -95,6 +96,7 @@ export default function PlansPage() {
 
             {/* Wallet Connection */}
             <div className="flex items-center gap-4">
+              <ThemeSwitcher />
               {wallet.isConnected ? (
                 <div className="flex items-center gap-3">
                   <div className="text-sm">
@@ -128,20 +130,20 @@ export default function PlansPage() {
       {/* Success Message */}
       {txHash && (
         <div className="container mx-auto px-4 py-6">
-          <Card className="border-green-500 bg-green-50">
+          <Card className="border-primary/30 bg-primary/10">
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <Check className="w-6 h-6 text-green-600" />
+                <Check className="w-6 h-6 text-primary" />
                 <div>
-                  <h3 className="font-semibold text-green-900">Payment Successful!</h3>
-                  <p className="text-green-700 text-sm">
+                  <h3 className="font-semibold text-primary">Payment Successful!</h3>
+                  <p className="text-primary/80 text-sm">
                     Your credits have been added to your account.
                   </p>
                   <a
                     href={`https://evm.flowscan.io/tx/${txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-green-600 hover:text-green-800 text-sm mt-2"
+                    className="inline-flex items-center gap-1 text-primary hover:text-primary/80 text-sm mt-2"
                   >
                     View transaction <ExternalLink className="w-3 h-3" />
                   </a>
@@ -155,13 +157,13 @@ export default function PlansPage() {
       {/* Error Message */}
       {error && (
         <div className="container mx-auto px-4 py-6">
-          <Card className="border-red-500 bg-red-50">
+          <Card className="border-destructive/30 bg-destructive/10">
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-red-600" />
+                <AlertCircle className="w-6 h-6 text-destructive" />
                 <div>
-                  <h3 className="font-semibold text-red-900">Payment Failed</h3>
-                  <p className="text-red-700 text-sm">{error}</p>
+                  <h3 className="font-semibold text-destructive">Payment Failed</h3>
+                  <p className="text-destructive/80 text-sm">{error}</p>
                 </div>
               </div>
             </CardContent>
@@ -215,7 +217,7 @@ export default function PlansPage() {
                   <ul className="space-y-3 mb-8 flex-1">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <Check className="w-5 h-5 text-primary flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}

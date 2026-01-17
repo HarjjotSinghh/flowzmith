@@ -33,26 +33,26 @@ export function RealTimeNotifications() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "deployment_success":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-primary" />;
       case "deployment_failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case "collaboration_invite":
-        return <Users className="h-4 w-4 text-blue-500" />;
+        return <Users className="h-4 w-4 text-muted-foreground" />;
       case "system":
         return <AlertCircle className="h-4 w-4 text-orange-500" />;
       default:
-        return <Info className="h-4 w-4 text-gray-500" />;
+        return <Info className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   const getNotificationColor = (type: string) => {
     switch (type) {
       case "deployment_success":
-        return "border-l-green-500";
+        return "border-l-primary";
       case "deployment_failed":
-        return "border-l-red-500";
+        return "border-l-destructive";
       case "collaboration_invite":
-        return "border-l-blue-500";
+        return "border-l-border";
       case "system":
         return "border-l-orange-500";
       default:
@@ -140,7 +140,7 @@ export function RealTimeNotifications() {
                           {notification.title}
                         </h4>
                         {!notification.read && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                          <div className="w-2 h-2 bg-primary rounded-full" />
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">

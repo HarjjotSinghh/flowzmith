@@ -33,7 +33,7 @@ function StreamingActionCard({
   
   const variantClasses = {
     default: "bg-gradient-to-br from-card/80 to-card/40 border-border/50 hover:border-primary/30 hover:shadow-primary/10",
-    primary: "bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:border-primary/40 hover:shadow-primary/20",
+    primary: "bg-gradient-to-br from-muted/40 to-muted/20 border-primary/20 hover:border-primary/40 hover:shadow-primary/20",
     secondary: "bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20 hover:border-secondary/40 hover:shadow-secondary/20"
   }
   
@@ -56,7 +56,7 @@ function StreamingActionCard({
               {isLoading ? (
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
               ) : isCompleted ? (
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                <CheckCircle className="h-6 w-6 text-primary" />
               ) : (
                 <div className="transition-transform duration-300 group-hover:scale-110">
                   {icon}
@@ -92,8 +92,8 @@ function StreamingActionCard({
               )}
               {isCompleted && (
                 <>
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span className="text-green-600 font-medium">Completed</span>
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <span className="text-primary font-medium">Completed</span>
                 </>
               )}
             </div>

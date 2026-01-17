@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import Image from "next/image"
+import { ThemeSwitcher } from "@/components/theme-switcher"
+import { useTheme } from "next-themes"
 import {
   Bot,
   Send,
@@ -41,6 +43,7 @@ interface ChatMessage {
 }
 
 export default function ChatPage() {
+  const { resolvedTheme } = useTheme()
   const [isInitialized, setIsInitialized] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isAkaveEnabled, setIsAkaveEnabled] = useState(false);
@@ -306,7 +309,7 @@ export default function ChatPage() {
       // Show success notification
       const notification = document.createElement("div");
       notification.className =
-        "fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50";
+        "fixed top-4 right-4 bg-foreground text-background px-4 py-2 rounded-full shadow-lg z-50";
       notification.textContent = `☁️ All files saved to Akave storage`;
       document.body.appendChild(notification);
 
@@ -462,7 +465,7 @@ export default function ChatPage() {
         // Show notification
         const notification = document.createElement("div");
         notification.className =
-          "fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+          "fixed top-4 right-4 bg-foreground text-background px-4 py-2 rounded-full shadow-lg z-50";
         notification.textContent = `📄 Generated ${contracts.length} contract(s)${isAkaveEnabled ? " and uploaded to Akave" : ""} and added to editor`;
         document.body.appendChild(notification);
 
@@ -581,14 +584,16 @@ export default function ChatPage() {
     );
   }
 
+  const editorTheme = resolvedTheme === "dark" ? "vs-dark" : "vs"
+
   return (
     <div className="min-h-screen bg-background">
       <div className="h-screen flex flex-col">
         {/* Header */}
-        <div className="border-b border-border bg-card p-4">
-          <div className="flex items-center justify-between">
+        <div className="border-b border-border bg-card/80 p-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary/[0.01] rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-muted/60 rounded-full flex items-center justify-center border border-border">
                 <Image
                   src="/images/flowZmithsLogo.svg"
                   alt="Flowzmith"
@@ -608,15 +613,16 @@ export default function ChatPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ThemeSwitcher />
               {/* Akave Status Indicator */}
               <div className="flex items-center gap-1">
                 <div
                   className={`w-2 h-2 rounded-full ${
                     akaveStatus === "available"
-                      ? "bg-green-500"
+                      ? "bg-primary"
                       : akaveStatus === "checking"
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
+                        ? "bg-muted-foreground"
+                        : "bg-destructive"
                   }`}
                 ></div>
                 <span className="text-xs text-muted-foreground">
@@ -721,21 +727,21 @@ export default function ChatPage() {
                           <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                               message.role === "assistant"
-                                ? "bg-primary/20"
-                                : "bg-secondary/20"
+                                ? "bg-primary/10"
+                                : "bg-muted/60"
                             }`}
                           >
                             {message.role === "assistant" ? (
                               <Bot className="w-4 h-4 text-primary" />
                             ) : (
-                              <User className="w-4 h-4 text-secondary-foreground" />
+                              <User className="w-4 h-4 text-foreground" />
                             )}
                           </div>
                           <div
                             className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                               message.role === "assistant"
-                                ? "bg-muted text-muted-foreground"
-                                : "bg-secondary text-secondary-foreground"
+                                ? "bg-card/80 border border-border/70 text-foreground"
+                                : "bg-foreground text-background"
                             }`}
                           >
                             <div className="text-sm whitespace-pre-wrap">
@@ -748,7 +754,7 @@ export default function ChatPage() {
                   )}
                   {isLoading && (
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/20">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10">
                         <Bot className="w-4 h-4 text-primary" />
                       </div>
                       <div className="bg-muted rounded-2xl px-4 py-3">
@@ -770,7 +776,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-border bg-card">
+                <div className="p-4 border-t border-border bg-card/80">
                   <form onSubmit={handleSubmit} className="flex gap-2">
                     <input
                       value={input}
@@ -791,13 +797,13 @@ export default function ChatPage() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="w-2 bg-border hover:bg-primary/50 transition-colors" />
+            <PanelResizeHandle className="w-2 bg-border hover:bg-muted-foreground/30 transition-colors" />
 
             {/* Editor Panel */}
             <Panel minSize={30}>
               <div className="h-full flex">
                 {/* File Tree */}
-                <div className="overflow-y-auto w-64 border-r border-border custom-scrollbar">
+                <div className="overflow-y-auto w-64 border-r border-border bg-card/80 custom-scrollbar">
                   <FileTree
                     files={files}
                     selectedFileId={selectedFileId}
@@ -809,7 +815,7 @@ export default function ChatPage() {
 
                 {/* Editor */}
                 <div className="flex-1 flex flex-col">
-                  <div className="border-b border-border bg-card p-3">
+                  <div className="border-b border-border bg-card/80 p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-muted-foreground" />
@@ -852,7 +858,7 @@ export default function ChatPage() {
                         language={getLanguageFromPath(selectedFile.path)}
                         value={selectedFile.content}
                         onChange={handleEditorChange}
-                        theme="vs-dark"
+                        theme={editorTheme}
                         options={{
                           minimap: { enabled: false },
                           fontSize: 14,
