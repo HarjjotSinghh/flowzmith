@@ -19,7 +19,7 @@
     --secondary: 0 0% 92%;
       --secondary-foreground: 0 0% 0%;
 
-    --accent: 75 100% 50%;
+    --accent: 712 95% 60%;
       /* Volt Green */
       --accent-foreground: 0 0% 0%;
 
@@ -31,7 +31,7 @@
 
     --border: 0 0% 0%;
       --input: 0 0% 0%;
-      --ring: 75 100% 50%;
+      --ring: 712 95% 60%;
 
     --radius: 0rem;
   }
@@ -52,7 +52,7 @@
     --secondary: 0 0% 12%;
       --secondary-foreground: 0 0% 95%;
 
-    --accent: 75 100% 50%;
+    --accent: 712 95% 60%;
       /* Volt Green */
       --accent-foreground: 0 0% 0%;
 
@@ -64,7 +64,7 @@
 
     --border: 0 0% 20%;
       --input: 0 0% 20%;
-      --ring: 75 100% 50%;
+      --ring: 712 95% 60%;
     }
     }
 

@@ -54,7 +54,7 @@ const FAQItem = ({ question, answer, isOpen, onToggle, index }: FAQItemProps) =>
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className={`w-full overflow-hidden border-2 border-foreground bg-background transition-all duration-300 ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(204,255,0,1)]" : "hover:bg-muted/5"
+      className={`w-full overflow-hidden border-2 border-foreground bg-background transition-all duration-300 ${isOpen ? "shadow-[4px_4px_0px_0px_hsl(712,95%,60%)]" : "hover:bg-muted/5"
         }`}
     >
       <button

@@ -18,7 +18,7 @@ const buttonVariants = cva(
           "bg-muted text-foreground/80 hover:bg-accent hover:text-accent-foreground border-2 border-transparent",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-foreground underline-offset-4 hover:underline",
-        terminal: "bg-background text-accent border-2 border-accent hover:bg-accent hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(204,255,0,0.3)] active:translate-y-1 active:shadow-none"
+        terminal: "bg-background text-accent border-2 border-accent hover:bg-accent hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[hsl(712,95%,60%)] active:translate-y-1 active:shadow-none"
       },
       size: {
         default: "h-10 px-6 py-2",

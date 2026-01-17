@@ -26,7 +26,7 @@ export function CTASection() {
             }}
           />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-16">
             <div className="space-y-6">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -53,7 +53,7 @@ export function CTASection() {
                 transition={{ delay: 0.5 }}
                 className="text-lg md:text-xl font-bold text-black/80 max-w-2xl uppercase"
               >
-                SPIN UP A NEW FLOW CONTRACT IN MINUTES. COLLABORATE IN REAL-TIME. SHIP WITH CONFIDENCE.
+                SPIN UP A NEW FLOW CONTRACT IN MINUTES.<br /> COLLABORATE IN REAL-TIME. SHIP WITH CONFIDENCE.
               </motion.p>
             </div>
 
@@ -62,7 +62,7 @@ export function CTASection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 shrink-0"
+              className="flex flex-col sm:flex-col-reverse gap-4 shrink-0 items-end justify-end h-full mt-auto"
             >
               <Link href="/login">
                 <Button className="h-14 md:h-16 px-8 md:px-10 text-lg md:text-xl bg-black text-white hover:bg-white hover:text-black border-2 border-black transition-all duration-300 group/btn">
