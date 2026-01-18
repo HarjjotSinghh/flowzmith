@@ -5,6 +5,7 @@ import { useState } from "react"
 import { ChevronDown, Plus, Minus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 const faqData = [
   {
@@ -140,7 +141,9 @@ export function FAQSection() {
           className="mt-16 p-8 border-4 border-dashed border-foreground/20 text-center"
         >
           <p className="text-xs font-black text-foreground/80 uppercase tracking-widest mb-4">STILL HAVE QUESTIONS?</p>
-          <Button variant="terminal" size="lg">OPEN SUPPORT TICKET</Button>
+          <Link href="/support">
+            <Button variant="terminal" size="lg">OPEN SUPPORT TICKET</Button>
+          </Link>
         </motion.div>
       </div>
     </section>

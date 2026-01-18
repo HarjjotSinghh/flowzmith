@@ -2,6 +2,7 @@
 
 import { ShieldCheck, Sparkles, Workflow, Timer, Server, Wand2 } from "lucide-react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 const features = [
   {
@@ -85,32 +86,33 @@ export function BentoSection() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-2 border-foreground bg-foreground gap-[1px]"
         >
           {features.map((feature) => (
-            <motion.div
-              key={feature.title}
-              variants={itemVariants}
-              className="group p-8 transition-all duration-300 hover:bg-accent bg-background flex flex-col h-full cursor-pointer relative overflow-hidden"
-            >
-              <div className="flex h-12 w-12 items-center justify-center border-2 border-foreground bg-background group-hover:bg-black group-hover:border-black transition-colors duration-300">
-                <feature.icon className="h-6 w-6 group-hover:text-accent transition-colors duration-300" />
-              </div>
-
-              <h3 className="mt-8 text-xl font-black tracking-tighter text-foreground group-hover:text-black transition-colors duration-300">
-                {`[ ${feature.title} ]`}
-              </h3>
-
-              <p className="mt-4 text-sm font-bold text-foreground/80 group-hover:text-black/80 leading-snug transition-colors duration-300">
-                {feature.description}
-              </p>
-
-              <div className="mt-auto pt-8 flex justify-between items-center">
-                <div className="text-[10px] font-black tracking-widest text-foreground/80 group-hover:text-black/60 transition-colors duration-300 uppercase">
-                  STATUS: READY
+            <Link key={feature.title} href="/features" className="h-full">
+              <motion.div
+                variants={itemVariants}
+                className="group p-8 transition-all duration-300 hover:bg-accent bg-background flex flex-col h-full cursor-pointer relative overflow-hidden"
+              >
+                <div className="flex h-12 w-12 items-center justify-center border-2 border-foreground bg-background group-hover:bg-black group-hover:border-black transition-colors duration-300">
+                  <feature.icon className="h-6 w-6 group-hover:text-accent transition-colors duration-300" />
                 </div>
-                <div className="h-2 w-2 bg-foreground group-hover:bg-black group-hover:scale-150 transition-all duration-300 animate-pulse" />
-              </div>
 
-              <div className="absolute top-0 right-0 w-0 h-0 border-t-[20px] border-l-[20px] border-t-transparent border-l-transparent group-hover:border-t-black transition-all duration-300" />
-            </motion.div>
+                <h3 className="mt-8 text-xl font-black tracking-tighter text-foreground group-hover:text-black transition-colors duration-300">
+                  {`[ ${feature.title} ]`}
+                </h3>
+
+                <p className="mt-4 text-sm font-bold text-foreground/80 group-hover:text-black/80 leading-snug transition-colors duration-300">
+                  {feature.description}
+                </p>
+
+                <div className="mt-auto pt-8 flex justify-between items-center">
+                  <div className="text-[10px] font-black tracking-widest text-foreground/80 group-hover:text-black/60 transition-colors duration-300 uppercase">
+                    STATUS: READY
+                  </div>
+                  <div className="h-2 w-2 bg-foreground group-hover:bg-black group-hover:scale-150 transition-all duration-300 animate-pulse" />
+                </div>
+
+                <div className="absolute top-0 right-0 w-0 h-0 border-t-[20px] border-l-[20px] border-t-transparent border-l-transparent group-hover:border-t-black transition-all duration-300" />
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
       </div>

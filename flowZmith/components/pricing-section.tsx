@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Check, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 const pricingPlans = [
   {
@@ -168,16 +169,18 @@ export function PricingSection() {
               </div>
 
               <div className="mt-12">
-                <Button
-                  variant={plan.popular ? "terminal" : "outline"}
-                  className={`w-full h-14 text-base md:text-lg border-2 ${plan.popular
-                    ? "group-hover:bg-black group-hover:text-accent group-hover:border-black bg-accent text-black"
-                    : "group-hover:bg-black group-hover:text-white group-hover:border-black"
-                    }`}
-                >
-                  {plan.buttonText}
-                  <Terminal className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href={plan.buttonText === "TALK TO SALES" ? "/contact" : "/plans"} className="w-full">
+                  <Button
+                    variant={plan.popular ? "terminal" : "outline"}
+                    className={`w-full h-14 text-base md:text-lg border-2 ${plan.popular
+                      ? "group-hover:bg-black group-hover:text-accent group-hover:border-black bg-accent text-black"
+                      : "group-hover:bg-black group-hover:text-white group-hover:border-black"
+                      }`}
+                  >
+                    {plan.buttonText}
+                    <Terminal className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           ))}
